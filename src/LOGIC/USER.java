@@ -12,4 +12,17 @@ public class USER {
    private LocalDate fechaRegistro;
    private long ultimaSesion;
    private String avatarPath;
+   
+   
+   //ATRIBUTOS JUEGO
+   private int nivelActual;
+   private boolean[] nivelesDesbloqueados;
+   private int[] puntajesPorNivel;
+   private long tiempoTotalJugado;
+   private int partidasJugadas;
+   private int fallosTotal;
+   private int estrellasTotal;
+   private int puntuacionGenera;
+   
+   
 }
