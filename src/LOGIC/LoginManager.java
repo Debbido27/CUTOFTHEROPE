@@ -106,4 +106,15 @@ public class LoginManager {
         } catch (IOException e) {}
         return lastActive;
     }
+      
+      
+    public boolean userExiste(String username){
+        try (RandomAccessFile f = new RandomAccessFile(USERS_FILE, "r")) {
+            while (f.getFilePointer() < f.length()) {
+                USER u = leerRegistro(f);
+                if (u.getUsername().equals(username)) return true;
+            }
+        } catch (IOException e) {}
+        return false;
+    }
 }
