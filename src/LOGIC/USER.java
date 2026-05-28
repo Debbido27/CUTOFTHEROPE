@@ -49,4 +49,132 @@ public class USER {
           this.amigos = new String[0];
       }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getFullname() {
+        return fullname;
+    }
+
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
+    }
+
+    public LocalDate getFechaRegistro() {
+        return fechaRegistro;
+    }
+
+    public void setFechaRegistro(LocalDate fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
+    }
+
+    public long getUltimaSesion() {
+        return ultimaSesion;
+    }
+
+    public void setUltimaSesion(long ultimaSesion) {
+        this.ultimaSesion = ultimaSesion;
+    }
+
+    public String getAvatarPath() {
+        return avatarPath;
+    }
+
+    public void setAvatarPath(String avatarPath) {
+        this.avatarPath = avatarPath;
+    }
+
+    public int getNivelActual() {
+        return nivelActual;
+    }
+
+    public void setNivelActual(int nivelActual) {
+        this.nivelActual = nivelActual;
+    }
+
+    public boolean[] getNivelesDesbloqueados() {
+        return nivelesDesbloqueados;
+    }
+
+    public void setNivelesDesbloqueados(boolean[] nivelesDesbloqueados) {
+        this.nivelesDesbloqueados = nivelesDesbloqueados;
+    }
+
+    public int[] getPuntajesPorNivel() {
+        return puntajesPorNivel;
+    }
+
+    public void setPuntajesPorNivel(int[] puntajesPorNivel) {
+        this.puntajesPorNivel = puntajesPorNivel;
+    }
+
+    public long getTiempoTotalJugado() {
+        return tiempoTotalJugado;
+    }
+
+    public void setTiempoTotalJugado(long tiempoTotalJugado) {
+        this.tiempoTotalJugado = tiempoTotalJugado;
+    }
+
+    public int getPartidasJugadas() {
+        return partidasJugadas;
+    }
+
+    public void setPartidasJugadas(int partidasJugadas) {
+        this.partidasJugadas = partidasJugadas;
+    }
+
+    public int getFallosTotales() {
+        return fallosTotales;
+    }
+
+    public void setFallosTotales(int fallosTotales) {
+        this.fallosTotales = fallosTotales;
+    }
+
+    public int getEstrellasTotal() {
+        return estrellasTotal;
+    }
+
+    public void setEstrellasTotal(int estrellasTotal) {
+        this.estrellasTotal = estrellasTotal;
+    }
+
+    public int getPuntuacionGeneral() {
+        return puntuacionGeneral;
+    }
+
+    public void setPuntuacionGeneral(int puntuacionGeneral) {
+        this.puntuacionGeneral = puntuacionGeneral;
+    }
+
+    public float getVolumen() {
+        return volumen;
+    }
+
+    public void setVolumen(float volumen) {
+        this.volumen = volumen;
+    }
+
+    public String[] getAmigos() {
+        return amigos;
+    }
+
+    public void setAmigos(String[] amigos) {
+        this.amigos = amigos;
+    }
+
 }
