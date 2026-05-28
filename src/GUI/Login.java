@@ -205,4 +205,111 @@ public class Login extends JFrame {
 
         return panel;
     }
+         
+     
+           private JPanel crearPanelCrear() {
+        JPanel panel = new JPanel();
+        panel.setBackground(PANEL);
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(ACENTO, 2),
+            BorderFactory.createEmptyBorder(30, 80, 30, 80)
+        ));
+
+        JLabel titulo = new JLabel("Crear Jugador");
+        titulo.setFont(FUENTE_TITULO);
+        titulo.setForeground(ACENTO);
+        titulo.setAlignmentX(CENTER_ALIGNMENT);
+
+        JSeparator sep = crearSeparador();
+
+        JLabel lblNombre = crearLabel("Nombre Completo");
+        campoNombreCompleto = crearCampoTexto();
+
+        JLabel lblUser = crearLabel("Nombre de Usuario");
+        campoUsuarioCrear = crearCampoTexto();
+
+        JLabel lblPass = crearLabel("Contraseña");
+        campoPasswordCrear = crearCampoPassword();
+        JPanel filaPass = crearFilaPassword(campoPasswordCrear);
+
+        JPanel panelChecks = crearPanelChecks();
+
+        campoPasswordCrear.addKeyListener(new KeyAdapter() {
+            public void keyReleased(KeyEvent e) {
+                actualizarChecks(new String(campoPasswordCrear.getPassword()));
+            }
+        });
+
+        JLabel lblAvatar = crearLabel("Elige tu avatar");
+        JPanel panelAvatares = crearPanelAvatares();
+
+        JLabel mensajeCrear = crearMensaje();
+
+        JButton btnCrear  = crearBoton("Crear",  BTN_PRIMARIO,   Color.WHITE);
+        JButton btnVolver = crearBoton("Volver", BTN_SECUNDARIO, Color.WHITE);
+
+        btnCrear.addActionListener(e -> {
+            String nombre = campoNombreCompleto.getText().trim();
+            String user   = campoUsuarioCrear.getText().trim();
+            String pass   = new String(campoPasswordCrear.getPassword());
+
+            if (nombre.isEmpty() || user.isEmpty() || pass.isEmpty()) {
+                mostrarError(mensajeCrear, "Completa todos los campos.");
+            } else if (manager.userExiste(user)) {
+                mostrarError(mensajeCrear, "Ese usuario ya existe.");
+            } else if (!validarPassword(pass)) {
+                mostrarError(mensajeCrear, "La contraseña no cumple los requisitos.");
+            } else if (manager.crearUser(user, pass, nombre)) {
+                if (!avatarSeleccionado.isEmpty())
+                    manager.cambiarAvatar(user, avatarSeleccionado);
+                mostrarExito(mensajeCrear, "¡Jugador creado!");
+                campoNombreCompleto.setText("");
+                campoUsuarioCrear.setText("");
+                campoPasswordCrear.setText("");
+                actualizarChecks("");
+            } else {
+                mostrarError(mensajeCrear, "Error al crear jugador.");
+            }
+        });
+
+        btnVolver.addActionListener(e -> {
+            campoNombreCompleto.setText("");
+            campoUsuarioCrear.setText("");
+            campoPasswordCrear.setText("");
+            mensajeCrear.setText(" ");
+            actualizarChecks("");
+            cardLayout.show(panelPrincipal, "menu");
+        });
+
+        panel.add(titulo);
+        panel.add(Box.createVerticalStrut(16));
+        panel.add(sep);
+        panel.add(Box.createVerticalStrut(20));
+        panel.add(lblNombre);
+        panel.add(Box.createVerticalStrut(5));
+        panel.add(campoNombreCompleto);
+        panel.add(Box.createVerticalStrut(12));
+        panel.add(lblUser);
+        panel.add(Box.createVerticalStrut(5));
+        panel.add(campoUsuarioCrear);
+        panel.add(Box.createVerticalStrut(12));
+        panel.add(lblPass);
+        panel.add(Box.createVerticalStrut(5));
+        panel.add(filaPass);
+        panel.add(Box.createVerticalStrut(8));
+        panel.add(panelChecks);
+        panel.add(Box.createVerticalStrut(14));
+        panel.add(lblAvatar);
+        panel.add(Box.createVerticalStrut(8));
+        panel.add(panelAvatares);
+        panel.add(Box.createVerticalStrut(14));
+        panel.add(mensajeCrear);
+        panel.add(Box.createVerticalStrut(8));
+        panel.add(btnCrear);
+        panel.add(Box.createVerticalStrut(8));
+        panel.add(btnVolver);
+
+        return panel;
+    }
 }
