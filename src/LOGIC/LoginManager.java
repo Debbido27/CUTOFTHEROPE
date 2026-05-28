@@ -170,6 +170,20 @@ public class LoginManager {
     }
     
     
+    private interface RegistroModificador { void modificar(USER u); }
+
+    private boolean reescribir(String usernameObjetivo, RegistroModificador mod) {
+        File tempFile = new File(USERS_TEMP);
+        try (RandomAccessFile original = new RandomAccessFile(USERS_FILE, "r");
+             RandomAccessFile temp    = new RandomAccessFile(tempFile, "rw")) {
+            while (original.getFilePointer() < original.length()) {
+                USER u = leerRegistro(original);
+                if (u.getUsername().equals(usernameObjetivo)) mod.modificar(u);
+                escribirRegistro(temp, u);
+            }
+        } catch (IOException e) { System.out.println("Error reescribiendo: " + e.getMessage()); return false; }
+        new File(USERS_FILE).delete();
+        return tempFile.renameTo(new File(USERS_FILE));
     }
     
     
