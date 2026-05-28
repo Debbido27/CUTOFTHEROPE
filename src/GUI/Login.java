@@ -373,4 +373,24 @@ public class Login extends JFrame {
         lbl.setAlignmentX(LEFT_ALIGNMENT);
         return lbl;
     }
+         
+         
+         private void actualizarChecks(String pass) {
+        setCheck(checkLongitud,  pass.length() >= 6,          "Mínimo 6 caracteres");
+        setCheck(checkMayuscula, pass.matches(".*[A-Z].*"),   "Una mayúscula");
+        setCheck(checkMinuscula, pass.matches(".*[a-z].*"),   "Una minúscula");
+        setCheck(checkNumero,    pass.matches(".*[0-9].*"),   "Un número");
+    }
+         
+        private void setCheck(JLabel lbl, boolean ok, String texto) {
+        lbl.setText((ok ? "✓  " : "✗  ") + texto);
+        lbl.setForeground(ok ? CHECK_OK : CHECK_MAL);
+    }
+
+    private boolean validarPassword(String pass) {
+        return pass.length() >= 6
+            && pass.matches(".*[A-Z].*")
+            && pass.matches(".*[a-z].*")
+            && pass.matches(".*[0-9].*");
+    }
 }
