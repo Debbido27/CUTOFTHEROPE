@@ -222,6 +222,24 @@ public class LoginManager {
     
     
     
+    public void registrarPartida(String username, int nivel, int puntaje,
+                              int estrellas, int fallos, long tiempoMs) {
+            reescribir(username, u -> {
+            u.setPartidasJugadas(u.getPartidasJugadas() + 1);
+            u.setEstrellasTotal(u.getEstrellasTotal() + estrellas);
+            u.setTiempoTotalJugado(u.getTiempoTotalJugado() + tiempoMs);
+            u.setFallosTotales(u.getFallosTotales() + fallos);
+            if (puntaje > u.getPuntajesPorNivel()[nivel])
+                u.setPuntajeNivel(nivel, puntaje);
+            if (nivel + 1 < 5) u.desbloquearNivel(nivel + 1);
+            if (nivel + 1 > u.getNivelActual()) u.setNivelActual(nivel + 1);
+            int total = 0;
+            for (int p : u.getPuntajesPorNivel()) total += p;
+            u.setPuntuacionGeneral(total);
+        });
+       }
+    
+    
     
    
 }

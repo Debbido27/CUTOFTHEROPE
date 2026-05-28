@@ -140,6 +140,10 @@ public class USER {
     public void setFallosTotales(int fallosTotales) {
         this.fallosTotales = fallosTotales;
     }
+    
+    public void setPuntuacionGeneral(int puntuacionGeneral) {
+    this.puntuacionGeneral = puntuacionGeneral;
+}
 
     public int getEstrellasTotal() {
         return estrellasTotal;
@@ -194,4 +198,6 @@ public class USER {
                "\nPartidas jugadas: " + partidasJugadas + "\nPuntuación: " + puntuacionGeneral;
     }
 
+    
+    
 }
