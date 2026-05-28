@@ -364,4 +364,13 @@ public class Login extends JFrame {
         panel.add(checkNumero);
         return panel;
     }
+         
+         
+         private JLabel crearCheckLabel(String texto) {
+        JLabel lbl = new JLabel("✗  " + texto);
+        lbl.setFont(FUENTE_CHECK);
+        lbl.setForeground(CHECK_MAL);
+        lbl.setAlignmentX(LEFT_ALIGNMENT);
+        return lbl;
+    }
 }
