@@ -244,6 +244,26 @@ public class LoginManager {
         for (int p : u.getPuntajesPorNivel()) total += p;
         return total;
     }
+        
+        
+        
+   public USER[] getRanking() {
+        USER[] todos = new USER[50];
+        int count = 0;
+        try (RandomAccessFile f = new RandomAccessFile(USERS_FILE, "r")) {
+            while (f.getFilePointer() < f.length() && count < 50)
+                todos[count++] = leerRegistro(f);
+        } catch (IOException e) {}
+        
+        for (int i = 0; i < count - 1; i++)
+            for (int j = 0; j < count - i - 1; j++)
+                if (todos[j].getPuntuacionGeneral() < todos[j+1].getPuntuacionGeneral()) {
+                    USER tmp = todos[j]; todos[j] = todos[j+1]; todos[j+1] = tmp;
+                }
+        USER[] resultado = new USER[count];
+        for (int i = 0; i < count; i++) resultado[i] = todos[i];
+        return resultado;
+    }
 
     
     
