@@ -66,6 +66,32 @@ public class LoginManager {
             u.setAmigos(amigos);
             return u;
         }
+            
+            
+      private void escribirRegistro(RandomAccessFile f, USER u) throws IOException {
+        f.writeUTF(u.getUsername());
+        f.writeUTF(u.getPassword());
+        f.writeUTF(u.getFullname());
+        f.writeLong(u.getFechaRegistro().toEpochDay());
+        f.writeLong(u.getUltimaSesion());
+        f.writeUTF(u.getAvatarPath());
+        f.writeInt(u.getNivelActual());
 
-    
+        boolean[] niveles = u.getNivelesDesbloqueados();
+        for (boolean b : niveles) f.writeBoolean(b);
+
+        int[] puntajes = u.getPuntajesPorNivel();
+        for (int p : puntajes) f.writeInt(p);
+
+        f.writeLong(u.getTiempoTotalJugado());
+        f.writeInt(u.getPartidasJugadas());
+        f.writeInt(u.getFallosTotales());
+        f.writeInt(u.getEstrellasTotal());
+        f.writeInt(u.getPuntuacionGeneral());
+        f.writeFloat(u.getVolumen());
+
+        String[] amigos = u.getAmigos();
+        f.writeInt(amigos.length);
+        for (String a : amigos) f.writeUTF(a);
+    }
 }
