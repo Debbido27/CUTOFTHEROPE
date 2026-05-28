@@ -143,5 +143,21 @@ public class LoginManager {
     }
     
     
+    private boolean crearCarpetaUsuario(String username) {
+        try {
+            File userFolder = new File(BASE_FOLDER + "/" + username);
+            if (!userFolder.mkdir()) return false;
+            new File(userFolder, "stats.ctr").createNewFile();
+            new File(userFolder, "sessions.ctr").createNewFile();
+            new File(userFolder, "preferences.ctr").createNewFile();
+            new File(userFolder, "amigos.ctr").createNewFile();
+            new File(userFolder, "avatar").mkdir();
+            return true;
+        } catch (IOException e) { System.out.println("Error creando carpeta: " + e.getMessage()); return false; }
+    }
+    
+    
+    
+    
    
 }
