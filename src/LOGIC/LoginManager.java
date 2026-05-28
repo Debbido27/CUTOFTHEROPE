@@ -309,6 +309,9 @@ public class LoginManager {
         folder.delete();
     }
     
+     public USER getCurrentUser() { return currentUser; }
+    public void setCurrentUser(USER u) { this.currentUser = u; }
+    
     
    
 }
