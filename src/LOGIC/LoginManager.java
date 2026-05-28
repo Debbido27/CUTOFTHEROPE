@@ -264,6 +264,27 @@ public class LoginManager {
         for (int i = 0; i < count; i++) resultado[i] = todos[i];
         return resultado;
     }
+   
+   
+     public boolean eliminarUsuario(String username) {
+        File tempFile = new File(USERS_TEMP);
+        boolean encontrado = false;
+        try (RandomAccessFile original = new RandomAccessFile(USERS_FILE, "r");
+             RandomAccessFile temp    = new RandomAccessFile(tempFile, "rw")) {
+            while (original.getFilePointer() < original.length()) {
+                USER u = leerRegistro(original);
+                if (!u.getUsername().equals(username)) {
+                    escribirRegistro(temp, u);
+                } else {
+                    borrarCarpeta(new File(BASE_FOLDER + "/" + username));
+                    encontrado = true;
+                }
+            }
+        } catch (IOException e) {}
+        new File(USERS_FILE).delete();
+        tempFile.renameTo(new File(USERS_FILE));
+        return encontrado;
+    }
 
     
     
