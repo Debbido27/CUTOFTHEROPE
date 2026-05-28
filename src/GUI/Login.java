@@ -6,10 +6,15 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Font;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JSeparator;
 import javax.swing.JTextField;
 
 
@@ -77,5 +82,51 @@ public class Login extends JFrame {
         add(panelPrincipal, BorderLayout.CENTER);
         cardLayout.show(panelPrincipal, "menu");
         setVisible(true);
+    }
+    
+    
+    //CREAR PANEL PRINCIPAl
+     private JPanel crearPanelMenu() {
+        JPanel panel = new JPanel();
+        panel.setBackground(PANEL);
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(ACENTO, 2),
+            BorderFactory.createEmptyBorder(60, 80, 60, 80)
+        ));
+
+        JLabel titulo = new JLabel("🍬 Cut the Rope");
+        titulo.setFont(FUENTE_TITULO);
+        titulo.setForeground(ACENTO);
+        titulo.setAlignmentX(CENTER_ALIGNMENT);
+
+        JLabel sub = new JLabel("¡Alimenta a Om Nom!");
+        sub.setFont(FUENTE_SUB);
+        sub.setForeground(TEXTO_TENUE);
+        sub.setAlignmentX(CENTER_ALIGNMENT);
+
+        JSeparator sep = crearSeparador();
+
+        JButton btnLogin = crearBoton("Iniciar Sesión", BTN_PRIMARIO,   Color.WHITE);
+        JButton btnCrear = crearBoton("Crear Jugador",  BTN_SECUNDARIO, Color.WHITE);
+        JButton btnSalir = crearBoton("Salir",          BTN_SALIR,      Color.WHITE);
+
+        btnLogin.addActionListener(e -> cardLayout.show(panelPrincipal, "login"));
+        btnCrear.addActionListener(e -> cardLayout.show(panelPrincipal, "crear"));
+        btnSalir.addActionListener(e -> System.exit(0));
+
+        panel.add(titulo);
+        panel.add(Box.createVerticalStrut(6));
+        panel.add(sub);
+        panel.add(Box.createVerticalStrut(30));
+        panel.add(sep);
+        panel.add(Box.createVerticalStrut(40));
+        panel.add(btnLogin);
+        panel.add(Box.createVerticalStrut(14));
+        panel.add(btnCrear);
+        panel.add(Box.createVerticalStrut(14));
+        panel.add(btnSalir);
+
+        return panel;
     }
 }
