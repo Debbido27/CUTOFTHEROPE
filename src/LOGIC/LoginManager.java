@@ -128,4 +128,20 @@ public class LoginManager {
         } catch (IOException e) {}
         return null;
     }
+    
+    public boolean crearUser(String username, String password, String fullname) {
+        if (userExiste(username)) return false;
+        if (!crearCarpetaUsuario(username)) return false;
+        try (RandomAccessFile f = new RandomAccessFile(USERS_FILE, "rw")) {
+            f.seek(f.length());
+            USER nuevo = new USER(username, password, fullname);
+            escribirRegistro(f, nuevo);
+            currentUser = nuevo;
+            return true;
+        } catch (IOException e) { System.out.println("Error creando usuario: " + e.getMessage()); }
+        return false;
+    }
+    
+    
+   
 }
