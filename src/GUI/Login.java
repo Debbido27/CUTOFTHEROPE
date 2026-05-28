@@ -2,11 +2,15 @@
 package GUI;
 
 import LOGIC.LoginManager;
+import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Font;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 
 
 public class Login extends JFrame {
@@ -37,4 +41,41 @@ public class Login extends JFrame {
     private LoginManager manager;
     private CardLayout cardLayout;
     private JPanel panelPrincipal;
+    
+    // campos login
+    private JTextField     campoUsuarioLogin;
+    private JPasswordField campoPasswordLogin;
+
+    // campos crear
+    private JTextField     campoNombreCompleto;
+    private JTextField     campoUsuarioCrear;
+    private JPasswordField campoPasswordCrear;
+    private String         avatarSeleccionado = "";
+
+    // checks contraseña
+    private JLabel checkLongitud;
+    private JLabel checkMayuscula;
+    private JLabel checkMinuscula;
+    private JLabel checkNumero;
+    
+    
+    public Login() {
+        setTitle("Cut the Rope");
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setSize(520, 620);
+        setLocationRelativeTo(null);
+        setResizable(false);
+        getContentPane().setBackground(FONDO);
+        setLayout(new BorderLayout());
+        manager = new LoginManager();
+        cardLayout     = new CardLayout();
+        panelPrincipal = new JPanel(cardLayout);
+        panelPrincipal.setBackground(PANEL);
+        panelPrincipal.add(crearPanelMenu(),   "menu");
+        panelPrincipal.add(crearPanelLogin(),  "login");
+        panelPrincipal.add(crearPanelCrear(),  "crear");
+        add(panelPrincipal, BorderLayout.CENTER);
+        cardLayout.show(panelPrincipal, "menu");
+        setVisible(true);
+    }
 }
