@@ -1,6 +1,9 @@
 
 package LOGIC;
 
+import java.io.File;
+import java.io.IOException;
+
 
 public class LoginManager {
     private static final String BASE_FOLDER = "CTR_RAIZ";
@@ -9,4 +12,11 @@ public class LoginManager {
 
     private USER currentUser;
     
+    public LoginManager() {
+        File base = new File(BASE_FOLDER);
+        if (!base.exists()) base.mkdir();
+        try { new File(USERS_FILE).createNewFile(); } catch (IOException e) {}
+        limpiarUsuariosHuerfanos();
+        currentUser = cargarUltimoUsuarioActivo();
+    }
 }
