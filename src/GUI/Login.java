@@ -129,4 +129,80 @@ public class Login extends JFrame {
 
         return panel;
     }
+     
+     
+     //CREAR PANEL LOGIN
+         private JPanel crearPanelLogin() {
+           JPanel panel = new JPanel();
+        panel.setBackground(PANEL);
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(ACENTO, 2),
+            BorderFactory.createEmptyBorder(50, 80, 50, 80)
+        ));
+
+        JLabel titulo = new JLabel("Iniciar Sesión");
+        titulo.setFont(FUENTE_TITULO);
+        titulo.setForeground(ACENTO);
+        titulo.setAlignmentX(CENTER_ALIGNMENT);
+
+        JSeparator sep = crearSeparador();
+
+        JLabel lblUser = crearLabel("Usuario");
+        campoUsuarioLogin = crearCampoTexto();
+
+        JLabel lblPass = crearLabel("Contraseña");
+        campoPasswordLogin = crearCampoPassword();
+
+        // fila contraseña + ojo
+        JPanel filaPass = crearFilaPassword(campoPasswordLogin);
+
+        JLabel mensajeLogin = crearMensaje();
+
+        JButton btnAceptar = crearBoton("Ingresar", BTN_PRIMARIO,   Color.WHITE);
+        JButton btnVolver  = crearBoton("Volver",   BTN_SECUNDARIO, Color.WHITE);
+
+        btnAceptar.addActionListener(e -> {
+            String user = campoUsuarioLogin.getText().trim();
+            String pass = new String(campoPasswordLogin.getPassword());
+
+            if (user.isEmpty() || pass.isEmpty()) {
+                mostrarError(mensajeLogin, "Completa todos los campos.");
+            } else if (!manager.userExiste(user)) {
+                mostrarError(mensajeLogin, "Usuario no existe.");
+            } else if (manager.login(user, pass)) {
+                dispose();
+                // new MenuPrincipal(user, manager);  <- descomentar cuando exista
+            } else {
+                mostrarError(mensajeLogin, "Contraseña incorrecta.");
+            }
+        });
+
+        btnVolver.addActionListener(e -> {
+            campoUsuarioLogin.setText("");
+            campoPasswordLogin.setText("");
+            mensajeLogin.setText(" ");
+            cardLayout.show(panelPrincipal, "menu");
+        });
+
+        panel.add(titulo);
+        panel.add(Box.createVerticalStrut(20));
+        panel.add(sep);
+        panel.add(Box.createVerticalStrut(30));
+        panel.add(lblUser);
+        panel.add(Box.createVerticalStrut(6));
+        panel.add(campoUsuarioLogin);
+        panel.add(Box.createVerticalStrut(16));
+        panel.add(lblPass);
+        panel.add(Box.createVerticalStrut(6));
+        panel.add(filaPass);
+        panel.add(Box.createVerticalStrut(20));
+        panel.add(mensajeLogin);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(btnAceptar);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(btnVolver);
+
+        return panel;
+    }
 }
