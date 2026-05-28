@@ -207,6 +207,18 @@ public class LoginManager {
             currentUser.setPassword(newPassword);
         return ok;
     }
+   
+      public boolean cambiarNombre(String username, String newFullname) {
+        return reescribir(username, u -> u.setFullname(newFullname));
+    }
+
+    public boolean cambiarAvatar(String username, String rutaAvatar) {
+        return reescribir(username, u -> u.setAvatarPath(rutaAvatar));
+    }
+
+    public boolean cambiarVolumen(String username, float volumen) {
+        return reescribir(username, u -> u.setVolumen(volumen));
+    }
     
     
     
