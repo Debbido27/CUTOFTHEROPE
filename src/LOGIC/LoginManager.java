@@ -94,4 +94,16 @@ public class LoginManager {
         f.writeInt(amigos.length);
         for (String a : amigos) f.writeUTF(a);
     }
+      
+      private USER cargarUltimoUsuarioActivo(){
+          USER lastActive = null;
+          try(RandomAccessFile  f = new RandomAccessFile (USERS_FILE, "r")){
+              while(f.getFilePointer()<f.length()){
+                      USER u = leerRegistro(f);
+                if (new File(BASE_FOLDER + "/" + u.getUsername()).exists())
+                    lastActive = u;
+            }
+        } catch (IOException e) {}
+        return lastActive;
+    }
 }
