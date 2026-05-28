@@ -186,6 +186,21 @@ public class LoginManager {
         return tempFile.renameTo(new File(USERS_FILE));
     }
     
+    public void guardarCambios(USER u) {
+    reescribir(u.getUsername(), existing -> {
+        existing.setNivelActual(u.getNivelActual());
+        existing.setPartidasJugadas(u.getPartidasJugadas());
+        existing.setFallosTotales(u.getFallosTotales());
+        existing.setEstrellasTotal(u.getEstrellasTotal());
+        existing.setTiempoTotalJugado(u.getTiempoTotalJugado());
+        existing.setPuntuacionGeneral(u.getPuntuacionGeneral());
+        existing.setUltimaSesion(u.getUltimaSesion());
+        existing.setVolumen(u.getVolumen());
+        existing.setAmigos(u.getAmigos());
+        existing.setAvatarPath(u.getAvatarPath());
+    });
+}
+    
     
     
    
