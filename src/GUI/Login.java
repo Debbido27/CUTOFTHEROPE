@@ -393,4 +393,86 @@ public class Login extends JFrame {
             && pass.matches(".*[a-z].*")
             && pass.matches(".*[0-9].*");
     }
+    
+    
+    private JLabel crearLabel(String texto) {
+        JLabel lbl = new JLabel(texto);
+        lbl.setFont(FUENTE_LABEL);
+        lbl.setForeground(TEXTO_TENUE);
+        lbl.setAlignmentX(LEFT_ALIGNMENT);
+        return lbl;
+    }
+
+    private JTextField crearCampoTexto() {
+        JTextField campo = new JTextField();
+        campo.setFont(FUENTE_CAMPO);
+        campo.setForeground(TEXTO);
+        campo.setBackground(CAMPO_FONDO);
+        campo.setCaretColor(ACENTO);
+        campo.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(CAMPO_BORDE),
+            BorderFactory.createEmptyBorder(8, 10, 8, 10)
+        ));
+        campo.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        campo.setAlignmentX(LEFT_ALIGNMENT);
+        return campo;
+    }
+
+    private JPasswordField crearCampoPassword() {
+        JPasswordField campo = new JPasswordField();
+        campo.setFont(FUENTE_CAMPO);
+        campo.setForeground(TEXTO);
+        campo.setBackground(CAMPO_FONDO);
+        campo.setCaretColor(ACENTO);
+        campo.setEchoChar('●');
+        campo.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(CAMPO_BORDE),
+            BorderFactory.createEmptyBorder(8, 10, 8, 10)
+        ));
+        campo.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        campo.setAlignmentX(LEFT_ALIGNMENT);
+        return campo;
+    }
+
+    private JButton crearBoton(String texto, Color fondo, Color colorTexto) {
+        JButton btn = new JButton(texto);
+        btn.setFont(FUENTE_BOTON);
+        btn.setForeground(colorTexto);
+        btn.setBackground(fondo);
+        btn.setFocusPainted(false);
+        btn.setBorderPainted(false);
+        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        btn.setAlignmentX(LEFT_ALIGNMENT);
+        Color hover = fondo.brighter();
+        btn.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) { btn.setBackground(hover); }
+            public void mouseExited(MouseEvent e)  { btn.setBackground(fondo); }
+        });
+        return btn;
+    }
+
+    private JSeparator crearSeparador() {
+        JSeparator sep = new JSeparator();
+        sep.setForeground(CAMPO_BORDE);
+        sep.setMaximumSize(new Dimension(Integer.MAX_VALUE, 1));
+        return sep;
+    }
+
+    private JLabel crearMensaje() {
+        JLabel lbl = new JLabel(" ");
+        lbl.setFont(FUENTE_LABEL);
+        lbl.setAlignmentX(CENTER_ALIGNMENT);
+        return lbl;
+    }
+
+    private void mostrarError(JLabel lbl, String msg) {
+        lbl.setForeground(CHECK_MAL);
+        lbl.setText(msg);
+    }
+
+    private void mostrarExito(JLabel lbl, String msg) {
+        lbl.setForeground(CHECK_OK);
+        lbl.setText(msg);
+    }
 }
