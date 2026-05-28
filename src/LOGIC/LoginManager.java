@@ -239,6 +239,13 @@ public class LoginManager {
         });
        }
     
+        private int calcularPuntuacionGeneral(USER u) {
+        int total = 0;
+        for (int p : u.getPuntajesPorNivel()) total += p;
+        return total;
+    }
+
+    
     
     
    
