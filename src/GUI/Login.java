@@ -79,7 +79,7 @@ public class Login extends JFrame {
     public Login() {
         setTitle("Cut the Rope");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(520, 620);
+        setSize(920, 620);
         setLocationRelativeTo(null);
         setResizable(false);
         getContentPane().setBackground(FONDO);
@@ -261,29 +261,27 @@ public class Login extends JFrame {
         JButton btnCrear  = crearBoton("Crear",  BTN_PRIMARIO,   Color.WHITE);
         JButton btnVolver = crearBoton("Volver", BTN_SECUNDARIO, Color.WHITE);
 
-        btnCrear.addActionListener(e -> {
-            String nombre = campoNombreCompleto.getText().trim();
-            String user   = campoUsuarioCrear.getText().trim();
-            String pass   = new String(campoPasswordCrear.getPassword());
+     btnCrear.addActionListener(e -> {
+    String nombre = campoNombreCompleto.getText().trim();
+    String user   = campoUsuarioCrear.getText().trim();
+    String pass   = new String(campoPasswordCrear.getPassword());
 
-            if (nombre.isEmpty() || user.isEmpty() || pass.isEmpty()) {
-                mostrarError(mensajeCrear, "Completa todos los campos.");
-            } else if (manager.userExiste(user)) {
-                mostrarError(mensajeCrear, "Ese usuario ya existe.");
-            } else if (!validarPassword(pass)) {
-                mostrarError(mensajeCrear, "La contraseña no cumple los requisitos.");
-            } else if (manager.crearUser(user, pass, nombre)) {
-                if (!avatarSeleccionado.isEmpty())
-                    manager.cambiarAvatar(user, avatarSeleccionado);
-                mostrarExito(mensajeCrear, "¡Jugador creado!");
-                campoNombreCompleto.setText("");
-                campoUsuarioCrear.setText("");
-                campoPasswordCrear.setText("");
-                actualizarChecks("");
-            } else {
-                mostrarError(mensajeCrear, "Error al crear jugador.");
-            }
-        });
+    if (nombre.isEmpty() || user.isEmpty() || pass.isEmpty()) {
+        mostrarError(mensajeCrear, "Completa todos los campos.");
+    } else if (manager.userExiste(user)) {
+        mostrarError(mensajeCrear, "Ese usuario ya existe.");
+    } else if (!validarPassword(pass)) {
+        mostrarError(mensajeCrear, "La contraseña no cumple los requisitos.");
+    } else if (manager.crearUser(user, pass, nombre, avatarSeleccionado)) { // <-- pasa el avatar aqui
+        mostrarExito(mensajeCrear, "¡Jugador creado!");
+        campoNombreCompleto.setText("");
+        campoUsuarioCrear.setText("");
+        campoPasswordCrear.setText("");
+        actualizarChecks("");
+    } else {
+        mostrarError(mensajeCrear, "Error al crear jugador.");
+    }
+});
 
         btnVolver.addActionListener(e -> {
             campoNombreCompleto.setText("");
@@ -331,7 +329,7 @@ public class Login extends JFrame {
     JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
     panel.setBackground(PANEL);
     panel.setAlignmentX(LEFT_ALIGNMENT);
-    panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
+    panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 160));
 
     ButtonGroup grupo = new ButtonGroup();
 

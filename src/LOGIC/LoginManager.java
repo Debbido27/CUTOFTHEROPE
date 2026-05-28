@@ -1,6 +1,7 @@
 
 package LOGIC;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -23,49 +24,56 @@ public class LoginManager {
     }
     
     
-            private USER leerRegistro(RandomAccessFile f) throws IOException {
-            String username   = f.readUTF();
-            String password   = f.readUTF();
-            String fullname   = f.readUTF();
-            long fechaReg     = f.readLong();
-            long ultimaSesion = f.readLong();
-            String avatarPath = f.readUTF();
-            int nivelActual   = f.readInt();
+  private USER leerRegistro(RandomAccessFile f) throws IOException {
+    long posInicio = f.getFilePointer();
+    try {
+        String username   = f.readUTF();
+        String password   = f.readUTF();
+        String fullname   = f.readUTF();
+        long fechaReg     = f.readLong();
+        long ultimaSesion = f.readLong();
+        String avatarPath = f.readUTF();
+        int nivelActual   = f.readInt();
 
-            boolean[] niveles = new boolean[5];
-            for (int i = 0; i < 5; i++) niveles[i] = f.readBoolean();
+        boolean[] niveles = new boolean[5];
+        for (int i = 0; i < 5; i++) niveles[i] = f.readBoolean();
 
-            int[] puntajes = new int[5];
-            for (int i = 0; i < 5; i++) puntajes[i] = f.readInt();
+        int[] puntajes = new int[5];
+        for (int i = 0; i < 5; i++) puntajes[i] = f.readInt();
 
-            long tiempoTotal = f.readLong();
-            int partidas     = f.readInt();
-            int fallos       = f.readInt();
-            int estrellas    = f.readInt();
-            int puntuacion   = f.readInt();
-            float volumen    = f.readFloat();
-            String idioma    = f.readUTF();
+        long tiempoTotal = f.readLong();
+        int partidas     = f.readInt();
+        int fallos       = f.readInt();
+        int estrellas    = f.readInt();
+        int puntuacion   = f.readInt();
+        float volumen    = f.readFloat();
 
-            int totalAmigos  = f.readInt();
-            String[] amigos  = new String[totalAmigos];
-            for (int i = 0; i < totalAmigos; i++) amigos[i] = f.readUTF();
+        
+        int totalAmigos  = f.readInt();
+        String[] amigos  = new String[totalAmigos];
+        for (int i = 0; i < totalAmigos; i++) amigos[i] = f.readUTF();
 
-            USER  u = new USER(username, password, fullname);
-            u.setFechaRegistro(LocalDate.ofEpochDay(fechaReg));
-            u.setUltimaSesion(ultimaSesion);
-            u.setAvatarPath(avatarPath);
-            u.setNivelActual(nivelActual);
-            for (int i = 0; i < 5; i++) if (niveles[i]) u.desbloquearNivel(i);
-            for (int i = 0; i < 5; i++) u.setPuntajeNivel(i, puntajes[i]);
-            u.setTiempoTotalJugado(tiempoTotal);
-            u.setPartidasJugadas(partidas);
-            u.setFallosTotales(fallos);
-            u.setEstrellasTotal(estrellas);
-            u.setPuntuacionGeneral(puntuacion);
-            u.setVolumen(volumen);
-            u.setAmigos(amigos);
-            return u;
-        }
+        USER u = new USER(username, password, fullname);
+        u.setFechaRegistro(LocalDate.ofEpochDay(fechaReg));
+        u.setUltimaSesion(ultimaSesion);
+        u.setAvatarPath(avatarPath);
+        u.setNivelActual(nivelActual);
+        for (int i = 0; i < 5; i++) if (niveles[i]) u.desbloquearNivel(i);
+        for (int i = 0; i < 5; i++) u.setPuntajeNivel(i, puntajes[i]);
+        u.setTiempoTotalJugado(tiempoTotal);
+        u.setPartidasJugadas(partidas);
+        u.setFallosTotales(fallos);
+        u.setEstrellasTotal(estrellas);
+        u.setPuntuacionGeneral(puntuacion);
+        u.setVolumen(volumen);
+        u.setAmigos(amigos);
+        return u;
+
+    } catch (EOFException e) {
+        f.seek(f.length());
+        throw e;
+    }
+}
             
             
       private void escribirRegistro(RandomAccessFile f, USER u) throws IOException {
@@ -108,16 +116,17 @@ public class LoginManager {
     }
       
       
-    public boolean userExiste(String username){
-        try (RandomAccessFile f = new RandomAccessFile(USERS_FILE, "r")) {
-            while (f.getFilePointer() < f.length()) {
-                USER u = leerRegistro(f);
-                if (u.getUsername().equals(username)) return true;
-            }
-        } catch (IOException e) {}
-        return false;
+   public boolean userExiste(String username) {
+    try (RandomAccessFile f = new RandomAccessFile(USERS_FILE, "rw")) {
+        while (f.getFilePointer() < f.length()) {
+            USER u = leerRegistro(f);
+            if (u.getUsername().equals(username)) return true;
+        }
+    } catch (IOException e) { 
+        e.printStackTrace();
     }
-    
+    return false;
+}
    
     public USER buscarUser(String username){
         try (RandomAccessFile f = new RandomAccessFile(USERS_FILE, "r")) {
@@ -129,8 +138,7 @@ public class LoginManager {
         return null;
     }
     
-    public boolean crearUser(String username, String password, String fullname) {
-        if (userExiste(username)) return false;
+public boolean crearUser(String username, String password, String fullname, String avatar) {        if (userExiste(username)) return false;
         if (!crearCarpetaUsuario(username)) return false;
         try (RandomAccessFile f = new RandomAccessFile(USERS_FILE, "rw")) {
             f.seek(f.length());
@@ -172,19 +180,23 @@ public class LoginManager {
     
     private interface RegistroModificador { void modificar(USER u); }
 
-    private boolean reescribir(String usernameObjetivo, RegistroModificador mod) {
-        File tempFile = new File(USERS_TEMP);
-        try (RandomAccessFile original = new RandomAccessFile(USERS_FILE, "r");
-             RandomAccessFile temp    = new RandomAccessFile(tempFile, "rw")) {
-            while (original.getFilePointer() < original.length()) {
-                USER u = leerRegistro(original);
-                if (u.getUsername().equals(usernameObjetivo)) mod.modificar(u);
-                escribirRegistro(temp, u);
-            }
-        } catch (IOException e) { System.out.println("Error reescribiendo: " + e.getMessage()); return false; }
-        new File(USERS_FILE).delete();
-        return tempFile.renameTo(new File(USERS_FILE));
+   private boolean reescribir(String usernameObjetivo, RegistroModificador mod) {
+    File tempFile = new File(USERS_TEMP);
+    try (RandomAccessFile original = new RandomAccessFile(USERS_FILE, "rw");  // <-- rw
+         RandomAccessFile temp    = new RandomAccessFile(tempFile, "rw")) {
+        while (original.getFilePointer() < original.length()) {
+            USER u = leerRegistro(original);
+            if (u.getUsername().equals(usernameObjetivo)) mod.modificar(u);
+            escribirRegistro(temp, u);
+        }
+    } catch (IOException e) { 
+        System.out.println("Error reescribiendo: " + e.getMessage()); 
+        e.printStackTrace();
+        return false; 
     }
+    new File(USERS_FILE).delete();
+    return tempFile.renameTo(new File(USERS_FILE));
+}
     
     public void guardarCambios(USER u) {
     reescribir(u.getUsername(), existing -> {
@@ -280,26 +292,42 @@ public class LoginManager {
                     encontrado = true;
                 }
             }
-        } catch (IOException e) {}
+        } 
+        catch (IOException e) {}
         new File(USERS_FILE).delete();
         tempFile.renameTo(new File(USERS_FILE));
         return encontrado;
+        
     }
      
      
-     private void limpiarUsuariosHuerfanos() {
-        File tempFile = new File(USERS_TEMP);
-        try (RandomAccessFile original = new RandomAccessFile(USERS_FILE, "r");
-             RandomAccessFile temp    = new RandomAccessFile(tempFile, "rw")) {
-            while (original.getFilePointer() < original.length()) {
-                USER u = leerRegistro(original);
-                if (new File(BASE_FOLDER + "/" + u.getUsername()).exists())
-                    escribirRegistro(temp, u);
+    private void limpiarUsuariosHuerfanos() {
+    File tempFile = new File(USERS_TEMP);
+    boolean ok = false;
+    try (RandomAccessFile original = new RandomAccessFile(USERS_FILE, "rw");
+         RandomAccessFile temp    = new RandomAccessFile(tempFile, "rw")) {
+        while (original.getFilePointer() < original.length()) {
+            USER u = leerRegistro(original);
+            System.out.println("Revisando huérfano: " + u.getUsername()); // debug
+            if (new File(BASE_FOLDER + "/" + u.getUsername()).exists()) {
+                escribirRegistro(temp, u);
+                System.out.println("Conservado: " + u.getUsername()); // debug
+            } else {
+                System.out.println("Eliminado huérfano: " + u.getUsername()); // debug
             }
-        } catch (IOException e) {}
+        }
+        ok = true;
+    } catch (IOException e) {
+        System.out.println("Error limpiando huérfanos: " + e.getMessage());
+        e.printStackTrace();
+    }
+    if (ok) {
         new File(USERS_FILE).delete();
         tempFile.renameTo(new File(USERS_FILE));
+    } else {
+        tempFile.delete(); 
     }
+}
 
     private void borrarCarpeta(File folder) {
         if (folder.isDirectory()) {
