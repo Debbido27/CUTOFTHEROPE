@@ -105,10 +105,6 @@ public class USER {
         this.nivelActual = nivelActual;
     }
 
-    public boolean[] getNivelesDesbloqueados() {
-        return nivelesDesbloqueados;
-    }
-
     public void setNivelesDesbloqueados(boolean[] nivelesDesbloqueados) {
         this.nivelesDesbloqueados = nivelesDesbloqueados;
     }
@@ -177,4 +173,10 @@ public class USER {
         this.amigos = amigos;
     }
 
+    public boolean[] getNivelesDesbloqueados(){return nivelesDesbloqueados;}
+   
+    public void desbloquearNivel(int nivel){
+        if(nivel>=0 && nivel < nivelesDesbloqueados.length)
+            nivelesDesbloqueados[nivel]=true;
+    }
 }
