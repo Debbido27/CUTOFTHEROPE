@@ -117,4 +117,15 @@ public class LoginManager {
         } catch (IOException e) {}
         return false;
     }
+    
+   
+    public USER busarUser(String username){
+        try (RandomAccessFile f = new RandomAccessFile(USERS_FILE, "r")) {
+            while (f.getFilePointer() < f.length()) {
+                USER u = leerRegistro(f);
+                if (u.getUsername().equals(username)) return u;
+            }
+        } catch (IOException e) {}
+        return null;
+    }
 }
