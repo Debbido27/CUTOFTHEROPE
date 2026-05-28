@@ -317,7 +317,7 @@ public class Login extends JFrame {
            
            
            //HELPERS
-           private JPanel crearFilaPassword(JPasswordField campo) {
+        private JPanel crearFilaPassword(JPasswordField campo) {
         JPanel fila = new JPanel(new BorderLayout(6, 0));
         fila.setBackground(PANEL);
         fila.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
@@ -341,5 +341,27 @@ public class Login extends JFrame {
         fila.add(campo, BorderLayout.CENTER);
         fila.add(ojo,   BorderLayout.EAST);
         return fila;
+    }
+        
+        
+         private JPanel crearPanelChecks() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBackground(PANEL);
+        panel.setAlignmentX(LEFT_ALIGNMENT);
+
+        checkLongitud  = crearCheckLabel("Mínimo 6 caracteres");
+        checkMayuscula = crearCheckLabel("Una mayúscula");
+        checkMinuscula = crearCheckLabel("Una minúscula");
+        checkNumero    = crearCheckLabel("Un número");
+
+        panel.add(checkLongitud);
+        panel.add(Box.createVerticalStrut(3));
+        panel.add(checkMayuscula);
+        panel.add(Box.createVerticalStrut(3));
+        panel.add(checkMinuscula);
+        panel.add(Box.createVerticalStrut(3));
+        panel.add(checkNumero);
+        return panel;
     }
 }
