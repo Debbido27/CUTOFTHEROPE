@@ -119,7 +119,7 @@ public class LoginManager {
     }
     
    
-    public USER busarUser(String username){
+    public USER buscarUser(String username){
         try (RandomAccessFile f = new RandomAccessFile(USERS_FILE, "r")) {
             while (f.getFilePointer() < f.length()) {
                 USER u = leerRegistro(f);
@@ -156,6 +156,21 @@ public class LoginManager {
         } catch (IOException e) { System.out.println("Error creando carpeta: " + e.getMessage()); return false; }
     }
     
+    
+    public boolean login(String username, String password){
+          USER u = buscarUser(username);
+        if (u != null && u.getPassword().equals(password)) {
+            if (!new File(BASE_FOLDER + "/" + username).exists()) return false;
+            u.setUltimaSesion(System.currentTimeMillis());
+            guardarCambios(u);
+            currentUser = u;
+            return true;
+        }
+        return false;
+    }
+    
+    
+    }
     
     
     
