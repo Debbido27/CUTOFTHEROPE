@@ -5,9 +5,15 @@ import LOGIC.LoginManager;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Image;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -18,7 +24,11 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
-
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
+import javax.swing.JToggleButton;
 
 public class Login extends JFrame {
     
@@ -314,6 +324,49 @@ public class Login extends JFrame {
 
         return panel;
     }
+           
+           
+           private JPanel crearPanelAvatares() {
+    String[] avatares = {"X1.png", "X2.png", "X3.png", "X4.png"};
+    JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+    panel.setBackground(PANEL);
+    panel.setAlignmentX(LEFT_ALIGNMENT);
+    panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
+
+    ButtonGroup grupo = new ButtonGroup();
+
+    for (String nombreImg : avatares) {
+        ImageIcon icono = new ImageIcon(getClass().getResource("/AVATARS/" + nombreImg));
+        Image img = icono.getImage().getScaledInstance(54, 54, Image.SCALE_SMOOTH);
+        ImageIcon iconoScalado = new ImageIcon(img);
+
+        JToggleButton btn = new JToggleButton(iconoScalado);
+        btn.setPreferredSize(new Dimension(64, 64));
+        btn.setBackground(CAMPO_FONDO);
+        btn.setFocusPainted(false);
+        btn.setBorderPainted(true);
+        btn.setBorder(BorderFactory.createLineBorder(CAMPO_BORDE, 2));
+        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+        btn.addActionListener(e -> {
+            avatarSeleccionado = nombreImg;
+            // resaltar el seleccionado
+            for (Component c : panel.getComponents()) {
+                if (c instanceof JToggleButton) {
+                    JToggleButton t = (JToggleButton) c;
+                    t.setBorder(BorderFactory.createLineBorder(
+                        t.isSelected() ? ACENTO : CAMPO_BORDE, 2));
+                    t.setBackground(t.isSelected() ? new Color(200, 230, 200) : CAMPO_FONDO);
+                }
+            }
+        });
+
+        grupo.add(btn);
+        panel.add(btn);
+    }
+
+    return panel;
+}
            
            
            //HELPERS
