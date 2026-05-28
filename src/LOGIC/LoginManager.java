@@ -199,7 +199,15 @@ public class LoginManager {
         existing.setAmigos(u.getAmigos());
         existing.setAvatarPath(u.getAvatarPath());
     });
-}
+   }
+    
+   public boolean cambiarPassword(String username, String newPassword){
+    boolean ok = reescribir(username, u -> u.setPassword(newPassword));
+        if (ok && currentUser != null && currentUser.getUsername().equals(username))
+            currentUser.setPassword(newPassword);
+        return ok;
+    }
+    
     
     
     
