@@ -179,4 +179,19 @@ public class USER {
         if(nivel>=0 && nivel < nivelesDesbloqueados.length)
             nivelesDesbloqueados[nivel]=true;
     }
+    
+    
+    
+    public void setPuntajeNivel(int nivel, int puntaje){
+        if(nivel >= 0 && nivel < puntajesPorNivel.length)
+            puntajesPorNivel[nivel] = puntaje;
+    }
+    
+    
+    @Override
+    public String toString() {
+        return "Usuario: " + username + "\nNivel actual: " + nivelActual +
+               "\nPartidas jugadas: " + partidasJugadas + "\nPuntuación: " + puntuacionGeneral;
+    }
+
 }
