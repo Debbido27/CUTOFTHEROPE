@@ -285,6 +285,21 @@ public class LoginManager {
         tempFile.renameTo(new File(USERS_FILE));
         return encontrado;
     }
+     
+     
+     private void limpiarUsuariosHuerfanos() {
+        File tempFile = new File(USERS_TEMP);
+        try (RandomAccessFile original = new RandomAccessFile(USERS_FILE, "r");
+             RandomAccessFile temp    = new RandomAccessFile(tempFile, "rw")) {
+            while (original.getFilePointer() < original.length()) {
+                USER u = leerRegistro(original);
+                if (new File(BASE_FOLDER + "/" + u.getUsername()).exists())
+                    escribirRegistro(temp, u);
+            }
+        } catch (IOException e) {}
+        new File(USERS_FILE).delete();
+        tempFile.renameTo(new File(USERS_FILE));
+    }
 
     
     
