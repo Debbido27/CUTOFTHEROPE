@@ -24,5 +24,13 @@ public class USER {
    private int estrellasTotal;
    private int puntuacionGenera;
    
+   //PREFERENCIAS
+   private float volumen;
+  
+   //Social 
+   private String[] amigos;
+   
+   
+   
    
 }
