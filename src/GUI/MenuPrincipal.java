@@ -10,7 +10,7 @@ public class MenuPrincipal extends JPanel {
         setBackground(Login.FONDO);
         setLayout(new BorderLayout());
 
-        JLabel label = new JLabel("Bienvenido, " + username + "!");
+        JLabel label = new JLabel("MENU PRINCIPAL, bienvenido, " + username + "!");
         label.setFont(Login.FUENTE_TITULO);
         label.setForeground(Login.ACENTO);
         label.setHorizontalAlignment(SwingConstants.CENTER);

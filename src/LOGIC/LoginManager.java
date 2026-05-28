@@ -308,7 +308,6 @@ public boolean crearUser(String username, String password, String fullname, Stri
          RandomAccessFile temp    = new RandomAccessFile(tempFile, "rw")) {
         while (original.getFilePointer() < original.length()) {
             USER u = leerRegistro(original);
-            System.out.println("Revisando huérfano: " + u.getUsername()); // debug
             if (new File(BASE_FOLDER + "/" + u.getUsername()).exists()) {
                 escribirRegistro(temp, u);
                 System.out.println("Conservado: " + u.getUsername()); // debug
@@ -318,7 +317,6 @@ public boolean crearUser(String username, String password, String fullname, Stri
         }
         ok = true;
     } catch (IOException e) {
-        System.out.println("Error limpiando huérfanos: " + e.getMessage());
         e.printStackTrace();
     }
     if (ok) {

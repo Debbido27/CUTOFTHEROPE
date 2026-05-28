@@ -91,6 +91,7 @@ public class Login extends JFrame {
         panelPrincipal.add(crearPanelMenu(),   "menu");
         panelPrincipal.add(crearPanelLogin(),  "login");
         panelPrincipal.add(crearPanelCrear(),  "crear");
+        panelPrincipal.add(new MenuPrincipal("",manager));
         add(panelPrincipal, BorderLayout.CENTER);
         cardLayout.show(panelPrincipal, "menu");
         setVisible(true);
@@ -107,12 +108,12 @@ public class Login extends JFrame {
             BorderFactory.createEmptyBorder(60, 80, 60, 80)
         ));
 
-        JLabel titulo = new JLabel("🍬 Cut the Rope");
+        JLabel titulo = new JLabel("Cut the Rope");
         titulo.setFont(FUENTE_TITULO);
         titulo.setForeground(ACENTO);
         titulo.setAlignmentX(CENTER_ALIGNMENT);
 
-        JLabel sub = new JLabel("¡Alimenta a Om Nom!");
+        JLabel sub = new JLabel("¡CORTA LOS HILOS!");
         sub.setFont(FUENTE_SUB);
         sub.setForeground(TEXTO_TENUE);
         sub.setAlignmentX(CENTER_ALIGNMENT);
@@ -184,7 +185,8 @@ public class Login extends JFrame {
                 mostrarError(mensajeLogin, "Usuario no existe.");
             } else if (manager.login(user, pass)) {
                 dispose();
-                // new MenuPrincipal(user, manager);  <- descomentar cuando exista
+                 panelPrincipal.add(new MenuPrincipal(user, manager), "principal");
+                cardLayout.show(panelPrincipal, "principal");
             } else {
                 mostrarError(mensajeLogin, "Contraseña incorrecta.");
             }
@@ -278,6 +280,8 @@ public class Login extends JFrame {
         campoUsuarioCrear.setText("");
         campoPasswordCrear.setText("");
         actualizarChecks("");
+        panelPrincipal.add(new MenuPrincipal(user, manager), "principal");
+    cardLayout.show(panelPrincipal, "principal");
     } else {
         mostrarError(mensajeCrear, "Error al crear jugador.");
     }
