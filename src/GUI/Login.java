@@ -5,6 +5,8 @@ import LOGIC.LoginManager;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Font;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -311,5 +313,33 @@ public class Login extends JFrame {
         panel.add(btnVolver);
 
         return panel;
+    }
+           
+           
+           //HELPERS
+           private JPanel crearFilaPassword(JPasswordField campo) {
+        JPanel fila = new JPanel(new BorderLayout(6, 0));
+        fila.setBackground(PANEL);
+        fila.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        fila.setAlignmentX(LEFT_ALIGNMENT);
+
+        JButton ojo = new JButton("👁");
+        ojo.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        ojo.setBackground(CAMPO_BORDE);
+        ojo.setForeground(TEXTO);
+        ojo.setFocusPainted(false);
+        ojo.setBorderPainted(false);
+        ojo.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        ojo.setPreferredSize(new Dimension(40, 40));
+
+        final boolean[] visible = {false};
+        ojo.addActionListener(e -> {
+            visible[0] = !visible[0];
+            campo.setEchoChar(visible[0] ? (char) 0 : '●');
+        });
+
+        fila.add(campo, BorderLayout.CENTER);
+        fila.add(ojo,   BorderLayout.EAST);
+        return fila;
     }
 }
