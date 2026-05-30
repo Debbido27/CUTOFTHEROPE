@@ -23,14 +23,12 @@ public class LoginScreen implements Screen {
     private LoginManager manager;
     private Skin skin;
 
-    // colores
-    private final Color FONDO  = new Color(0.96f, 0.92f, 0.82f, 1f);
-    private final Color VERDE  = new Color(0.33f, 0.59f, 0.31f, 1f);
-    private final Color CAFE   = new Color(0.23f, 0.16f, 0.08f, 1f);
-    private final Color NARANJA= new Color(0.78f, 0.63f, 0.31f, 1f);
-    private final Color ROJO   = new Color(0.70f, 0.27f, 0.20f, 1f);
+    private final Color FONDO   = new Color(0.96f, 0.92f, 0.82f, 1f);
+    private final Color VERDE   = new Color(0.33f, 0.59f, 0.31f, 1f);
+    private final Color CAFE    = new Color(0.23f, 0.16f, 0.08f, 1f);
+    private final Color NARANJA = new Color(0.78f, 0.63f, 0.31f, 1f);
+    private final Color ROJO    = new Color(0.70f, 0.27f, 0.20f, 1f);
 
-    // campos compartidos
     private Label mensajeLabel;
     private Label checksLabel;
     private TextField campoUser, campoPass;
@@ -59,7 +57,7 @@ public class LoginScreen implements Screen {
         titulo.setFontScale(2f);
         titulo.setColor(VERDE);
 
-        Label sub = new Label("Alimenta", skin);
+        Label sub = new Label("Alimenta a Om Nom!", skin);
         sub.setColor(CAFE);
 
         TextButton btnLogin = crearBoton("Iniciar Sesion", VERDE);
@@ -69,11 +67,9 @@ public class LoginScreen implements Screen {
         btnLogin.addListener(new ClickListener() {
             public void clicked(InputEvent e, float x, float y) { construirLogin(); }
         });
-       btnCrear.addListener(new ClickListener() {
+        btnCrear.addListener(new ClickListener() {
             public void clicked(InputEvent e, float x, float y) { construirCrear(); }
         });
-        
-        
         btnSalir.addListener(new ClickListener() {
             public void clicked(InputEvent e, float x, float y) { Gdx.app.exit(); }
         });
@@ -106,6 +102,13 @@ public class LoginScreen implements Screen {
         campoPass.setPasswordMode(true);
         campoPass.setPasswordCharacter('*');
 
+        CheckBox chkVerPass = new CheckBox(" Ver contrasena", skin);
+        chkVerPass.addListener(new ChangeListener() {
+            public void changed(ChangeEvent event, Actor actor) {
+                campoPass.setPasswordMode(!chkVerPass.isChecked());
+            }
+        });
+
         mensajeLabel = new Label("", skin);
         mensajeLabel.setColor(ROJO);
 
@@ -113,23 +116,23 @@ public class LoginScreen implements Screen {
         TextButton btnVolver  = crearBoton("Volver",   NARANJA);
 
         btnAceptar.addListener(new ClickListener() {
-    public void clicked(InputEvent e, float x, float y) {
-        String user = campoUser.getText().trim();
-        String pass = campoPass.getText().trim();
-        if (user.isEmpty() || pass.isEmpty()) {
-            mensajeLabel.setText("Completa todos los campos.");
-        } else if (!manager.userExiste(user)) {
-            mensajeLabel.setText("Usuario no existe.");
-        } else if (manager.login(user, pass)) {
-            final String u = user;
-            Gdx.app.postRunnable(() -> {
-                game.setScreen(new MenuPrincipalScreen(game, u, manager));
-            });
-        } else {
-            mensajeLabel.setText("Contrasena incorrecta.");
-        }
-    }
-});
+            public void clicked(InputEvent e, float x, float y) {
+                String user = campoUser.getText().trim();
+                String pass = campoPass.getText().trim();
+                if (user.isEmpty() || pass.isEmpty()) {
+                    mensajeLabel.setText("Completa todos los campos.");
+                } else if (!manager.userExiste(user)) {
+                    mensajeLabel.setText("Usuario no existe.");
+                } else if (manager.login(user, pass)) {
+                    final String u = user;
+                    Gdx.app.postRunnable(() -> {
+                        game.setScreen(new MenuPrincipalScreen(game, u, manager));
+                    });
+                } else {
+                    mensajeLabel.setText("Contrasena incorrecta.");
+                }
+            }
+        });
 
         btnVolver.addListener(new ClickListener() {
             public void clicked(InputEvent e, float x, float y) {
@@ -142,7 +145,8 @@ public class LoginScreen implements Screen {
 
         table.add(titulo).padBottom(30).row();
         table.add(campoUser).width(300).height(45).padBottom(15).row();
-        table.add(campoPass).width(300).height(45).padBottom(15).row();
+        table.add(campoPass).width(300).height(45).padBottom(5).row();
+        table.add(chkVerPass).left().width(300).padBottom(15).row();
         table.add(mensajeLabel).padBottom(10).row();
         table.add(btnAceptar).width(300).height(45).padBottom(10).row();
         table.add(btnVolver).width(300).height(45).row();
@@ -170,7 +174,13 @@ public class LoginScreen implements Screen {
         campoPassCrear.setPasswordMode(true);
         campoPassCrear.setPasswordCharacter('*');
 
-        // checklist
+        CheckBox chkVerPassCrear = new CheckBox(" Ver contrasena", skin);
+        chkVerPassCrear.addListener(new ChangeListener() {
+            public void changed(ChangeEvent event, Actor actor) {
+                campoPassCrear.setPasswordMode(!chkVerPassCrear.isChecked());
+            }
+        });
+
         checksLabel = new Label(
             "X  Min 6 caracteres\nX  Una mayuscula\nX  Una minuscula\nX  Un numero", skin);
         checksLabel.setColor(ROJO);
@@ -188,36 +198,36 @@ public class LoginScreen implements Screen {
         TextButton btnVolver = crearBoton("Volver", NARANJA);
 
         btnCrear.addListener(new ClickListener() {
-    public void clicked(InputEvent e, float x, float y) {
-        String nombre = campoNombre.getText().trim();
-        String user   = campoUserCrear.getText().trim();
-        String pass   = campoPassCrear.getText().trim();
-        if (nombre.isEmpty() || user.isEmpty() || pass.isEmpty()) {
-            mostrarError("Completa todos los campos.");
-        } else if (manager.userExiste(user)) {
-            mostrarError("Usuario ya existe.");
-        } else if (!validarPass(pass)) {
-            mostrarError("La contrasena no cumple los requisitos.");
-        } else if (manager.crearUser(user, pass, nombre, "")) {
-            final String u = user;
-            Gdx.app.postRunnable(() -> {
-                game.setScreen(new MenuPrincipalScreen(game, u, manager));
-            });
-        } else {
-            mostrarError("Error al crear jugador.");
-        }
-    }
-});
-        btnVolver.addListener(new ClickListener() {
             public void clicked(InputEvent e, float x, float y) {
-                construirMenu();
+                String nombre = campoNombre.getText().trim();
+                String user   = campoUserCrear.getText().trim();
+                String pass   = campoPassCrear.getText().trim();
+                if (nombre.isEmpty() || user.isEmpty() || pass.isEmpty()) {
+                    mostrarError("Completa todos los campos.");
+                } else if (manager.userExiste(user)) {
+                    mostrarError("Usuario ya existe.");
+                } else if (!validarPass(pass)) {
+                    mostrarError("La contrasena no cumple los requisitos.");
+                } else if (manager.crearUser(user, pass, nombre, "")) {
+                    final String u = user;
+                    Gdx.app.postRunnable(() -> {
+                        game.setScreen(new MenuPrincipalScreen(game, u, manager));
+                    });
+                } else {
+                    mostrarError("Error al crear jugador.");
+                }
             }
+        });
+
+        btnVolver.addListener(new ClickListener() {
+            public void clicked(InputEvent e, float x, float y) { construirMenu(); }
         });
 
         table.add(titulo).padBottom(20).row();
         table.add(campoNombre).width(300).height(45).padBottom(12).row();
         table.add(campoUserCrear).width(300).height(45).padBottom(12).row();
-        table.add(campoPassCrear).width(300).height(45).padBottom(8).row();
+        table.add(campoPassCrear).width(300).height(45).padBottom(5).row();
+        table.add(chkVerPassCrear).left().width(300).padBottom(8).row();
         table.add(checksLabel).left().width(300).padBottom(12).row();
         table.add(mensajeLabel).padBottom(10).row();
         table.add(btnCrear).width(300).height(45).padBottom(10).row();
@@ -234,7 +244,6 @@ public class LoginScreen implements Screen {
         boolean may = pass.matches(".*[A-Z].*");
         boolean min = pass.matches(".*[a-z].*");
         boolean num = pass.matches(".*[0-9].*");
-
         checksLabel.setText(
             (lon ? "OK " : "X  ") + "Min 6 caracteres\n" +
             (may ? "OK " : "X  ") + "Una mayuscula\n"    +
@@ -291,7 +300,7 @@ public class LoginScreen implements Screen {
         skin.add("default-font", font);
 
         Label.LabelStyle lblStyle = new Label.LabelStyle();
-        lblStyle.font = font;
+        lblStyle.font      = font;
         lblStyle.fontColor = CAFE;
         skin.add("default", lblStyle);
 
@@ -311,6 +320,13 @@ public class LoginScreen implements Screen {
         tfStyle.selection        = skin.newDrawable("white", new Color(0.33f, 0.59f, 0.31f, 0.5f));
         tfStyle.background       = skin.newDrawable("white", new Color(0.95f, 0.92f, 0.85f, 1f));
         skin.add("default", tfStyle);
+
+        CheckBox.CheckBoxStyle chkStyle = new CheckBox.CheckBoxStyle();
+        chkStyle.font        = font;
+        chkStyle.fontColor   = CAFE;
+        chkStyle.checkboxOn  = skin.newDrawable("white", VERDE);
+        chkStyle.checkboxOff = skin.newDrawable("white", new Color(0.7f, 0.7f, 0.7f, 1f));
+        skin.add("default", chkStyle);
 
         return skin;
     }
