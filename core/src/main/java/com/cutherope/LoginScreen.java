@@ -69,23 +69,8 @@ public class LoginScreen implements Screen {
         btnLogin.addListener(new ClickListener() {
             public void clicked(InputEvent e, float x, float y) { construirLogin(); }
         });
-        btnCrear.addListener(new ClickListener() {
-            public void clicked(InputEvent e, float x, float y) {
-                String nombre = campoNombre.getText().trim();
-                String user   = campoUserCrear.getText().trim();
-                String pass   = campoPassCrear.getText().trim();
-                if (nombre.isEmpty() || user.isEmpty() || pass.isEmpty()) {
-                    mostrarError("Completa todos los campos.");
-                } else if (manager.userExiste(user)) {
-                    mostrarError("Usuario ya existe.");
-                } else if (!validarPass(pass)) {
-                    mostrarError("La contrasena no cumple los requisitos.");
-                } else if (manager.crearUser(user, pass, nombre, "")) {
-                    game.setScreen(new MenuPrincipalScreen(game, user, manager)); // <- directo al menu
-                } else {
-                    mostrarError("Error al crear jugador.");
-                }
-            }
+       btnCrear.addListener(new ClickListener() {
+            public void clicked(InputEvent e, float x, float y) { construirCrear(); }
         });
         
         
@@ -128,20 +113,23 @@ public class LoginScreen implements Screen {
         TextButton btnVolver  = crearBoton("Volver",   NARANJA);
 
         btnAceptar.addListener(new ClickListener() {
-            public void clicked(InputEvent e, float x, float y) {
-                String user = campoUser.getText().trim();
-                String pass = campoPass.getText().trim();
-                if (user.isEmpty() || pass.isEmpty()) {
-                    mensajeLabel.setText("Completa todos los campos.");
-                } else if (!manager.userExiste(user)) {
-                    mensajeLabel.setText("Usuario no existe.");
-                } else if (manager.login(user, pass)) {
-                    game.setScreen(new MenuPrincipalScreen(game, user, manager));
-                } else {
-                    mensajeLabel.setText("Contrasena incorrecta.");
-                }
-            }
-        });
+    public void clicked(InputEvent e, float x, float y) {
+        String user = campoUser.getText().trim();
+        String pass = campoPass.getText().trim();
+        if (user.isEmpty() || pass.isEmpty()) {
+            mensajeLabel.setText("Completa todos los campos.");
+        } else if (!manager.userExiste(user)) {
+            mensajeLabel.setText("Usuario no existe.");
+        } else if (manager.login(user, pass)) {
+            final String u = user;
+            Gdx.app.postRunnable(() -> {
+                game.setScreen(new MenuPrincipalScreen(game, u, manager));
+            });
+        } else {
+            mensajeLabel.setText("Contrasena incorrecta.");
+        }
+    }
+});
 
         btnVolver.addListener(new ClickListener() {
             public void clicked(InputEvent e, float x, float y) {
@@ -200,28 +188,26 @@ public class LoginScreen implements Screen {
         TextButton btnVolver = crearBoton("Volver", NARANJA);
 
         btnCrear.addListener(new ClickListener() {
-            public void clicked(InputEvent e, float x, float y) {
-                String nombre = campoNombre.getText().trim();
-                String user   = campoUserCrear.getText().trim();
-                String pass   = campoPassCrear.getText().trim();
-                if (nombre.isEmpty() || user.isEmpty() || pass.isEmpty()) {
-                    mostrarError("Completa todos los campos.");
-                } else if (manager.userExiste(user)) {
-                    mostrarError("Usuario ya existe.");
-                } else if (!validarPass(pass)) {
-                    mostrarError("La contrasena no cumple los requisitos.");
-                } else if (manager.crearUser(user, pass, nombre, "")) {
-                    mostrarExito("Jugador creado exitosamente!");
-                    campoNombre.setText("");
-                    campoUserCrear.setText("");
-                    campoPassCrear.setText("");
-                    actualizarChecks("");
-                } else {
-                    mostrarError("Error al crear jugador.");
-                }
-            }
-        });
-
+    public void clicked(InputEvent e, float x, float y) {
+        String nombre = campoNombre.getText().trim();
+        String user   = campoUserCrear.getText().trim();
+        String pass   = campoPassCrear.getText().trim();
+        if (nombre.isEmpty() || user.isEmpty() || pass.isEmpty()) {
+            mostrarError("Completa todos los campos.");
+        } else if (manager.userExiste(user)) {
+            mostrarError("Usuario ya existe.");
+        } else if (!validarPass(pass)) {
+            mostrarError("La contrasena no cumple los requisitos.");
+        } else if (manager.crearUser(user, pass, nombre, "")) {
+            final String u = user;
+            Gdx.app.postRunnable(() -> {
+                game.setScreen(new MenuPrincipalScreen(game, u, manager));
+            });
+        } else {
+            mostrarError("Error al crear jugador.");
+        }
+    }
+});
         btnVolver.addListener(new ClickListener() {
             public void clicked(InputEvent e, float x, float y) {
                 construirMenu();
