@@ -193,6 +193,20 @@ public class USER {
         return "Usuario: " + username + "\nNivel actual: " + nivelActual +
                "\nPartidas jugadas: " + partidasJugadas + "\nPuntuación: " + puntuacionGeneral;
     }
+    
+    
+    public int getNivelesCompletados() {
+    int completados = 0;
+    for (int puntaje : puntajesPorNivel) {
+        if (puntaje > 0) completados++;
+    }
+    return completados;
+}
+
+    public double getTiempoPromedioPorNivel() {
+        if (getNivelesCompletados() == 0) return 0;
+        return (double) tiempoTotalJugado / getNivelesCompletados();
+    }
 
     
     

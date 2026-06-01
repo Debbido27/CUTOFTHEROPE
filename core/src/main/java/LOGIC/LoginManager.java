@@ -276,6 +276,20 @@ public boolean crearUser(String username, String password, String fullname, Stri
         return resultado;
     }
    
+        public boolean cambiarUsername(String usernameViejo, String usernameNuevo) {
+         if (userExiste(usernameNuevo)) return false;
+
+         File carpetaVieja = new File(BASE_FOLDER + "/" + usernameViejo);
+         File carpetaNueva = new File(BASE_FOLDER + "/" + usernameNuevo);
+         if (!carpetaVieja.renameTo(carpetaNueva)) return false;
+
+         boolean ok = reescribir(usernameViejo, u -> u.setUsername(usernameNuevo));
+
+         if (ok && currentUser != null && currentUser.getUsername().equals(usernameViejo))
+             currentUser.setUsername(usernameNuevo);
+
+         return ok;
+     }
    
      public boolean eliminarUsuario(String username) {
         File tempFile = new File(USERS_TEMP);
