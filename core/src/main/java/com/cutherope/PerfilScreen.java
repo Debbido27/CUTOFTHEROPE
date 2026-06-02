@@ -603,6 +603,52 @@ public class PerfilScreen implements Screen{
         btn.getStyle().over = piel.newDrawable("white", color.cpy().mul(1.1f, 1.1f, 1.1f, 1f));
         return btn;
     }
+    
+    
+    private Skin crearPiel() {
+        Skin skin = new Skin();
+
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pixmap.setColor(Color.WHITE);
+        pixmap.fill();
+        skin.add("white", new Texture(pixmap));
+        pixmap.dispose();
+
+        BitmapFont fuente = new BitmapFont();
+        skin.add("default-font", fuente);
+
+        Label.LabelStyle estiloLabel = new Label.LabelStyle();
+        estiloLabel.font      = fuente;
+        estiloLabel.fontColor = CAFE;
+        skin.add("default", estiloLabel);
+
+        TextButton.TextButtonStyle estiloBoton = new TextButton.TextButtonStyle();
+        estiloBoton.font      = fuente;
+        estiloBoton.fontColor = Color.WHITE;
+        estiloBoton.up        = skin.newDrawable("white", VERDE);
+        estiloBoton.down      = skin.newDrawable("white", VERDE.cpy().mul(0.8f, 0.8f, 0.8f, 1f));
+        estiloBoton.over      = skin.newDrawable("white", VERDE.cpy().mul(1.1f, 1.1f, 1.1f, 1f));
+        skin.add("default", estiloBoton);
+
+        TextField.TextFieldStyle tfStyle = new TextField.TextFieldStyle();
+        tfStyle.font             = fuente;
+        tfStyle.fontColor        = CAFE;
+        tfStyle.messageFontColor = Color.GRAY;
+        tfStyle.cursor           = skin.newDrawable("white", CAFE);
+        tfStyle.selection        = skin.newDrawable("white", new Color(0.33f, 0.59f, 0.31f, 0.5f));
+        tfStyle.background       = skin.newDrawable("white", new Color(0.95f, 0.92f, 0.85f, 1f));
+        skin.add("default", tfStyle);
+
+        CheckBox.CheckBoxStyle chkStyle = new CheckBox.CheckBoxStyle();
+        chkStyle.font        = fuente;
+        chkStyle.fontColor   = CAFE;
+        chkStyle.checkboxOn  = skin.newDrawable("white", VERDE);
+        chkStyle.checkboxOff = skin.newDrawable("white", new Color(0.7f, 0.7f, 0.7f, 1f));
+        skin.add("default", chkStyle);
+
+        return skin;
+    }
+
        
        
        
