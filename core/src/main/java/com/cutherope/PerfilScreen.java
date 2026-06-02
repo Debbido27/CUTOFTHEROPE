@@ -9,13 +9,17 @@ import LOGIC.USER;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import java.time.format.DateTimeFormatter;
@@ -205,6 +209,100 @@ public class PerfilScreen implements Screen{
         scroll.setScrollingDisabled(true, false);
 
         escenario.addActor(scroll);
+    }
+      
+      
+       private void construirCambiarUsuario() {
+        escenario.clear();
+
+        Table tabla = new Table();
+        tabla.setFillParent(true);
+        tabla.center();
+
+        Label titulo = new Label("Cambiar Usuario", piel);
+        titulo.setFontScale(1.8f);
+        titulo.setColor(VERDE);
+
+        Label lblPass = crearLabel("Confirma tu contrasena");
+        TextField campoPass = crearCampo("Contrasena actual");
+        campoPass.setPasswordMode(true);
+        campoPass.setPasswordCharacter('*');
+
+        CheckBox chkVer = new CheckBox(" Ver contrasena", piel);
+        chkVer.addListener(new ChangeListener() {
+            public void changed(ChangeEvent event, Actor actor) {
+                campoPass.setPasswordMode(!chkVer.isChecked());
+            }
+        });
+
+        Label lblNuevo = crearLabel("Nuevo nombre de usuario");
+        lblNuevo.setVisible(false);
+        TextField campoNuevoUser = crearCampo("Nuevo usuario");
+        campoNuevoUser.setVisible(false);
+
+        Label mensaje = new Label("", piel);
+        mensaje.setColor(ROJO);
+
+        TextButton btnValidar = crearBoton("Validar", VERDE);
+        TextButton btnGuardar = crearBoton("Guardar", VERDE);
+        TextButton btnVolver  = crearBoton("Volver",  NARANJA);
+        btnGuardar.setVisible(false);
+
+        btnValidar.addListener(new ClickListener() {
+            public void clicked(InputEvent e, float x, float y) {
+                USER u = gestor.buscarUser(usuario);
+                if (u == null || !u.getPassword().equals(campoPass.getText().trim())) {
+                    mensaje.setColor(ROJO);
+                    mensaje.setText("Contrasena incorrecta.");
+                } else {
+                    mensaje.setColor(VERDE);
+                    mensaje.setText("Contrasena validada.");
+                    lblNuevo.setVisible(true);
+                    campoNuevoUser.setVisible(true);
+                    btnGuardar.setVisible(true);
+                    btnValidar.setVisible(false);
+                    campoPass.setDisabled(true);
+                }
+            }
+        });
+
+        btnGuardar.addListener(new ClickListener() {
+            public void clicked(InputEvent e, float x, float y) {
+                String nuevoUser = campoNuevoUser.getText().trim();
+                if (nuevoUser.isEmpty()) {
+                    mensaje.setColor(ROJO);
+                    mensaje.setText("Ingresa un nombre de usuario.");
+                } else if (gestor.userExiste(nuevoUser)) {
+                    mensaje.setColor(ROJO);
+                    mensaje.setText("Ese usuario ya existe.");
+                } else if (gestor.cambiarUsername(usuario, nuevoUser)) {
+                    usuario = nuevoUser;
+                    mensaje.setColor(VERDE);
+                    mensaje.setText("Usuario cambiado exitosamente.");
+                    btnGuardar.setVisible(false);
+                } else {
+                    mensaje.setColor(ROJO);
+                    mensaje.setText("Error al cambiar usuario.");
+                }
+            }
+        });
+
+        btnVolver.addListener(new ClickListener() {
+            public void clicked(InputEvent e, float x, float y) { construirMenuPerfil(); }
+        });
+
+        tabla.add(titulo).padBottom(30).row();
+        tabla.add(lblPass).left().width(300).padBottom(4).row();
+        tabla.add(campoPass).width(300).height(45).padBottom(5).row();
+        tabla.add(chkVer).left().width(300).padBottom(15).row();
+        tabla.add(lblNuevo).left().width(300).padBottom(4).row();
+        tabla.add(campoNuevoUser).width(300).height(45).padBottom(15).row();
+        tabla.add(mensaje).padBottom(10).row();
+        tabla.add(btnValidar).width(300).height(45).padBottom(10).row();
+        tabla.add(btnGuardar).width(300).height(45).padBottom(10).row();
+        tabla.add(btnVolver).width(300).height(45).row();
+
+        escenario.addActor(tabla);
     }
 
      
