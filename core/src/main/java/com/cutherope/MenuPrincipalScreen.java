@@ -75,9 +75,12 @@ public class MenuPrincipalScreen implements Screen {
         btnAmigos.addListener(new ClickListener() {
             public void clicked(InputEvent e, float x, float y) { /* TODO */ }
         });
-        btnAjustes.addListener(new ClickListener() {
-            public void clicked(InputEvent e, float x, float y) { /* TODO */ }
-        });
+        
+       btnAjustes.addListener(new ClickListener() {
+    public void clicked(InputEvent e, float x, float y) {
+        Gdx.app.postRunnable(() -> juego.setScreen(new AjustesScreen(juego, usuario, gestor)));
+    }
+});
         btnCerrarSesion.addListener(new ClickListener() {
             public void clicked(InputEvent e, float x, float y) {
                 Gdx.app.postRunnable(() -> juego.setScreen(new LoginScreen(juego)));
