@@ -9,6 +9,10 @@ import LOGIC.USER;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -648,6 +652,22 @@ public class PerfilScreen implements Screen{
 
         return skin;
     }
+    
+    
+    @Override
+    public void render(float delta) {
+        Gdx.gl.glClearColor(FONDO.r, FONDO.g, FONDO.b, 1f);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        escenario.act(delta);
+        escenario.draw();
+    }
+
+    @Override public void resize(int w, int h) { escenario.getViewport().update(w, h, true); }
+    @Override public void show()    { Gdx.input.setInputProcessor(escenario); }
+    @Override public void pause()   {}
+    @Override public void resume()  {}
+    @Override public void hide()    {}
+    @Override public void dispose() { escenario.dispose(); piel.dispose(); }
 
        
        
