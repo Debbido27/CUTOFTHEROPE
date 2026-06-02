@@ -45,6 +45,8 @@ public class PerfilScreen implements Screen{
         Gdx.input.setInputProcessor(escenario);
         construirMenuPerfil();
     }
+     
+     
 
      
 }
