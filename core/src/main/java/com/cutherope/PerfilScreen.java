@@ -411,6 +411,8 @@ public class PerfilScreen implements Screen{
         escenario.addActor(tabla);
     }
 
+       
+       
         private void construirCambiarAvatar() {
         escenario.clear();
 
@@ -545,6 +547,62 @@ public class PerfilScreen implements Screen{
         escenario.addActor(tabla);
     }
 
+        
+        private void agregarSeccion(Table t, String titulo) {
+        Label lbl = new Label("— " + titulo + " —", piel);
+        lbl.setColor(NARANJA);
+        t.add(lbl).colspan(2).center().padTop(16).padBottom(6).row();
+    }
+
+    private void agregarFila(Table t, String clave, String valor) {
+        Label lblClave = new Label(clave + ":", piel);
+        lblClave.setColor(GRIS);
+        Label lblValor = new Label(valor, piel);
+        lblValor.setColor(CAFE);
+        t.add(lblClave).left().padRight(20).padBottom(6);
+        t.add(lblValor).left().padBottom(6).row();
+    }
+
+    private void actualizarChecks(Label checksLabel, String pass) {
+        boolean lon = pass.length() >= 6;
+        boolean may = pass.matches(".*[A-Z].*");
+        boolean min = pass.matches(".*[a-z].*");
+        boolean num = pass.matches(".*[0-9].*");
+        checksLabel.setText(
+            (lon ? "OK " : "X  ") + "Min 6 caracteres\n" +
+            (may ? "OK " : "X  ") + "Una mayuscula\n"    +
+            (min ? "OK " : "X  ") + "Una minuscula\n"    +
+            (num ? "OK " : "X  ") + "Un numero"
+        );
+        checksLabel.setColor(lon && may && min && num ? VERDE : ROJO);
+    }
+
+    private boolean validarPass(String pass) {
+        return pass.length() >= 6
+            && pass.matches(".*[A-Z].*")
+            && pass.matches(".*[a-z].*")
+            && pass.matches(".*[0-9].*");
+    }
+
+    private Label crearLabel(String texto) {
+        Label lbl = new Label(texto, piel);
+        lbl.setColor(CAFE);
+        return lbl;
+    }
+
+    private TextField crearCampo(String placeholder) {
+        TextField campo = new TextField("", piel);
+        campo.setMessageText(placeholder);
+        return campo;
+    }
+
+    private TextButton crearBoton(String texto, Color color) {
+        TextButton btn = new TextButton(texto, piel);
+        btn.getStyle().up   = piel.newDrawable("white", color);
+        btn.getStyle().down = piel.newDrawable("white", color.cpy().mul(0.8f, 0.8f, 0.8f, 1f));
+        btn.getStyle().over = piel.newDrawable("white", color.cpy().mul(1.1f, 1.1f, 1.1f, 1f));
+        return btn;
+    }
        
        
        
