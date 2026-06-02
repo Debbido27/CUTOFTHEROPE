@@ -25,4 +25,13 @@ public class PerfilScreen implements Screen{
     private final Color NARANJA = new Color(0.78f, 0.63f, 0.31f, 1f);
     private final Color ROJO    = new Color(0.70f, 0.27f, 0.20f, 1f);
     private final Color GRIS    = new Color(0.60f, 0.60f, 0.60f, 1f);
+   
+    private static final String[] AVATARES = {
+        "avatares/avatar1.png",
+        "avatares/avatar2.png",
+        "avatares/avatar3.png",
+        "avatares/avatar4.png"
+    };
+
+     
 }
