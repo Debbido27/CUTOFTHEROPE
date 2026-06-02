@@ -411,7 +411,140 @@ public class PerfilScreen implements Screen{
         escenario.addActor(tabla);
     }
 
-       
+        private void construirCambiarAvatar() {
+        escenario.clear();
+
+        Table tabla = new Table();
+        tabla.setFillParent(true);
+        tabla.center();
+
+        Label titulo = new Label("Cambiar Avatar", piel);
+        titulo.setFontScale(1.8f);
+        titulo.setColor(VERDE);
+
+        // ── pedir contraseña primero ────────────────────────────────────────
+        Label lblPass = crearLabel("Confirma tu contrasena");
+        TextField campoPass = crearCampo("Contrasena");
+        campoPass.setPasswordMode(true);
+        campoPass.setPasswordCharacter('*');
+
+        CheckBox chkVer = new CheckBox(" Ver contrasena", piel);
+        chkVer.addListener(new ChangeListener() {
+            public void changed(ChangeEvent event, Actor actor) {
+                campoPass.setPasswordMode(!chkVer.isChecked());
+            }
+        });
+
+        Label mensaje = new Label("", piel);
+        mensaje.setColor(ROJO);
+
+        // ── seccion avatares (oculta hasta validar) ────────────────────────
+        Table tablaAvatares = new Table();
+        tablaAvatares.setVisible(false);
+
+        Label lblSelecciona = crearLabel("Selecciona un avatar predefinido:");
+        lblSelecciona.setVisible(false);
+
+        // fila de botones de avatar predefinidos
+        final String[] avatarSeleccionado = { "" };
+        for (String ruta : AVATARES) {
+            String nombre = ruta.substring(ruta.lastIndexOf('/') + 1, ruta.lastIndexOf('.'));
+            TextButton btnAvatar = crearBoton(nombre, CAFE);
+            btnAvatar.addListener(new ClickListener() {
+                public void clicked(InputEvent e, float x, float y) {
+                    avatarSeleccionado[0] = ruta;
+                    mensaje.setColor(VERDE);
+                    mensaje.setText("Seleccionado: " + nombre);
+                }
+            });
+            tablaAvatares.add(btnAvatar).width(130).height(40).pad(4);
+        }
+
+        // ── opcion ruta manual ─────────────────────────────────────────────
+        Label lblRuta = crearLabel("O ingresa la ruta de tu imagen:");
+        lblRuta.setVisible(false);
+        TextField campoRuta = crearCampo("Ruta del archivo (ej: avatares/mifoto.png)");
+        campoRuta.setVisible(false);
+
+        TextButton btnUsarRuta = crearBoton("Usar esta ruta", NARANJA);
+        btnUsarRuta.setVisible(false);
+        btnUsarRuta.addListener(new ClickListener() {
+            public void clicked(InputEvent e, float x, float y) {
+                String ruta = campoRuta.getText().trim();
+                if (ruta.isEmpty()) {
+                    mensaje.setColor(ROJO);
+                    mensaje.setText("Ingresa una ruta valida.");
+                } else {
+                    avatarSeleccionado[0] = ruta;
+                    mensaje.setColor(VERDE);
+                    mensaje.setText("Ruta asignada: " + ruta);
+                }
+            }
+        });
+
+        // ── guardar avatar ─────────────────────────────────────────────────
+        TextButton btnGuardar = crearBoton("Guardar Avatar", VERDE);
+        btnGuardar.setVisible(false);
+        btnGuardar.addListener(new ClickListener() {
+            public void clicked(InputEvent e, float x, float y) {
+                if (avatarSeleccionado[0].isEmpty()) {
+                    mensaje.setColor(ROJO);
+                    mensaje.setText("Selecciona o ingresa un avatar primero.");
+                } else if (gestor.cambiarAvatar(usuario, avatarSeleccionado[0])) {
+                    mensaje.setColor(VERDE);
+                    mensaje.setText("Avatar actualizado exitosamente.");
+                    btnGuardar.setVisible(false);
+                } else {
+                    mensaje.setColor(ROJO);
+                    mensaje.setText("Error al guardar avatar.");
+                }
+            }
+        });
+
+        TextButton btnValidar = crearBoton("Validar", VERDE);
+        btnValidar.addListener(new ClickListener() {
+            public void clicked(InputEvent e, float x, float y) {
+                USER u = gestor.buscarUser(usuario);
+                if (u == null || !u.getPassword().equals(campoPass.getText().trim())) {
+                    mensaje.setColor(ROJO);
+                    mensaje.setText("Contrasena incorrecta.");
+                } else {
+                    mensaje.setColor(VERDE);
+                    mensaje.setText("Validada. Elige tu avatar.");
+                    tablaAvatares.setVisible(true);
+                    lblSelecciona.setVisible(true);
+                    lblRuta.setVisible(true);
+                    campoRuta.setVisible(true);
+                    btnUsarRuta.setVisible(true);
+                    btnGuardar.setVisible(true);
+                    btnValidar.setVisible(false);
+                    campoPass.setDisabled(true);
+                }
+            }
+        });
+
+        TextButton btnVolver = crearBoton("Volver", NARANJA);
+        btnVolver.addListener(new ClickListener() {
+            public void clicked(InputEvent e, float x, float y) { construirMenuPerfil(); }
+        });
+
+        tabla.add(titulo).padBottom(30).row();
+        tabla.add(lblPass).left().width(300).padBottom(4).row();
+        tabla.add(campoPass).width(300).height(45).padBottom(5).row();
+        tabla.add(chkVer).left().width(300).padBottom(15).row();
+        tabla.add(mensaje).padBottom(10).row();
+        tabla.add(btnValidar).width(300).height(45).padBottom(15).row();
+        tabla.add(lblSelecciona).left().width(300).padBottom(6).row();
+        tabla.add(tablaAvatares).width(300).padBottom(10).row();
+        tabla.add(lblRuta).left().width(300).padBottom(4).row();
+        tabla.add(campoRuta).width(300).height(45).padBottom(8).row();
+        tabla.add(btnUsarRuta).width(300).height(45).padBottom(15).row();
+        tabla.add(btnGuardar).width(300).height(45).padBottom(10).row();
+        tabla.add(btnVolver).width(300).height(45).row();
+
+        escenario.addActor(tabla);
+    }
+
        
        
        
