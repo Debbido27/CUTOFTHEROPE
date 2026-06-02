@@ -45,11 +45,11 @@ public class PerfilScreen implements Screen{
     private final Color GRIS    = new Color(0.60f, 0.60f, 0.60f, 1f);
    
     private static final String[] AVATARES = {
-        "avatares/avatar1.png",
-        "avatares/avatar2.png",
-        "avatares/avatar3.png",
-        "avatares/avatar4.png"
-    };
+    "AVATARES/X1.png",
+    "AVATARES/X2.png",
+    "AVATARES/X3.png",
+    "AVATARES/X4.png"
+};
     
     
      public PerfilScreen(CutTheRope juego, String usuario, LoginManager gestor) {

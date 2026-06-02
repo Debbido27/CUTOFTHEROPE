@@ -29,6 +29,13 @@ public class LoginScreen implements Screen {
     private final Color NARANJA = new Color(0.78f, 0.63f, 0.31f, 1f);
     private final Color ROJO    = new Color(0.70f, 0.27f, 0.20f, 1f);
 
+    private static final String[] AVATARES = {
+    "AVATARES/X1.png",
+    "AVATARES/X2.png",
+    "AVATARES/X3.png",
+    "AVATARES/X4.png"
+};
+    
     private Label mensajeLabel;
     private Label checksLabel;
     private TextField campoUser, campoPass;
@@ -158,84 +165,107 @@ public class LoginScreen implements Screen {
     //  PANEL 3 — CREAR JUGADOR
     // ══════════════════════════════════════════════════════════════════════════
     private void construirCrear() {
-        stage.clear();
+    stage.clear();
 
-        Table table = new Table();
-        table.setFillParent(true);
-        table.center();
+    Table table = new Table();
+    table.setFillParent(true);
+    table.center();
 
-        Label titulo = new Label("Crear Jugador", skin);
-        titulo.setFontScale(1.8f);
-        titulo.setColor(VERDE);
+    Label titulo = new Label("Crear Jugador", skin);
+    titulo.setFontScale(1.8f);
+    titulo.setColor(VERDE);
 
-        campoNombre    = crearCampo("Nombre Completo");
-        campoUserCrear = crearCampo("Usuario");
-        campoPassCrear = crearCampo("Contrasena");
-        campoPassCrear.setPasswordMode(true);
-        campoPassCrear.setPasswordCharacter('*');
+    campoNombre    = crearCampo("Nombre Completo");
+    campoUserCrear = crearCampo("Usuario");
+    campoPassCrear = crearCampo("Contrasena");
+    campoPassCrear.setPasswordMode(true);
+    campoPassCrear.setPasswordCharacter('*');
 
-        CheckBox chkVerPassCrear = new CheckBox(" Ver contrasena", skin);
-        chkVerPassCrear.addListener(new ChangeListener() {
-            public void changed(ChangeEvent event, Actor actor) {
-                campoPassCrear.setPasswordMode(!chkVerPassCrear.isChecked());
-            }
-        });
+    CheckBox chkVerPassCrear = new CheckBox(" Ver contrasena", skin);
+    chkVerPassCrear.addListener(new ChangeListener() {
+        public void changed(ChangeEvent event, Actor actor) {
+            campoPassCrear.setPasswordMode(!chkVerPassCrear.isChecked());
+        }
+    });
 
-        checksLabel = new Label(
-            "X  Min 6 caracteres\nX  Una mayuscula\nX  Una minuscula\nX  Un numero", skin);
-        checksLabel.setColor(ROJO);
+    checksLabel = new Label(
+        "X  Min 6 caracteres\nX  Una mayuscula\nX  Una minuscula\nX  Un numero", skin);
+    checksLabel.setColor(ROJO);
 
-        campoPassCrear.addListener(new ChangeListener() {
-            public void changed(ChangeEvent event, Actor actor) {
-                actualizarChecks(campoPassCrear.getText());
-            }
-        });
+    campoPassCrear.addListener(new ChangeListener() {
+        public void changed(ChangeEvent event, Actor actor) {
+            actualizarChecks(campoPassCrear.getText());
+        }
+    });
 
-        mensajeLabel = new Label("", skin);
-        mensajeLabel.setColor(ROJO);
+    // ── avatares ──────────────────────────────────────────────────────────
+    final String[] avatarSeleccionado = { "" };
 
-        TextButton btnCrear  = crearBoton("Crear",  VERDE);
-        TextButton btnVolver = crearBoton("Volver", NARANJA);
+    Label lblAvatar = new Label("Selecciona tu avatar:", skin);
+    lblAvatar.setColor(CAFE);
 
-        btnCrear.addListener(new ClickListener() {
+    Table tablaAvatares = new Table();
+    for (String ruta : AVATARES) {
+        String nombre = ruta.substring(ruta.lastIndexOf('/') + 1, ruta.lastIndexOf('.'));
+        TextButton btnAvatar = crearBoton(nombre, CAFE);
+        btnAvatar.addListener(new ClickListener() {
             public void clicked(InputEvent e, float x, float y) {
-                String nombre = campoNombre.getText().trim();
-                String user   = campoUserCrear.getText().trim();
-                String pass   = campoPassCrear.getText().trim();
-                if (nombre.isEmpty() || user.isEmpty() || pass.isEmpty()) {
-                    mostrarError("Completa todos los campos.");
-                } else if (manager.userExiste(user)) {
-                    mostrarError("Usuario ya existe.");
-                } else if (!validarPass(pass)) {
-                    mostrarError("La contrasena no cumple los requisitos.");
-                } else if (manager.crearUser(user, pass, nombre, "")) {
-                    final String u = user;
-                    Gdx.app.postRunnable(() -> {
-                        game.setScreen(new MenuPrincipalScreen(game, u, manager));
-                    });
-                } else {
-                    mostrarError("Error al crear jugador.");
-                }
+                avatarSeleccionado[0] = ruta;
+                mensajeLabel.setColor(VERDE);
+                mensajeLabel.setText("Avatar seleccionado: " + nombre);
             }
         });
-
-        btnVolver.addListener(new ClickListener() {
-            public void clicked(InputEvent e, float x, float y) { construirMenu(); }
-        });
-
-        table.add(titulo).padBottom(20).row();
-        table.add(campoNombre).width(300).height(45).padBottom(12).row();
-        table.add(campoUserCrear).width(300).height(45).padBottom(12).row();
-        table.add(campoPassCrear).width(300).height(45).padBottom(5).row();
-        table.add(chkVerPassCrear).left().width(300).padBottom(8).row();
-        table.add(checksLabel).left().width(300).padBottom(12).row();
-        table.add(mensajeLabel).padBottom(10).row();
-        table.add(btnCrear).width(300).height(45).padBottom(10).row();
-        table.add(btnVolver).width(300).height(45).row();
-
-        stage.addActor(table);
+        tablaAvatares.add(btnAvatar).width(60).height(35).pad(3);
     }
 
+    mensajeLabel = new Label("", skin);
+    mensajeLabel.setColor(ROJO);
+
+    TextButton btnCrear  = crearBoton("Crear",  VERDE);
+    TextButton btnVolver = crearBoton("Volver", NARANJA);
+
+    btnCrear.addListener(new ClickListener() {
+        public void clicked(InputEvent e, float x, float y) {
+            String nombre = campoNombre.getText().trim();
+            String user   = campoUserCrear.getText().trim();
+            String pass   = campoPassCrear.getText().trim();
+            if (nombre.isEmpty() || user.isEmpty() || pass.isEmpty()) {
+                mostrarError("Completa todos los campos.");
+            } else if (manager.userExiste(user)) {
+                mostrarError("Usuario ya existe.");
+            } else if (!validarPass(pass)) {
+                mostrarError("La contrasena no cumple los requisitos.");
+            } else if (manager.crearUser(user, pass, nombre, avatarSeleccionado[0])) {
+                final String u = user;
+                Gdx.app.postRunnable(() -> {
+                    game.setScreen(new MenuPrincipalScreen(game, u, manager));
+                });
+            } else {
+                mostrarError("Error al crear jugador.");
+            }
+        }
+    });
+
+    btnVolver.addListener(new ClickListener() {
+        public void clicked(InputEvent e, float x, float y) { construirMenu(); }
+    });
+
+    table.add(titulo).padBottom(20).row();
+    table.add(campoNombre).width(300).height(45).padBottom(12).row();
+    table.add(campoUserCrear).width(300).height(45).padBottom(12).row();
+    table.add(campoPassCrear).width(300).height(45).padBottom(5).row();
+    table.add(chkVerPassCrear).left().width(300).padBottom(8).row();
+    table.add(checksLabel).left().width(300).padBottom(12).row();
+    table.add(lblAvatar).left().width(300).padBottom(6).row();
+    table.add(tablaAvatares).width(300).padBottom(12).row();
+    table.add(mensajeLabel).padBottom(10).row();
+    table.add(btnCrear).width(300).height(45).padBottom(10).row();
+    table.add(btnVolver).width(300).height(45).row();
+
+    stage.addActor(table);
+}
+    
+    
     // ══════════════════════════════════════════════════════════════════════════
     //  HELPERS
     // ══════════════════════════════════════════════════════════════════════════
