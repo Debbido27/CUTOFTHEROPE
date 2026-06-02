@@ -5,10 +5,12 @@
 package com.cutherope;
 
 import LOGIC.LoginManager;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 
 public class PerfilScreen implements Screen{
@@ -32,6 +34,17 @@ public class PerfilScreen implements Screen{
         "avatares/avatar3.png",
         "avatares/avatar4.png"
     };
+    
+    
+     public PerfilScreen(CutTheRope juego, String usuario, LoginManager gestor) {
+        this.juego    = juego;
+        this.usuario  = usuario;
+        this.gestor   = gestor;
+        this.escenario = new Stage(new ScreenViewport());
+        this.piel      = crearPiel();
+        Gdx.input.setInputProcessor(escenario);
+        construirMenuPerfil();
+    }
 
      
 }
