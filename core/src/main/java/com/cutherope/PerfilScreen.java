@@ -306,5 +306,114 @@ public class PerfilScreen implements Screen{
     }
 
      
+       
+       private void construirCambiarPassword() {
+        escenario.clear();
+
+        Table tabla = new Table();
+        tabla.setFillParent(true);
+        tabla.center();
+
+        Label titulo = new Label("Cambiar Contrasena", piel);
+        titulo.setFontScale(1.8f);
+        titulo.setColor(VERDE);
+
+        Label lblActual = crearLabel("Contrasena actual");
+        TextField campoActual = crearCampo("Contrasena actual");
+        campoActual.setPasswordMode(true);
+        campoActual.setPasswordCharacter('*');
+
+        CheckBox chkVer = new CheckBox(" Ver contrasena", piel);
+        chkVer.addListener(new ChangeListener() {
+            public void changed(ChangeEvent event, Actor actor) {
+                campoActual.setPasswordMode(!chkVer.isChecked());
+            }
+        });
+
+        Label lblNueva = crearLabel("Nueva contrasena");
+        lblNueva.setVisible(false);
+        TextField campoNueva = crearCampo("Nueva contrasena");
+        campoNueva.setPasswordMode(true);
+        campoNueva.setPasswordCharacter('*');
+        campoNueva.setVisible(false);
+
+        Label checksLabel = new Label(
+            "X  Min 6 caracteres\nX  Una mayuscula\nX  Una minuscula\nX  Un numero", piel);
+        checksLabel.setColor(ROJO);
+        checksLabel.setVisible(false);
+
+        campoNueva.addListener(new ChangeListener() {
+            public void changed(ChangeEvent event, Actor actor) {
+                if (campoNueva.isVisible()) actualizarChecks(checksLabel, campoNueva.getText());
+            }
+        });
+
+        Label mensaje = new Label("", piel);
+        mensaje.setColor(ROJO);
+
+        TextButton btnValidar = crearBoton("Validar", VERDE);
+        TextButton btnGuardar = crearBoton("Guardar", VERDE);
+        TextButton btnVolver  = crearBoton("Volver",  NARANJA);
+        btnGuardar.setVisible(false);
+
+        btnValidar.addListener(new ClickListener() {
+            public void clicked(InputEvent e, float x, float y) {
+                USER u = gestor.buscarUser(usuario);
+                if (u == null || !u.getPassword().equals(campoActual.getText().trim())) {
+                    mensaje.setColor(ROJO);
+                    mensaje.setText("Contrasena incorrecta.");
+                } else {
+                    mensaje.setColor(VERDE);
+                    mensaje.setText("Validada. Ingresa la nueva contrasena.");
+                    lblNueva.setVisible(true);
+                    campoNueva.setVisible(true);
+                    checksLabel.setVisible(true);
+                    btnGuardar.setVisible(true);
+                    btnValidar.setVisible(false);
+                    campoActual.setDisabled(true);
+                }
+            }
+        });
+
+        btnGuardar.addListener(new ClickListener() {
+            public void clicked(InputEvent e, float x, float y) {
+                String nueva = campoNueva.getText().trim();
+                if (!validarPass(nueva)) {
+                    mensaje.setColor(ROJO);
+                    mensaje.setText("La contrasena no cumple los requisitos.");
+                } else if (gestor.cambiarPassword(usuario, nueva)) {
+                    mensaje.setColor(VERDE);
+                    mensaje.setText("Contrasena cambiada exitosamente.");
+                    btnGuardar.setVisible(false);
+                } else {
+                    mensaje.setColor(ROJO);
+                    mensaje.setText("Error al cambiar contrasena.");
+                }
+            }
+        });
+
+        btnVolver.addListener(new ClickListener() {
+            public void clicked(InputEvent e, float x, float y) { construirMenuPerfil(); }
+        });
+
+        tabla.add(titulo).padBottom(30).row();
+        tabla.add(lblActual).left().width(300).padBottom(4).row();
+        tabla.add(campoActual).width(300).height(45).padBottom(5).row();
+        tabla.add(chkVer).left().width(300).padBottom(15).row();
+        tabla.add(lblNueva).left().width(300).padBottom(4).row();
+        tabla.add(campoNueva).width(300).height(45).padBottom(5).row();
+        tabla.add(checksLabel).left().width(300).padBottom(12).row();
+        tabla.add(mensaje).padBottom(10).row();
+        tabla.add(btnValidar).width(300).height(45).padBottom(10).row();
+        tabla.add(btnGuardar).width(300).height(45).padBottom(10).row();
+        tabla.add(btnVolver).width(300).height(45).row();
+
+        escenario.addActor(tabla);
+    }
+
+       
+       
+       
+       
 }
 
