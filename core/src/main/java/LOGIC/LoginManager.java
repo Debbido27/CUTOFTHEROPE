@@ -142,6 +142,7 @@ public boolean crearUser(String username, String password, String fullname, Stri
         try (RandomAccessFile f = new RandomAccessFile(USERS_FILE, "rw")) {
             f.seek(f.length());
             USER nuevo = new USER(username, password, fullname);
+            nuevo.setAvatarPath(avatar);  
             escribirRegistro(f, nuevo);
             currentUser = nuevo;
             return true;

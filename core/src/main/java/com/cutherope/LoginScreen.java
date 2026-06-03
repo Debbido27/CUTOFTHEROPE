@@ -22,20 +22,21 @@ public class LoginScreen implements Screen {
     private Stage stage;
     private LoginManager manager;
     private Skin skin;
-
+ 
     private final Color FONDO   = new Color(0.96f, 0.92f, 0.82f, 1f);
     private final Color VERDE   = new Color(0.33f, 0.59f, 0.31f, 1f);
     private final Color CAFE    = new Color(0.23f, 0.16f, 0.08f, 1f);
     private final Color NARANJA = new Color(0.78f, 0.63f, 0.31f, 1f);
     private final Color ROJO    = new Color(0.70f, 0.27f, 0.20f, 1f);
     private static final String DEFAULT_AVATAR = "AVATARS/X1.png";
+    private String avatarTemporal = DEFAULT_AVATAR;
     private static final String[][] CATEGORIAS = {
-    { "Dragon Ball",       "AVATARS.DRAGON",      "D1","D2","D3","D4" },
-    { "Rapidos y Furiosos","AVATARS.FNR",          "R1","R2","R3","R4","R5" },
-    { "Invincible",        "AVATARS.INVINCIBLE",   "I1","I2","I3","I4" },
-    { "Transformers",      "AVATARS.TRANSFORMER",  "T1","T2","T3","T4" },
-    { "Futbol",            "AVATARS.futbol",        "F1","F2","F3","F4" }
-   };
+    { "Dragon Ball",       "AVATARS/DRAGON",      "D1","D2","D3","D4" },
+    { "Rapidos y Furiosos","AVATARS/FNR",          "R1","R2","R3","R4","R5" },
+    { "Invincible",        "AVATARS/INVINCIBLE",   "I1","I2","I3","I4" },
+    { "Transformers",      "AVATARS/TRANSFORMER",  "T1","T2","T3","T4" },
+    { "Futbol",            "AVATARS/futbol",        "F1","F2","F3","F4" }
+};
     
     private Label mensajeLabel;
     private Label checksLabel;
@@ -57,7 +58,7 @@ public class LoginScreen implements Screen {
     private void construirMenu() {
         stage.clear();
 
-        Table table = new Table();
+          Table table = new Table();
         table.setFillParent(true);
         table.center();
 
@@ -165,11 +166,14 @@ public class LoginScreen implements Screen {
     // ══════════════════════════════════════════════════════════════════════════
     //  PANEL 3 — CREAR JUGADOR
     // ══════════════════════════════════════════════════════════════════════════
-    private void construirCrear() {
+   private void construirCrear() {
     stage.clear();
 
-    Table table = new Table();
-    table.setFillParent(true);
+    final String[] avatarSeleccionado = { avatarTemporal };
+
+final Table[] tableRef = { new Table() };
+Table table = tableRef[0];
+table.setFillParent(true);
     table.center();
 
     Label titulo = new Label("Crear Jugador", skin);
@@ -199,25 +203,22 @@ public class LoginScreen implements Screen {
         }
     });
 
-    // ── avatares ──────────────────────────────────────────────────────────
-    final String[] avatarSeleccionado = { "" };
+    Label lblAvatarElegido = new Label("Avatar: default", skin);
+    lblAvatarElegido.setColor(CAFE);
 
-    Label lblAvatar = new Label("Selecciona tu avatar:", skin);
-    lblAvatar.setColor(CAFE);
-
-    Table tablaAvatares = new Table();
-    for (String ruta : AVATARES) {
-        Texture textura = new Texture(Gdx.files.internal(ruta));
-        Image imgAvatar = new Image(textura);
-        imgAvatar.addListener(new ClickListener() {
-            public void clicked(InputEvent e, float x, float y) {
-                avatarSeleccionado[0] = ruta;
-                mensajeLabel.setColor(VERDE);
-                mensajeLabel.setText("Avatar seleccionado.");
-            }
+    TextButton btnAvatar = crearBoton("Elegir Avatar", NARANJA);
+    btnAvatar.addListener(new ClickListener() {
+    public void clicked(InputEvent e, float x, float y) {
+        construirPanelAvatares(avatarSeleccionado, () -> {
+            avatarTemporal = avatarSeleccionado[0];
+            String nombre = avatarTemporal;
+            nombre = nombre.substring(nombre.lastIndexOf('/') + 1, nombre.lastIndexOf('.'));
+            lblAvatarElegido.setText("Avatar: " + nombre);
+            stage.clear();
+            stage.addActor(table);
         });
-        tablaAvatares.add(imgAvatar).width(60).height(60).pad(5);
     }
+});
 
     mensajeLabel = new Label("", skin);
     mensajeLabel.setColor(ROJO);
@@ -238,18 +239,20 @@ public class LoginScreen implements Screen {
                 mostrarError("La contrasena no cumple los requisitos.");
             } else if (manager.crearUser(user, pass, nombre, avatarSeleccionado[0])) {
                 final String u = user;
-                Gdx.app.postRunnable(() -> {
-                    game.setScreen(new MenuPrincipalScreen(game, u, manager));
-                });
+                Gdx.app.postRunnable(() ->
+                    game.setScreen(new MenuPrincipalScreen(game, u, manager)));
             } else {
                 mostrarError("Error al crear jugador.");
             }
         }
     });
 
-    btnVolver.addListener(new ClickListener() {
-        public void clicked(InputEvent e, float x, float y) { construirMenu(); }
-    });
+   btnVolver.addListener(new ClickListener() {
+    public void clicked(InputEvent e, float x, float y) {
+        avatarTemporal = DEFAULT_AVATAR;
+        construirMenu();
+    }
+});
 
     table.add(titulo).padBottom(20).row();
     table.add(campoNombre).width(300).height(45).padBottom(12).row();
@@ -257,8 +260,8 @@ public class LoginScreen implements Screen {
     table.add(campoPassCrear).width(300).height(45).padBottom(5).row();
     table.add(chkVerPassCrear).left().width(300).padBottom(8).row();
     table.add(checksLabel).left().width(300).padBottom(12).row();
-    table.add(lblAvatar).left().width(300).padBottom(6).row();
-    table.add(tablaAvatares).width(300).padBottom(12).row();
+    table.add(lblAvatarElegido).center().padBottom(6).row();
+    table.add(btnAvatar).width(300).height(45).padBottom(12).row();
     table.add(mensajeLabel).padBottom(10).row();
     table.add(btnCrear).width(300).height(45).padBottom(10).row();
     table.add(btnVolver).width(300).height(45).row();
@@ -266,6 +269,61 @@ public class LoginScreen implements Screen {
     stage.addActor(table);
 }
     
+    private void construirPanelAvatares(String[] avatarSeleccionado, Runnable alVolver) {
+    stage.clear();
+
+    Table contenido = new Table();
+    contenido.top().pad(20);
+
+    Label titulo = new Label("Elige tu Avatar", skin);
+    titulo.setFontScale(1.8f);
+    titulo.setColor(VERDE);
+    contenido.add(titulo).colspan(10).center().padBottom(20).row();
+
+    for (String[] cat : CATEGORIAS) {
+        String nombreCat = cat[0];
+        String carpeta   = cat[1];
+
+        Label lblCat = new Label(nombreCat, skin);
+        lblCat.setFontScale(1.3f);
+        lblCat.setColor(NARANJA);
+        contenido.add(lblCat).colspan(10).left().padTop(16).padBottom(8).row();
+
+        Table fila = new Table();
+        for (int i = 2; i < cat.length; i++) {
+            String archivo = cat[i] + ".png";
+            String ruta    = carpeta + "/" + archivo;
+            if (!Gdx.files.internal(ruta).exists()) continue;
+
+            Texture tex    = new Texture(Gdx.files.internal(ruta));
+            com.badlogic.gdx.scenes.scene2d.ui.Image img =
+                new com.badlogic.gdx.scenes.scene2d.ui.Image(tex);
+
+            img.addListener(new ClickListener() {
+                public void clicked(InputEvent e, float x, float y) {
+                    avatarSeleccionado[0] = ruta;
+                    alVolver.run();
+                }
+            });
+            fila.add(img).width(70).height(70).pad(6);
+        }
+        contenido.add(fila).colspan(10).left().row();
+    }
+
+    TextButton btnVolver = crearBoton("Cancelar", ROJO);
+    btnVolver.addListener(new ClickListener() {
+        public void clicked(InputEvent e, float x, float y) { alVolver.run(); }
+    });
+    contenido.add(btnVolver).width(280).height(50).padTop(20).colspan(10).center().row();
+
+    ScrollPane.ScrollPaneStyle spStyle = new ScrollPane.ScrollPaneStyle();
+    spStyle.background = skin.newDrawable("white", FONDO);
+    ScrollPane scroll = new ScrollPane(contenido, spStyle);
+    scroll.setFillParent(true);
+    scroll.setScrollingDisabled(true, false);
+
+    stage.addActor(scroll);
+}
     
     // ══════════════════════════════════════════════════════════════════════════
     //  HELPERS

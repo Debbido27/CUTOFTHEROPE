@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package com.cutherope;
 
 import LOGIC.LoginManager;
@@ -43,12 +40,15 @@ public class PerfilScreen implements Screen{
     private final Color NARANJA = new Color(0.78f, 0.63f, 0.31f, 1f);
     private final Color ROJO    = new Color(0.70f, 0.27f, 0.20f, 1f);
     private final Color GRIS    = new Color(0.60f, 0.60f, 0.60f, 1f);
-   
-    private static final String[] AVATARES = {
-    "AVATARS/X1.png",
-    "AVATARS/X2.png",
-    "AVATARS/X3.png",
-    "AVATARS/X4.png"
+    private String avatarTemporalPerfil = null;
+    private static final String DEFAULT_AVATAR = "AVATARS/X1.png";
+    
+    private static final String[][] CATEGORIAS = {
+    { "Dragon Ball",       "AVATARS/DRAGON",      "D1","D2","D3","D4" },
+    { "Rapidos y Furiosos","AVATARS/FNR",          "R1","R2","R3","R4","R5" },
+    { "Invincible",        "AVATARS/INVINCIBLE",   "I1","I2","I3","I4" },
+    { "Transformers",      "AVATARS/TRANSFORMER",  "T1","T2","T3","T4" },
+    { "Futbol",            "AVATARS/futbol",        "F1","F2","F3","F4" }
 };
     
     
@@ -74,11 +74,14 @@ public class PerfilScreen implements Screen{
          titulo.setColor(VERDE);
          
           USER u = gestor.buscarUser(usuario);
-        String avatarInfo = (u != null && !u.getAvatarPath().isEmpty())
-            ? u.getAvatarPath() : "Sin avatar";
+        String avatarRuta = (u != null && !u.getAvatarPath().isEmpty())
+       ? u.getAvatarPath() : DEFAULT_AVATAR;
 
-        Label subAvatar = new Label("Avatar: " + avatarInfo, piel);
-        subAvatar.setColor(CAFE);
+        com.badlogic.gdx.scenes.scene2d.ui.Image imgAvatarPerfil = null;
+        if (Gdx.files.internal(avatarRuta).exists()) {
+            Texture texAvatar = new Texture(Gdx.files.internal(avatarRuta));
+            imgAvatarPerfil = new com.badlogic.gdx.scenes.scene2d.ui.Image(texAvatar);
+        }
 
         Label subUsuario = new Label("@" + usuario, piel);
         subUsuario.setColor(NARANJA);
@@ -111,8 +114,8 @@ public class PerfilScreen implements Screen{
         
         tabla.add(titulo).padBottom(4).row();
         tabla.add(subUsuario).padBottom(4).row();
-        tabla.add(subAvatar).padBottom(40).row();
-        tabla.add(btnVerInfo).width(280).height(50).padBottom(12).row();
+        if (imgAvatarPerfil != null)
+        tabla.add(imgAvatarPerfil).width(80).height(80).padBottom(10).row();        tabla.add(btnVerInfo).width(280).height(50).padBottom(12).row();
         tabla.add(btnCambiarUser).width(280).height(50).padBottom(12).row();
         tabla.add(btnCambiarPass).width(280).height(50).padBottom(12).row();
         tabla.add(btnCambiarAvatar).width(280).height(50).padBottom(12).row();
@@ -180,12 +183,12 @@ public class PerfilScreen implements Screen{
 
         // ── secciones pendientes de logica ─────────────────────────────────
         agregarSeccion(contenido, "HISTORIAL DE PARTIDAS");
-        Label lblHistorial = new Label("[ Proximamente ]", piel);
+        Label lblHistorial = new Label("] ", piel);
         lblHistorial.setColor(GRIS);
         contenido.add(lblHistorial).colspan(2).padBottom(10).center().row();
 
         agregarSeccion(contenido, "RANKING GENERAL");
-        Label lblRanking = new Label("[ Proximamente ]", piel);
+        Label lblRanking = new Label(" ]", piel);
         lblRanking.setColor(GRIS);
         contenido.add(lblRanking).colspan(2).padBottom(10).center().row();
 
@@ -417,140 +420,130 @@ public class PerfilScreen implements Screen{
 
        
        
-        private void construirCambiarAvatar() {
-        escenario.clear();
+ private void construirCambiarAvatar() {
+    escenario.clear();
 
-        Table tabla = new Table();
-        tabla.setFillParent(true);
-        tabla.center();
+    Table tabla = new Table();
+    tabla.setFillParent(true);
+    tabla.center();
 
-        Label titulo = new Label("Cambiar Avatar", piel);
-        titulo.setFontScale(1.8f);
-        titulo.setColor(VERDE);
+    Label titulo = new Label("Cambiar Avatar", piel);
+    titulo.setFontScale(1.8f);
+    titulo.setColor(VERDE);
 
-        // ── pedir contraseña primero ────────────────────────────────────────
-        Label lblPass = crearLabel("Confirma tu contrasena");
-        TextField campoPass = crearCampo("Contrasena");
-        campoPass.setPasswordMode(true);
-        campoPass.setPasswordCharacter('*');
+    Label lblPass = crearLabel("Confirma tu contrasena");
+    TextField campoPass = crearCampo("Contrasena");
+    campoPass.setPasswordMode(true);
+    campoPass.setPasswordCharacter('*');
 
-        CheckBox chkVer = new CheckBox(" Ver contrasena", piel);
-        chkVer.addListener(new ChangeListener() {
-            public void changed(ChangeEvent event, Actor actor) {
-                campoPass.setPasswordMode(!chkVer.isChecked());
+    CheckBox chkVer = new CheckBox(" Ver contrasena", piel);
+    chkVer.addListener(new ChangeListener() {
+        public void changed(ChangeEvent event, Actor actor) {
+            campoPass.setPasswordMode(!chkVer.isChecked());
+        }
+    });
+
+    Label mensaje = new Label("", piel);
+    mensaje.setColor(ROJO);
+
+    if (avatarTemporalPerfil == null) avatarTemporalPerfil = DEFAULT_AVATAR;
+    final String[] avatarSeleccionado = { avatarTemporalPerfil };
+
+    TextButton btnValidar = crearBoton("Validar", VERDE);
+    TextButton btnVolver  = crearBoton("Volver",  NARANJA);
+
+    btnValidar.addListener(new ClickListener() {
+        public void clicked(InputEvent e, float x, float y) {
+            USER u = gestor.buscarUser(usuario);
+            if (u == null || !u.getPassword().equals(campoPass.getText().trim())) {
+                mensaje.setColor(ROJO);
+                mensaje.setText("Contrasena incorrecta.");
+            } else {
+                // abre panel directamente al validar
+                construirPanelAvatares(avatarSeleccionado, () -> {
+                    avatarTemporalPerfil = avatarSeleccionado[0];
+                    gestor.cambiarAvatar(usuario, avatarTemporalPerfil);
+                    avatarTemporalPerfil = null;
+                    construirMenuPerfil();
+                });
             }
-        });
+        }
+    });
 
-        Label mensaje = new Label("", piel);
-        mensaje.setColor(ROJO);
+    btnVolver.addListener(new ClickListener() {
+        public void clicked(InputEvent e, float x, float y) {
+            avatarTemporalPerfil = null;
+            construirMenuPerfil();
+        }
+    });
 
-        // ── seccion avatares (oculta hasta validar) ────────────────────────
-        Table tablaAvatares = new Table();
-        tablaAvatares.setVisible(false);
+    tabla.add(titulo).padBottom(30).row();
+    tabla.add(lblPass).left().width(300).padBottom(4).row();
+    tabla.add(campoPass).width(300).height(45).padBottom(5).row();
+    tabla.add(chkVer).left().width(300).padBottom(15).row();
+    tabla.add(mensaje).padBottom(10).row();
+    tabla.add(btnValidar).width(300).height(45).padBottom(10).row();
+    tabla.add(btnVolver).width(300).height(45).row();
 
-        Label lblSelecciona = crearLabel("Selecciona un avatar predefinido:");
-        lblSelecciona.setVisible(false);
+    escenario.addActor(tabla);
+}
 
-        // fila de botones de avatar predefinidos
-        final String[] avatarSeleccionado = { "" };
-        for (String ruta : AVATARES) {
-            String nombre = ruta.substring(ruta.lastIndexOf('/') + 1, ruta.lastIndexOf('.'));
-            TextButton btnAvatar = crearBoton(nombre, CAFE);
-            btnAvatar.addListener(new ClickListener() {
+     
+     private void construirPanelAvatares(String[] avatarSeleccionado, Runnable alVolver) {
+    escenario.clear();
+
+    Table contenido = new Table();
+    contenido.top().pad(20);
+
+    Label titulo = new Label("Elige tu Avatar", piel);
+    titulo.setFontScale(1.8f);
+    titulo.setColor(VERDE);
+    contenido.add(titulo).colspan(10).center().padBottom(20).row();
+
+    for (String[] cat : CATEGORIAS) {
+        String nombreCat = cat[0];
+        String carpeta   = cat[1];
+
+        Label lblCat = new Label(nombreCat, piel);
+        lblCat.setFontScale(1.3f);
+        lblCat.setColor(NARANJA);
+        contenido.add(lblCat).colspan(10).left().padTop(16).padBottom(8).row();
+
+        Table fila = new Table();
+        for (int i = 2; i < cat.length; i++) {
+            String archivo = cat[i] + ".png";
+            String ruta    = carpeta + "/" + archivo;
+            if (!Gdx.files.internal(ruta).exists()) continue;
+
+            Texture tex    = new Texture(Gdx.files.internal(ruta));
+            com.badlogic.gdx.scenes.scene2d.ui.Image img =
+                new com.badlogic.gdx.scenes.scene2d.ui.Image(tex);
+
+            img.addListener(new ClickListener() {
                 public void clicked(InputEvent e, float x, float y) {
                     avatarSeleccionado[0] = ruta;
-                    mensaje.setColor(VERDE);
-                    mensaje.setText("Seleccionado: " + nombre);
+                    alVolver.run();
                 }
             });
-            tablaAvatares.add(btnAvatar).width(130).height(40).pad(4);
+            fila.add(img).width(70).height(70).pad(6);
         }
-
-        // ── opcion ruta manual ─────────────────────────────────────────────
-        Label lblRuta = crearLabel("O ingresa la ruta de tu imagen:");
-        lblRuta.setVisible(false);
-        TextField campoRuta = crearCampo("Ruta del archivo (ej: avatares/mifoto.png)");
-        campoRuta.setVisible(false);
-
-        TextButton btnUsarRuta = crearBoton("Usar esta ruta", NARANJA);
-        btnUsarRuta.setVisible(false);
-        btnUsarRuta.addListener(new ClickListener() {
-            public void clicked(InputEvent e, float x, float y) {
-                String ruta = campoRuta.getText().trim();
-                if (ruta.isEmpty()) {
-                    mensaje.setColor(ROJO);
-                    mensaje.setText("Ingresa una ruta valida.");
-                } else {
-                    avatarSeleccionado[0] = ruta;
-                    mensaje.setColor(VERDE);
-                    mensaje.setText("Ruta asignada: " + ruta);
-                }
-            }
-        });
-
-        // ── guardar avatar ─────────────────────────────────────────────────
-        TextButton btnGuardar = crearBoton("Guardar Avatar", VERDE);
-        btnGuardar.setVisible(false);
-        btnGuardar.addListener(new ClickListener() {
-            public void clicked(InputEvent e, float x, float y) {
-                if (avatarSeleccionado[0].isEmpty()) {
-                    mensaje.setColor(ROJO);
-                    mensaje.setText("Selecciona o ingresa un avatar primero.");
-                } else if (gestor.cambiarAvatar(usuario, avatarSeleccionado[0])) {
-                    mensaje.setColor(VERDE);
-                    mensaje.setText("Avatar actualizado exitosamente.");
-                    btnGuardar.setVisible(false);
-                } else {
-                    mensaje.setColor(ROJO);
-                    mensaje.setText("Error al guardar avatar.");
-                }
-            }
-        });
-
-        TextButton btnValidar = crearBoton("Validar", VERDE);
-        btnValidar.addListener(new ClickListener() {
-            public void clicked(InputEvent e, float x, float y) {
-                USER u = gestor.buscarUser(usuario);
-                if (u == null || !u.getPassword().equals(campoPass.getText().trim())) {
-                    mensaje.setColor(ROJO);
-                    mensaje.setText("Contrasena incorrecta.");
-                } else {
-                    mensaje.setColor(VERDE);
-                    mensaje.setText("Validada. Elige tu avatar.");
-                    tablaAvatares.setVisible(true);
-                    lblSelecciona.setVisible(true);
-                    lblRuta.setVisible(true);
-                    campoRuta.setVisible(true);
-                    btnUsarRuta.setVisible(true);
-                    btnGuardar.setVisible(true);
-                    btnValidar.setVisible(false);
-                    campoPass.setDisabled(true);
-                }
-            }
-        });
-
-        TextButton btnVolver = crearBoton("Volver", NARANJA);
-        btnVolver.addListener(new ClickListener() {
-            public void clicked(InputEvent e, float x, float y) { construirMenuPerfil(); }
-        });
-
-        tabla.add(titulo).padBottom(30).row();
-        tabla.add(lblPass).left().width(300).padBottom(4).row();
-        tabla.add(campoPass).width(300).height(45).padBottom(5).row();
-        tabla.add(chkVer).left().width(300).padBottom(15).row();
-        tabla.add(mensaje).padBottom(10).row();
-        tabla.add(btnValidar).width(300).height(45).padBottom(15).row();
-        tabla.add(lblSelecciona).left().width(300).padBottom(6).row();
-        tabla.add(tablaAvatares).width(300).padBottom(10).row();
-        tabla.add(lblRuta).left().width(300).padBottom(4).row();
-        tabla.add(campoRuta).width(300).height(45).padBottom(8).row();
-        tabla.add(btnUsarRuta).width(300).height(45).padBottom(15).row();
-        tabla.add(btnGuardar).width(300).height(45).padBottom(10).row();
-        tabla.add(btnVolver).width(300).height(45).row();
-
-        escenario.addActor(tabla);
+        contenido.add(fila).colspan(10).left().row();
     }
 
+    TextButton btnVolver = crearBoton("Cancelar", ROJO);
+    btnVolver.addListener(new ClickListener() {
+        public void clicked(InputEvent e, float x, float y) { alVolver.run(); }
+    });
+    contenido.add(btnVolver).width(280).height(50).padTop(20).colspan(10).center().row();
+
+    ScrollPane.ScrollPaneStyle spStyle = new ScrollPane.ScrollPaneStyle();
+    spStyle.background = piel.newDrawable("white", FONDO);
+    ScrollPane scroll = new ScrollPane(contenido, spStyle);
+    scroll.setFillParent(true);
+    scroll.setScrollingDisabled(true, false);
+
+    escenario.addActor(scroll);
+}
         
         private void agregarSeccion(Table t, String titulo) {
         Label lbl = new Label("— " + titulo + " —", piel);
