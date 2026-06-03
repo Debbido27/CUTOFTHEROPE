@@ -55,4 +55,17 @@ public class FriendsManager {
         return contieneLinea(getSolicitudesPath(receptor), solicitante);
     }
 
+    public String[] getAmigos(String username) {
+        return leerLineas(getAmigosPath(username));
+    }
+
+    public String[] getSolicitudes(String username) {
+        return leerLineas(getSolicitudesPath(username));
+    }
+
+    public int contarAmigos(String username) {
+        return getAmigos(username).length;
+    }
+
+    
 }
