@@ -45,10 +45,10 @@ public class PerfilScreen implements Screen{
     private final Color GRIS    = new Color(0.60f, 0.60f, 0.60f, 1f);
    
     private static final String[] AVATARES = {
-    "AVATARES/X1.png",
-    "AVATARES/X2.png",
-    "AVATARES/X3.png",
-    "AVATARES/X4.png"
+    "AVATARS/X1.png",
+    "AVATARS/X2.png",
+    "AVATARS/X3.png",
+    "AVATARS/X4.png"
 };
     
     

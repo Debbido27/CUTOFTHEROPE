@@ -28,13 +28,14 @@ public class LoginScreen implements Screen {
     private final Color CAFE    = new Color(0.23f, 0.16f, 0.08f, 1f);
     private final Color NARANJA = new Color(0.78f, 0.63f, 0.31f, 1f);
     private final Color ROJO    = new Color(0.70f, 0.27f, 0.20f, 1f);
-
-    private static final String[] AVATARES = {
-    "AVATARES/X1.png",
-    "AVATARES/X2.png",
-    "AVATARES/X3.png",
-    "AVATARES/X4.png"
-};
+    private static final String DEFAULT_AVATAR = "AVATARS/X1.png";
+    private static final String[][] CATEGORIAS = {
+    { "Dragon Ball",       "AVATARS.DRAGON",      "D1","D2","D3","D4" },
+    { "Rapidos y Furiosos","AVATARS.FNR",          "R1","R2","R3","R4","R5" },
+    { "Invincible",        "AVATARS.INVINCIBLE",   "I1","I2","I3","I4" },
+    { "Transformers",      "AVATARS.TRANSFORMER",  "T1","T2","T3","T4" },
+    { "Futbol",            "AVATARS.futbol",        "F1","F2","F3","F4" }
+   };
     
     private Label mensajeLabel;
     private Label checksLabel;
@@ -206,16 +207,16 @@ public class LoginScreen implements Screen {
 
     Table tablaAvatares = new Table();
     for (String ruta : AVATARES) {
-        String nombre = ruta.substring(ruta.lastIndexOf('/') + 1, ruta.lastIndexOf('.'));
-        TextButton btnAvatar = crearBoton(nombre, CAFE);
-        btnAvatar.addListener(new ClickListener() {
+        Texture textura = new Texture(Gdx.files.internal(ruta));
+        Image imgAvatar = new Image(textura);
+        imgAvatar.addListener(new ClickListener() {
             public void clicked(InputEvent e, float x, float y) {
                 avatarSeleccionado[0] = ruta;
                 mensajeLabel.setColor(VERDE);
-                mensajeLabel.setText("Avatar seleccionado: " + nombre);
+                mensajeLabel.setText("Avatar seleccionado.");
             }
         });
-        tablaAvatares.add(btnAvatar).width(60).height(35).pad(3);
+        tablaAvatares.add(imgAvatar).width(60).height(60).pad(5);
     }
 
     mensajeLabel = new Label("", skin);
