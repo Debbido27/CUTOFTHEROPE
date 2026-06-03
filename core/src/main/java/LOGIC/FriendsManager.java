@@ -20,4 +20,39 @@ public class FriendsManager {
         }
         return f.getPath();
     }
+    
+    
+    public boolean enviarSolicitud(String de, String para, LoginManager loginManager) {
+        if (loginManager.buscarUser(para) == null) return false;
+        if (sonAmigos(de, para)) return false;
+        if (tieneSolicitudPendiente(de, para)) return false;
+        return agregarLinea(getSolicitudesPath(para), de);
+    }
+
+    public boolean aceptarSolicitud(String solicitante, String receptor) {
+        if (!tieneSolicitudPendiente(solicitante, receptor)) return false;
+        eliminarLinea(getSolicitudesPath(receptor), solicitante);
+        agregarLinea(getAmigosPath(receptor), solicitante);
+        agregarLinea(getAmigosPath(solicitante), receptor);
+        return true;
+    }
+    
+    public boolean rechazarSolicitud(String solicitante, String receptor) {
+        return eliminarLinea(getSolicitudesPath(receptor), solicitante);
+    }
+
+    public boolean eliminarAmigo(String userA, String userB) {
+        boolean a = eliminarLinea(getAmigosPath(userA), userB);
+        boolean b = eliminarLinea(getAmigosPath(userB), userA);
+        return a && b;
+    }
+
+    public boolean sonAmigos(String userA, String userB) {
+        return contieneLinea(getAmigosPath(userA), userB);
+    }
+
+    public boolean tieneSolicitudPendiente(String solicitante, String receptor) {
+        return contieneLinea(getSolicitudesPath(receptor), solicitante);
+    }
+
 }
