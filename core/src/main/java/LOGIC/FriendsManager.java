@@ -11,8 +11,7 @@ import java.io.IOException;
 
 public class FriendsManager {
     
-    private static final String BASE_FOLDER ="../assets/CTR._RAIZ";
-    
+    private static final String BASE_FOLDER = "../assets/CTR_RAIZ";    
     private String getAmigosPath(String username){
         return BASE_FOLDER+"/"+username+"/amigos.ctr";
     }
@@ -140,6 +139,9 @@ public class FriendsManager {
             return new String[0];
         }
     }
+    
+    
+    
 
     
 }

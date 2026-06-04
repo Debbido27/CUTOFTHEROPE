@@ -587,6 +587,8 @@ public class PerfilScreen implements Screen{
         return lbl;
     }
 
+    
+    
     private TextField crearCampo(String placeholder) {
         TextField campo = new TextField("", piel);
         campo.setMessageText(placeholder);
@@ -645,6 +647,9 @@ public class PerfilScreen implements Screen{
 
         return skin;
     }
+    
+    
+    
     
     
     @Override
