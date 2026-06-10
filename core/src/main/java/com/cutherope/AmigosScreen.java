@@ -14,7 +14,8 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 
 public class AmigosScreen implements Screen {
 
@@ -37,15 +38,13 @@ public class AmigosScreen implements Screen {
         this.usuario       = usuario;
         this.gestor        = gestor;
         this.friendsManager = new FriendsManager();
-        this.escenario     = new Stage(new ScreenViewport());
+        this.escenario     = new Stage(new FitViewport(640, 480));
         this.piel          = crearPiel();
         Gdx.input.setInputProcessor(escenario);
         construirMenu();
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    //  MENU PRINCIPAL AMIGOS
-    // ══════════════════════════════════════════════════════════════════════════
+    //menu principal amigos
     private void construirMenu() {
         escenario.clear();
 
@@ -99,9 +98,7 @@ public class AmigosScreen implements Screen {
         escenario.addActor(tabla);
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    //  VER AMIGOS
-    // ══════════════════════════════════════════════════════════════════════════
+    //ver amigos
     private void construirVerAmigos() {
         escenario.clear();
 
@@ -172,9 +169,7 @@ card.add(btnDetalles).width(110).height(35).padRight(6);
         escenario.addActor(scroll);
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    //  AGREGAR AMIGO
-    // ══════════════════════════════════════════════════════════════════════════
+    //agregar amigo
     private void construirAgregarAmigo() {
         escenario.clear();
 
@@ -194,7 +189,7 @@ card.add(btnDetalles).width(110).height(35).padRight(6);
         Label mensaje = new Label("", piel);
         mensaje.setColor(ROJO);
 
-        // resultado de busqueda
+        //resultado de busqueda
         Table tablaResultado = new Table();
 
         TextButton btnVerJugadores = crearBoton("Ver Jugadores", NARANJA);
@@ -289,9 +284,7 @@ card.add(btnDetalles).width(110).height(35).padRight(6);
         escenario.addActor(tabla);
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    //  VER SOLICITUDES
-    // ══════════════════════════════════════════════════════════════════════════
+    //ver solicitudes
     private void construirVerSolicitudes() {
         escenario.clear();
 
@@ -362,10 +355,7 @@ card.add(btnDetalles).width(110).height(35).padRight(6);
         escenario.addActor(scroll);
     }
 
-    
-    // ══════════════════════════════════════════════════════════════════════════
-//  VER JUGADORES
-// ══════════════════════════════════════════════════════════════════════════
+    //ver jugadores
 private void construirVerJugadores() {
     escenario.clear();
 
@@ -383,7 +373,7 @@ private void construirVerJugadores() {
         if (u == null) continue;
         if (u.getUsername().equals(usuario)) continue;
 
-        // avatar
+        //avatar
         String rutaAvatar = (u.getAvatarPath() != null && !u.getAvatarPath().isEmpty())
             ? u.getAvatarPath() : "AVATARS/X1.png";
 
@@ -446,9 +436,7 @@ private void construirVerJugadores() {
     escenario.addActor(scroll);
 }
 
-// ══════════════════════════════════════════════════════════════════════════
-//  VER DETALLES DE AMIGO
-// ══════════════════════════════════════════════════════════════════════════
+//ver detalles de amigo
 private void construirDetallesAmigo(String usernameAmigo) {
     escenario.clear();
 
@@ -463,7 +451,7 @@ private void construirDetallesAmigo(String usernameAmigo) {
     contenido.add(titulo).colspan(2).center().padBottom(20).row();
 
     if (u != null) {
-        // avatar
+        //avatar
         String rutaAvatar = (u.getAvatarPath() != null && !u.getAvatarPath().isEmpty())
             ? u.getAvatarPath() : "AVATARS/X1.png";
         if (Gdx.files.internal(rutaAvatar).exists()) {
@@ -514,9 +502,7 @@ private void construirDetallesAmigo(String usernameAmigo) {
 
     escenario.addActor(scroll);
 }
-    // ══════════════════════════════════════════════════════════════════════════
-    //  HELPERS
-    // ══════════════════════════════════════════════════════════════════════════
+    //helpers
     private TextField crearCampo(String placeholder) {
         TextField campo = new TextField("", piel);
         campo.setMessageText(placeholder);
@@ -531,15 +517,20 @@ private void construirDetallesAmigo(String usernameAmigo) {
         return btn;
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    //  PIEL
-    // ══════════════════════════════════════════════════════════════════════════
+    //piel
     private Skin crearPiel() {
         Skin skin = new Skin();
         Pixmap px = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         px.setColor(Color.WHITE); px.fill();
         skin.add("white", new Texture(px)); px.dispose();
-        BitmapFont f = new BitmapFont();
+        FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("fonts/GOODDC__.TTF"));
+        FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        float escala = Math.min(Gdx.graphics.getWidth() / 640f, Gdx.graphics.getHeight() / 480f);
+        param.size = Math.round(18 * escala);
+        param.characters = FreeTypeFontGenerator.DEFAULT_CHARS + "áéíóúÁÉÍÓÚñÑüÜ¡¿";
+        BitmapFont f = gen.generateFont(param);
+        f.getData().setScale(1f / escala);
+        gen.dispose();
         skin.add("default-font", f);
         Label.LabelStyle ls = new Label.LabelStyle(); ls.font = f; ls.fontColor = CAFE;
         skin.add("default", ls);
@@ -567,9 +558,7 @@ private void construirDetallesAmigo(String usernameAmigo) {
     t.add(lblClave).left().padRight(20).padBottom(6);
     t.add(lblValor).left().padBottom(6).row();
 }
-    // ══════════════════════════════════════════════════════════════════════════
-    //  CICLO SCREEN
-    // ══════════════════════════════════════════════════════════════════════════
+    //ciclo screen
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(FONDO.r, FONDO.g, FONDO.b, 1f);

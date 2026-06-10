@@ -22,7 +22,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import java.time.format.DateTimeFormatter;
 
 
@@ -56,7 +57,7 @@ public class PerfilScreen implements Screen{
         this.juego    = juego;
         this.usuario  = usuario;
         this.gestor   = gestor;
-        this.escenario = new Stage(new ScreenViewport());
+        this.escenario = new Stage(new FitViewport(640, 480));
         this.piel      = crearPiel();
         Gdx.input.setInputProcessor(escenario);
         construirMenuPerfil();
@@ -163,7 +164,7 @@ public class PerfilScreen implements Screen{
 
         contenido.add(titulo).padBottom(20).colspan(2).center().row();
 
-        // separador de sección
+        //separador de seccion
         agregarSeccion(contenido, "DATOS PERSONALES");
         agregarFila(contenido, "Nombre completo",  nombreCompleto);
         agregarFila(contenido, "Usuario",          "@" + usuario);
@@ -181,7 +182,7 @@ public class PerfilScreen implements Screen{
         agregarFila(contenido, "Fallos totales",      String.valueOf(fallos));
         agregarFila(contenido, "Tiempo total jugado", tiempo);
 
-        // ── secciones pendientes de logica ─────────────────────────────────
+        //estas secciones todavia no tienen logica implementada
         agregarSeccion(contenido, "HISTORIAL DE PARTIDAS");
         Label lblHistorial = new Label("] ", piel);
         lblHistorial.setColor(GRIS);
@@ -459,7 +460,7 @@ public class PerfilScreen implements Screen{
                 mensaje.setColor(ROJO);
                 mensaje.setText("Contrasena incorrecta.");
             } else {
-                // abre panel directamente al validar
+                //si la contrasena es correcta abrimos el panel de avatares
                 construirPanelAvatares(avatarSeleccionado, () -> {
                     avatarTemporalPerfil = avatarSeleccionado[0];
                     gestor.cambiarAvatar(usuario, avatarTemporalPerfil);
@@ -613,7 +614,14 @@ public class PerfilScreen implements Screen{
         skin.add("white", new Texture(pixmap));
         pixmap.dispose();
 
-        BitmapFont fuente = new BitmapFont();
+        FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("fonts/GOODDC__.TTF"));
+        FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        float escala = Math.min(Gdx.graphics.getWidth() / 640f, Gdx.graphics.getHeight() / 480f);
+        param.size = Math.round(18 * escala);
+        param.characters = FreeTypeFontGenerator.DEFAULT_CHARS + "áéíóúÁÉÍÓÚñÑüÜ¡¿";
+        BitmapFont fuente = gen.generateFont(param);
+        fuente.getData().setScale(1f / escala);
+        gen.dispose();
         skin.add("default-font", fuente);
 
         Label.LabelStyle estiloLabel = new Label.LabelStyle();

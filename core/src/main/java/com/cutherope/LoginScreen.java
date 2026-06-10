@@ -13,7 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import LOGIC.LoginManager;
 
 public class LoginScreen implements Screen {
@@ -46,15 +47,13 @@ public class LoginScreen implements Screen {
     public LoginScreen(CutTheRope game) {
         this.game    = game;
         this.manager = new LoginManager();
-        this.stage   = new Stage(new ScreenViewport());
+        this.stage   = new Stage(new FitViewport(640, 480));
         this.skin    = crearSkin();
         Gdx.input.setInputProcessor(stage);
         construirMenu();
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    //  PANEL 1 — MENU
-    // ══════════════════════════════════════════════════════════════════════════
+    //panel menu
     private void construirMenu() {
         stage.clear();
 
@@ -92,9 +91,7 @@ public class LoginScreen implements Screen {
         stage.addActor(table);
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    //  PANEL 2 — LOGIN
-    // ══════════════════════════════════════════════════════════════════════════
+    //panel login
     private void construirLogin() {
         stage.clear();
 
@@ -163,9 +160,7 @@ public class LoginScreen implements Screen {
         stage.addActor(table);
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    //  PANEL 3 — CREAR JUGADOR
-    // ══════════════════════════════════════════════════════════════════════════
+    //crear jugador
    private void construirCrear() {
     stage.clear();
 
@@ -325,9 +320,7 @@ table.setFillParent(true);
     stage.addActor(scroll);
 }
     
-    // ══════════════════════════════════════════════════════════════════════════
-    //  HELPERS
-    // ══════════════════════════════════════════════════════════════════════════
+    //helpers
     private void actualizarChecks(String pass) {
         boolean lon = pass.length() >= 6;
         boolean may = pass.matches(".*[A-Z].*");
@@ -373,9 +366,7 @@ table.setFillParent(true);
         return btn;
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    //  SKIN
-    // ══════════════════════════════════════════════════════════════════════════
+    //skin
     private Skin crearSkin() {
         Skin skin = new Skin();
 
@@ -385,7 +376,14 @@ table.setFillParent(true);
         skin.add("white", new Texture(pixmap));
         pixmap.dispose();
 
-        BitmapFont font = new BitmapFont();
+        FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("fonts/GOODDC__.TTF"));
+        FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        float escala = Math.min(Gdx.graphics.getWidth() / 640f, Gdx.graphics.getHeight() / 480f);
+        param.size = Math.round(18 * escala);
+        param.characters = FreeTypeFontGenerator.DEFAULT_CHARS + "áéíóúÁÉÍÓÚñÑüÜ¡¿";
+        BitmapFont font = gen.generateFont(param);
+        font.getData().setScale(1f / escala);
+        gen.dispose();
         skin.add("default-font", font);
 
         Label.LabelStyle lblStyle = new Label.LabelStyle();
@@ -420,9 +418,7 @@ table.setFillParent(true);
         return skin;
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    //  SCREEN
-    // ══════════════════════════════════════════════════════════════════════════
+    //screen
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(FONDO.r, FONDO.g, FONDO.b, 1f);

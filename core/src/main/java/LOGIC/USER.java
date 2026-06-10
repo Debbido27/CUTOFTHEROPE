@@ -5,7 +5,7 @@ import java.time.LocalDate;
 
 public class USER {
     
-    //ATRIBUTOS JUGADOR
+    //atributos del jugador
    private String username;
    private String password;
    private String fullname;
@@ -14,7 +14,7 @@ public class USER {
    private String avatarPath;
    
    
-   //ATRIBUTOS JUEGO
+   //atributos del juego
    private int nivelActual;
    private boolean[] nivelesDesbloqueados;
    private int[] puntajesPorNivel;
@@ -24,10 +24,10 @@ public class USER {
    private int estrellasTotal;
    private int puntuacionGeneral;
    
-   //PREFERENCIAS
+   //preferencias
    private float volumen;
   
-   //Social 
+   //social
    private String[] amigos;
    
     public USER(String username, String password, String fullname) {
@@ -190,8 +190,10 @@ public class USER {
     
     @Override
     public String toString() {
-        return "Usuario: " + username + "\nNivel actual: " + nivelActual +
-               "\nPartidas jugadas: " + partidasJugadas + "\nPuntuación: " + puntuacionGeneral;
+        return "Usuario: " + username + "\nNombre: " + fullname +
+               "\nFecha de registro: " + fechaRegistro +
+               "\nNivel actual: " + nivelActual +
+               "\nPartidas jugadas: " + partidasJugadas + "\nPuntuacion: " + puntuacionGeneral;
     }
     
     

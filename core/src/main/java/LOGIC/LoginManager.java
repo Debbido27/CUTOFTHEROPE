@@ -324,9 +324,9 @@ public boolean crearUser(String username, String password, String fullname, Stri
             USER u = leerRegistro(original);
             if (new File(BASE_FOLDER + "/" + u.getUsername()).exists()) {
                 escribirRegistro(temp, u);
-                System.out.println("Conservado: " + u.getUsername()); // debug
+                System.out.println("Conservado: " + u.getUsername()); //debug
             } else {
-                System.out.println("Eliminado huérfano: " + u.getUsername()); // debug
+                System.out.println("Eliminado huérfano: " + u.getUsername()); //debug
             }
         }
         ok = true;

@@ -11,7 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import LOGIC.LoginManager;
 
 public class MenuPrincipalScreen implements Screen {
@@ -32,15 +33,13 @@ public class MenuPrincipalScreen implements Screen {
         this.juego    = juego;
         this.usuario  = usuario;
         this.gestor   = gestor;
-        this.escenario = new Stage(new ScreenViewport());
+        this.escenario = new Stage(new FitViewport(640, 480));
         this.piel      = crearPiel();
         Gdx.input.setInputProcessor(escenario);
         construirMenu();
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    //  MENU PRINCIPAL
-    // ══════════════════════════════════════════════════════════════════════════
+    //menu principal
     private void construirMenu() {
         escenario.clear();
 
@@ -62,9 +61,11 @@ public class MenuPrincipalScreen implements Screen {
         TextButton btnAjustes      = crearBoton("Ajustes",        NARANJA);
         TextButton btnCerrarSesion = crearBoton("Cerrar Sesion",  ROJO);
 
-        // TODO: implementar cada pantalla
         btnJugar.addListener(new ClickListener() {
-            public void clicked(InputEvent e, float x, float y) { /* TODO */ }
+            public void clicked(InputEvent e, float x, float y) {
+                Gdx.app.postRunnable(() ->
+                    juego.setScreen(new SeleccionNivelScreen(juego, usuario, gestor)));
+            }
         });
         btnEstadisticas.addListener(new ClickListener() {
             public void clicked(InputEvent e, float x, float y) { /* TODO */ }
@@ -102,9 +103,7 @@ public class MenuPrincipalScreen implements Screen {
         escenario.addActor(tabla);
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    //  HELPERS
-    // ══════════════════════════════════════════════════════════════════════════
+    //helpers
     private TextButton crearBoton(String texto, Color color) {
         TextButton btn = new TextButton(texto, piel);
         btn.getStyle().up   = piel.newDrawable("blanco", color);
@@ -113,9 +112,7 @@ public class MenuPrincipalScreen implements Screen {
         return btn;
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    //  PIEL
-    // ══════════════════════════════════════════════════════════════════════════
+    //piel
     private Skin crearPiel() {
         Skin skin = new Skin();
 
@@ -125,7 +122,14 @@ public class MenuPrincipalScreen implements Screen {
         skin.add("blanco", new Texture(pixmap));
         pixmap.dispose();
 
-        BitmapFont fuente = new BitmapFont();
+        FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("fonts/GOODDC__.TTF"));
+        FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        float escala = Math.min(Gdx.graphics.getWidth() / 640f, Gdx.graphics.getHeight() / 480f);
+        param.size = Math.round(18 * escala);
+        param.characters = FreeTypeFontGenerator.DEFAULT_CHARS + "áéíóúÁÉÍÓÚñÑüÜ¡¿";
+        BitmapFont fuente = gen.generateFont(param);
+        fuente.getData().setScale(1f / escala);
+        gen.dispose();
         skin.add("fuente-defecto", fuente);
 
         Label.LabelStyle estiloLabel = new Label.LabelStyle();
@@ -144,9 +148,7 @@ public class MenuPrincipalScreen implements Screen {
         return skin;
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    //  CICLO SCREEN
-    // ══════════════════════════════════════════════════════════════════════════
+    //ciclo screen
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(FONDO.r, FONDO.g, FONDO.b, 1f);
