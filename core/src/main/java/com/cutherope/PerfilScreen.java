@@ -131,95 +131,236 @@ tabla.add(btnVolver).width(260).height(38).row();
      
      
      
-      private void construirVerInfo() {
-        escenario.clear();
+            private void construirVerInfo() {
+           escenario.clear();
 
-        USER u = gestor.buscarUser(usuario);
+           Table tabla = new Table();
+           tabla.setFillParent(true);
+           tabla.center();
 
-        ScrollPane.ScrollPaneStyle spStyle = new ScrollPane.ScrollPaneStyle();
-        spStyle.background = piel.newDrawable("white", FONDO);
+           Label titulo = new Label("Informacion de Perfil", piel);
+           titulo.setFontScale(1.2f);
+           titulo.setColor(VERDE);
 
-        Table contenido = new Table();
-        contenido.center().pad(20);
+           TextButton btnDatos      = crearBoton("Datos Personales",   NARANJA);
+           TextButton btnProgreso   = crearBoton("Progreso del Juego", VERDE);
+           TextButton btnEstadist   = crearBoton("Estadisticas",       VERDE);
+           TextButton btnHistorial  = crearBoton("Historial",          VERDE);
+           TextButton btnRanking    = crearBoton("Ranking",            VERDE);
+           TextButton btnAmigos     = crearBoton("Amigos / Rivales",   VERDE);
+           TextButton btnVolver     = crearBoton("Volver al Perfil",   ROJO);
 
-        Label titulo = new Label("Informacion de Perfil", piel);
-        titulo.setFontScale(1.2f);
-        titulo.setColor(VERDE);
+           btnDatos.addListener(new ClickListener() {
+               public void clicked(InputEvent e, float x, float y) { construirVerDatos(); }
+           });
+           btnProgreso.addListener(new ClickListener() {
+               public void clicked(InputEvent e, float x, float y) { construirVerProgreso(); }
+           });
+           btnEstadist.addListener(new ClickListener() {
+               public void clicked(InputEvent e, float x, float y) { construirVerEstadisticas(); }
+           });
+           btnHistorial.addListener(new ClickListener() {
+               public void clicked(InputEvent e, float x, float y) { construirVerHistorial(); }
+           });
+           btnRanking.addListener(new ClickListener() {
+               public void clicked(InputEvent e, float x, float y) { construirVerRanking(); }
+           });
+           btnAmigos.addListener(new ClickListener() {
+               public void clicked(InputEvent e, float x, float y) { construirVerAmigos(); }
+           });
+           btnVolver.addListener(new ClickListener() {
+               public void clicked(InputEvent e, float x, float y) { construirMenuPerfil(); }
+           });
 
-        String fechaReg = (u != null)
-            ? u.getFechaRegistro().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "-";
-        long ms = (u != null) ? u.getUltimaSesion() : 0;
-        String ultimaSesion = (ms > 0)
-            ? new java.util.Date(ms).toString() : "-";
-        String avatarActual = (u != null && !u.getAvatarPath().isEmpty())
-            ? u.getAvatarPath() : "Sin avatar";
-        String nombreCompleto = (u != null) ? u.getFullname() : "-";
+           tabla.add(titulo).padBottom(20).row();
+           tabla.add(btnDatos).width(260).height(38).padBottom(8).row();
+           tabla.add(btnProgreso).width(260).height(38).padBottom(8).row();
+           tabla.add(btnEstadist).width(260).height(38).padBottom(8).row();
+           tabla.add(btnHistorial).width(260).height(38).padBottom(8).row();
+           tabla.add(btnRanking).width(260).height(38).padBottom(8).row();
+           tabla.add(btnAmigos).width(260).height(38).padBottom(20).row();
+           tabla.add(btnVolver).width(260).height(38).row();
 
-        int nivelesComp  = (u != null) ? u.getNivelesCompletados() : 0;
-        int puntuacion   = (u != null) ? u.getPuntuacionGeneral()  : 0;
-        int partidas     = (u != null) ? u.getPartidasJugadas()    : 0;
-        int fallos       = (u != null) ? u.getFallosTotales()      : 0;
-        int estrellas    = (u != null) ? u.getEstrellasTotal()      : 0;
-        long tiempoMs    = (u != null) ? u.getTiempoTotalJugado()  : 0;
-        String tiempo    = String.format("%d min %d seg",
-            (tiempoMs / 60000), (tiempoMs % 60000) / 1000);
+           escenario.addActor(tabla);
+       }
 
-        contenido.add(titulo).padBottom(20).colspan(2).center().row();
+            private void construirVerDatos() {
+           escenario.clear();
+           USER u = gestor.buscarUser(usuario);
+           Table tabla = new Table();
+           tabla.setFillParent(true);
+           tabla.center();
 
-        //separador de seccion
-        agregarSeccion(contenido, "DATOS PERSONALES");
-        agregarFila(contenido, "Nombre completo",  nombreCompleto);
-        agregarFila(contenido, "Usuario",          "@" + usuario);
-        agregarFila(contenido, "Avatar",           avatarActual);
-        agregarFila(contenido, "Fecha de registro",fechaReg);
-        agregarFila(contenido, "Ultima sesion",    ultimaSesion);
+           Label titulo = new Label("Datos Personales", piel);
+           titulo.setFontScale(1.2f);
+           titulo.setColor(VERDE);
 
-        agregarSeccion(contenido, "PROGRESO DEL JUEGO");
-        agregarFila(contenido, "Niveles completados", nivelesComp + " / 5");
-        agregarFila(contenido, "Puntuacion general",  String.valueOf(puntuacion));
-        agregarFila(contenido, "Estrellas totales",   String.valueOf(estrellas));
+           String fechaReg = (u != null)
+               ? u.getFechaRegistro().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "-";
+           long ms = (u != null) ? u.getUltimaSesion() : 0;
+           String ultimaSesion = (ms > 0) ? new java.util.Date(ms).toString() : "-";
+           String avatarActual = (u != null && !u.getAvatarPath().isEmpty()) ? u.getAvatarPath() : "Sin avatar";
+           String nombreCompleto = (u != null) ? u.getFullname() : "-";
 
-        agregarSeccion(contenido, "ESTADISTICAS");
-        agregarFila(contenido, "Partidas jugadas",    String.valueOf(partidas));
-        agregarFila(contenido, "Fallos totales",      String.valueOf(fallos));
-        agregarFila(contenido, "Tiempo total jugado", tiempo);
+           TextButton btnVolver = crearBoton("Volver", ROJO);
+           btnVolver.addListener(new ClickListener() {
+               public void clicked(InputEvent e, float x, float y) { construirVerInfo(); }
+           });
 
-        //estas secciones todavia no tienen logica implementada
-        agregarSeccion(contenido, "HISTORIAL DE PARTIDAS");
-        Label lblHistorial = new Label("] ", piel);
-        lblHistorial.setColor(GRIS);
-        contenido.add(lblHistorial).colspan(2).padBottom(10).center().row();
+           tabla.add(titulo).padBottom(16).colspan(2).center().row();
+           agregarFila(tabla, "Nombre completo",   nombreCompleto);
+           agregarFila(tabla, "Usuario",           "@" + usuario);
+           agregarFila(tabla, "Avatar",            avatarActual);
+           agregarFila(tabla, "Fecha de registro", fechaReg);
+           agregarFila(tabla, "Ultima sesion",     ultimaSesion);
+           tabla.add(btnVolver).width(240).height(36).padTop(16).colspan(2).center().row();
 
-        agregarSeccion(contenido, "RANKING GENERAL");
-        Label lblRanking = new Label(" ]", piel);
-        lblRanking.setColor(GRIS);
-        contenido.add(lblRanking).colspan(2).padBottom(10).center().row();
+           escenario.addActor(tabla);
+       }
 
-        agregarSeccion(contenido, "AMIGOS / RIVALES");
-        if (u != null && u.getAmigos().length > 0) {
-            for (String amigo : u.getAmigos()) {
-                Label lblAmigo = new Label("• " + amigo, piel);
-                lblAmigo.setColor(CAFE);
-                contenido.add(lblAmigo).colspan(2).left().padLeft(20).padBottom(4).row();
-            }
-        } else {
-            Label lblSinAmigos = new Label("Sin amigos agregados aun.", piel);
-            lblSinAmigos.setColor(GRIS);
-            contenido.add(lblSinAmigos).colspan(2).padBottom(10).center().row();
-        }
+       private void construirVerProgreso() {
+           escenario.clear();
+           USER u = gestor.buscarUser(usuario);
+           Table tabla = new Table();
+           tabla.setFillParent(true);
+           tabla.center();
 
-        TextButton btnVolver = crearBoton("Volver al Perfil", NARANJA);
-        btnVolver.addListener(new ClickListener() {
-            public void clicked(InputEvent e, float x, float y) { construirMenuPerfil(); }
-        });
-contenido.add(btnVolver).width(240).height(38).padTop(12).colspan(2).center().row();
-        ScrollPane scroll = new ScrollPane(contenido, spStyle);
-        scroll.setFillParent(true);
-        scroll.setScrollingDisabled(true, false);
+           Label titulo = new Label("Progreso del Juego", piel);
+           titulo.setFontScale(1.2f);
+           titulo.setColor(VERDE);
 
-        escenario.addActor(scroll);
-    }
-      
+           int nivelesComp = (u != null) ? u.getNivelesCompletados() : 0;
+           int puntuacion  = (u != null) ? u.getPuntuacionGeneral()  : 0;
+           int estrellas   = (u != null) ? u.getEstrellasTotal()     : 0;
+
+           TextButton btnVolver = crearBoton("Volver", ROJO);
+           btnVolver.addListener(new ClickListener() {
+               public void clicked(InputEvent e, float x, float y) { construirVerInfo(); }
+           });
+
+           tabla.add(titulo).padBottom(16).colspan(2).center().row();
+           agregarFila(tabla, "Niveles completados", nivelesComp + " / 5");
+           agregarFila(tabla, "Puntuacion general",  String.valueOf(puntuacion));
+           agregarFila(tabla, "Estrellas totales",   String.valueOf(estrellas));
+           tabla.add(btnVolver).width(240).height(36).padTop(16).colspan(2).center().row();
+
+           escenario.addActor(tabla);
+       }
+
+       private void construirVerEstadisticas() {
+           escenario.clear();
+           USER u = gestor.buscarUser(usuario);
+           Table tabla = new Table();
+           tabla.setFillParent(true);
+           tabla.center();
+
+           Label titulo = new Label("Estadisticas", piel);
+           titulo.setFontScale(1.2f);
+           titulo.setColor(VERDE);
+
+           int partidas  = (u != null) ? u.getPartidasJugadas()   : 0;
+           int fallos    = (u != null) ? u.getFallosTotales()      : 0;
+           long tiempoMs = (u != null) ? u.getTiempoTotalJugado()  : 0;
+           String tiempo = String.format("%d min %d seg", (tiempoMs / 60000), (tiempoMs % 60000) / 1000);
+
+           TextButton btnVolver = crearBoton("Volver", ROJO);
+           btnVolver.addListener(new ClickListener() {
+               public void clicked(InputEvent e, float x, float y) { construirVerInfo(); }
+           });
+
+           tabla.add(titulo).padBottom(16).colspan(2).center().row();
+           agregarFila(tabla, "Partidas jugadas",    String.valueOf(partidas));
+           agregarFila(tabla, "Fallos totales",      String.valueOf(fallos));
+           agregarFila(tabla, "Tiempo total jugado", tiempo);
+           tabla.add(btnVolver).width(240).height(36).padTop(16).colspan(2).center().row();
+
+           escenario.addActor(tabla);
+       }
+
+       private void construirVerHistorial() {
+           escenario.clear();
+           Table tabla = new Table();
+           tabla.setFillParent(true);
+           tabla.center();
+
+           Label titulo = new Label("Historial de Partidas", piel);
+           titulo.setFontScale(1.2f);
+           titulo.setColor(VERDE);
+
+           Label lblInfo = new Label("Sin historial disponible aun.", piel);
+           lblInfo.setColor(GRIS);
+
+           TextButton btnVolver = crearBoton("Volver", ROJO);
+           btnVolver.addListener(new ClickListener() {
+               public void clicked(InputEvent e, float x, float y) { construirVerInfo(); }
+           });
+
+           tabla.add(titulo).padBottom(16).row();
+           tabla.add(lblInfo).padBottom(16).row();
+           tabla.add(btnVolver).width(240).height(36).row();
+
+           escenario.addActor(tabla);
+       }
+
+       private void construirVerRanking() {
+           escenario.clear();
+           Table tabla = new Table();
+           tabla.setFillParent(true);
+           tabla.center();
+
+           Label titulo = new Label("Ranking General", piel);
+           titulo.setFontScale(1.2f);
+           titulo.setColor(VERDE);
+
+           Label lblInfo = new Label("Sin ranking disponible aun.", piel);
+           lblInfo.setColor(GRIS);
+
+           TextButton btnVolver = crearBoton("Volver", ROJO);
+           btnVolver.addListener(new ClickListener() {
+               public void clicked(InputEvent e, float x, float y) { construirVerInfo(); }
+           });
+
+           tabla.add(titulo).padBottom(16).row();
+           tabla.add(lblInfo).padBottom(16).row();
+           tabla.add(btnVolver).width(240).height(36).row();
+
+           escenario.addActor(tabla);
+       }
+
+       private void construirVerAmigos() {
+           escenario.clear();
+           USER u = gestor.buscarUser(usuario);
+           Table tabla = new Table();
+           tabla.setFillParent(true);
+           tabla.center();
+
+           Label titulo = new Label("Amigos / Rivales", piel);
+           titulo.setFontScale(1.2f);
+           titulo.setColor(VERDE);
+
+           TextButton btnVolver = crearBoton("Volver", ROJO);
+           btnVolver.addListener(new ClickListener() {
+               public void clicked(InputEvent e, float x, float y) { construirVerInfo(); }
+           });
+
+           tabla.add(titulo).padBottom(16).row();
+
+           if (u != null && u.getAmigos().length > 0) {
+               for (String amigo : u.getAmigos()) {
+                   Label lblAmigo = new Label("• " + amigo, piel);
+                   lblAmigo.setColor(CAFE);
+                   tabla.add(lblAmigo).left().padBottom(4).row();
+               }
+           } else {
+               Label lblSin = new Label("Sin amigos agregados aun.", piel);
+               lblSin.setColor(GRIS);
+               tabla.add(lblSin).padBottom(16).row();
+           }
+
+           tabla.add(btnVolver).width(240).height(36).padTop(16).row();
+
+           escenario.addActor(tabla);
+       }
       
        private void construirCambiarUsuario() {
         escenario.clear();
