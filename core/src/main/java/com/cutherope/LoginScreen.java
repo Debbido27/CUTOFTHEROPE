@@ -172,7 +172,7 @@ table.setFillParent(true);
     table.center();
 
     Label titulo = new Label("Crear Jugador", skin);
-    titulo.setFontScale(1.8f);
+    titulo.setFontScale(1.2f);
     titulo.setColor(VERDE);
 
     campoNombre    = crearCampo("Nombre Completo");
@@ -249,17 +249,17 @@ table.setFillParent(true);
     }
 });
 
-    table.add(titulo).padBottom(20).row();
-    table.add(campoNombre).width(300).height(45).padBottom(12).row();
-    table.add(campoUserCrear).width(300).height(45).padBottom(12).row();
-    table.add(campoPassCrear).width(300).height(45).padBottom(5).row();
-    table.add(chkVerPassCrear).left().width(300).padBottom(8).row();
-    table.add(checksLabel).left().width(300).padBottom(12).row();
-    table.add(lblAvatarElegido).center().padBottom(6).row();
-    table.add(btnAvatar).width(300).height(45).padBottom(12).row();
-    table.add(mensajeLabel).padBottom(10).row();
-    table.add(btnCrear).width(300).height(45).padBottom(10).row();
-    table.add(btnVolver).width(300).height(45).row();
+        table.add(titulo).padBottom(6).row();
+        table.add(campoNombre).width(260).height(32).padBottom(4).row();
+        table.add(campoUserCrear).width(260).height(32).padBottom(4).row();
+        table.add(campoPassCrear).width(260).height(32).padBottom(2).row();
+        table.add(chkVerPassCrear).left().width(260).padBottom(2).row();
+        table.add(checksLabel).left().width(260).padBottom(4).row();
+        table.add(lblAvatarElegido).center().padBottom(2).row();
+        table.add(btnAvatar).width(260).height(32).padBottom(4).row();
+        table.add(mensajeLabel).padBottom(2).row();
+        table.add(btnCrear).width(260).height(32).padBottom(4).row();
+        table.add(btnVolver).width(260).height(32).row();
 
     stage.addActor(table);
 }
@@ -379,7 +379,7 @@ table.setFillParent(true);
         FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("fonts/GOODDC__.TTF"));
         FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
         float escala = Math.min(Gdx.graphics.getWidth() / 640f, Gdx.graphics.getHeight() / 480f);
-        param.size = Math.round(18 * escala);
+        param.size = Math.round(14 * escala);
         param.characters = FreeTypeFontGenerator.DEFAULT_CHARS + "áéíóúÁÉÍÓÚñÑüÜ¡¿";
         BitmapFont font = gen.generateFont(param);
         font.getData().setScale(1f / escala);

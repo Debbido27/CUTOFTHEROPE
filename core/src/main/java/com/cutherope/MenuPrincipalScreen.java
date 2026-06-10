@@ -48,10 +48,11 @@ public class MenuPrincipalScreen implements Screen {
         tabla.center();
 
         Label titulo = new Label("Cut the Rope", piel);
-        titulo.setFontScale(2f);
+        titulo.setFontScale(1.4f);
         titulo.setColor(VERDE);
 
         Label bienvenida = new Label("Bienvenido, " + usuario + "!", piel);
+        bienvenida.setFontScale(0.9f);
         bienvenida.setColor(CAFE);
 
         TextButton btnJugar        = crearBoton("Jugar",          VERDE);
@@ -91,14 +92,14 @@ public class MenuPrincipalScreen implements Screen {
             }
         });
 
-        tabla.add(titulo).padBottom(6).row();
-        tabla.add(bienvenida).padBottom(40).row();
-        tabla.add(btnJugar).width(280).height(50).padBottom(12).row();
-        tabla.add(btnEstadisticas).width(280).height(50).padBottom(12).row();
-        tabla.add(btnRanking).width(280).height(50).padBottom(12).row();
-        tabla.add(btnAmigos).width(280).height(50).padBottom(12).row();
-        tabla.add(btnAjustes).width(280).height(50).padBottom(12).row();
-        tabla.add(btnCerrarSesion).width(280).height(50).row();
+        tabla.add(titulo).padBottom(4).row();
+tabla.add(bienvenida).padBottom(20).row();
+tabla.add(btnJugar).width(260).height(38).padBottom(8).row();
+tabla.add(btnEstadisticas).width(260).height(38).padBottom(8).row();
+tabla.add(btnRanking).width(260).height(38).padBottom(8).row();
+tabla.add(btnAmigos).width(260).height(38).padBottom(8).row();
+tabla.add(btnAjustes).width(260).height(38).padBottom(8).row();
+tabla.add(btnCerrarSesion).width(260).height(38).row();
 
         escenario.addActor(tabla);
     }
@@ -125,7 +126,7 @@ public class MenuPrincipalScreen implements Screen {
         FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("fonts/GOODDC__.TTF"));
         FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
         float escala = Math.min(Gdx.graphics.getWidth() / 640f, Gdx.graphics.getHeight() / 480f);
-        param.size = Math.round(18 * escala);
+        param.size = Math.round(14 * escala);
         param.characters = FreeTypeFontGenerator.DEFAULT_CHARS + "áéíóúÁÉÍÓÚñÑüÜ¡¿";
         BitmapFont fuente = gen.generateFont(param);
         fuente.getData().setScale(1f / escala);

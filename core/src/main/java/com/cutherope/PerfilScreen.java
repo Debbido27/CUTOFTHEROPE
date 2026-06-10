@@ -20,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -71,7 +72,7 @@ public class PerfilScreen implements Screen{
          tabla.center();
          
          Label titulo = new Label("Mi perfil", piel);
-         titulo.setFontScale(2f);
+         titulo.setFontScale(1.4f);
          titulo.setColor(VERDE);
          
           USER u = gestor.buscarUser(usuario);
@@ -113,14 +114,15 @@ public class PerfilScreen implements Screen{
             }
         });
         
-        tabla.add(titulo).padBottom(4).row();
-        tabla.add(subUsuario).padBottom(4).row();
-        if (imgAvatarPerfil != null)
-        tabla.add(imgAvatarPerfil).width(80).height(80).padBottom(10).row();        tabla.add(btnVerInfo).width(280).height(50).padBottom(12).row();
-        tabla.add(btnCambiarUser).width(280).height(50).padBottom(12).row();
-        tabla.add(btnCambiarPass).width(280).height(50).padBottom(12).row();
-        tabla.add(btnCambiarAvatar).width(280).height(50).padBottom(12).row();
-        tabla.add(btnVolver).width(280).height(50).row();
+        tabla.add(titulo).padBottom(2).row();
+tabla.add(subUsuario).padBottom(2).row();
+if (imgAvatarPerfil != null)
+    tabla.add(imgAvatarPerfil).width(60).height(60).padBottom(6).row();
+tabla.add(btnVerInfo).width(260).height(38).padBottom(8).row();
+tabla.add(btnCambiarUser).width(260).height(38).padBottom(8).row();
+tabla.add(btnCambiarPass).width(260).height(38).padBottom(8).row();
+tabla.add(btnCambiarAvatar).width(260).height(38).padBottom(8).row();
+tabla.add(btnVolver).width(260).height(38).row();
 
         escenario.addActor(tabla);
      
@@ -141,7 +143,7 @@ public class PerfilScreen implements Screen{
         contenido.center().pad(20);
 
         Label titulo = new Label("Informacion de Perfil", piel);
-        titulo.setFontScale(1.8f);
+        titulo.setFontScale(1.2f);
         titulo.setColor(VERDE);
 
         String fechaReg = (u != null)
@@ -210,8 +212,7 @@ public class PerfilScreen implements Screen{
         btnVolver.addListener(new ClickListener() {
             public void clicked(InputEvent e, float x, float y) { construirMenuPerfil(); }
         });
-        contenido.add(btnVolver).width(280).height(50).padTop(20).colspan(2).center().row();
-
+contenido.add(btnVolver).width(240).height(38).padTop(12).colspan(2).center().row();
         ScrollPane scroll = new ScrollPane(contenido, spStyle);
         scroll.setFillParent(true);
         scroll.setScrollingDisabled(true, false);
@@ -228,7 +229,7 @@ public class PerfilScreen implements Screen{
         tabla.center();
 
         Label titulo = new Label("Cambiar Usuario", piel);
-        titulo.setFontScale(1.8f);
+        titulo.setFontScale(1.2f);
         titulo.setColor(VERDE);
 
         Label lblPass = crearLabel("Confirma tu contrasena");
@@ -299,16 +300,16 @@ public class PerfilScreen implements Screen{
             public void clicked(InputEvent e, float x, float y) { construirMenuPerfil(); }
         });
 
-        tabla.add(titulo).padBottom(30).row();
-        tabla.add(lblPass).left().width(300).padBottom(4).row();
-        tabla.add(campoPass).width(300).height(45).padBottom(5).row();
-        tabla.add(chkVer).left().width(300).padBottom(15).row();
-        tabla.add(lblNuevo).left().width(300).padBottom(4).row();
-        tabla.add(campoNuevoUser).width(300).height(45).padBottom(15).row();
-        tabla.add(mensaje).padBottom(10).row();
-        tabla.add(btnValidar).width(300).height(45).padBottom(10).row();
-        tabla.add(btnGuardar).width(300).height(45).padBottom(10).row();
-        tabla.add(btnVolver).width(300).height(45).row();
+    tabla.add(titulo).padBottom(16).row();
+tabla.add(lblPass).left().width(280).padBottom(2).row();
+tabla.add(campoPass).width(280).height(36).padBottom(3).row();
+tabla.add(chkVer).left().width(280).padBottom(8).row();
+tabla.add(lblNuevo).left().width(280).padBottom(2).row();
+tabla.add(campoNuevoUser).width(280).height(36).padBottom(8).row();
+tabla.add(mensaje).padBottom(6).row();
+tabla.add(btnValidar).width(280).height(36).padBottom(6).row();
+tabla.add(btnGuardar).width(280).height(36).padBottom(6).row();
+tabla.add(btnVolver).width(280).height(36).row();
 
         escenario.addActor(tabla);
     }
@@ -323,7 +324,7 @@ public class PerfilScreen implements Screen{
         tabla.center();
 
         Label titulo = new Label("Cambiar Contrasena", piel);
-        titulo.setFontScale(1.8f);
+        titulo.setFontScale(1.2f);
         titulo.setColor(VERDE);
 
         Label lblActual = crearLabel("Contrasena actual");
@@ -404,17 +405,17 @@ public class PerfilScreen implements Screen{
             public void clicked(InputEvent e, float x, float y) { construirMenuPerfil(); }
         });
 
-        tabla.add(titulo).padBottom(30).row();
-        tabla.add(lblActual).left().width(300).padBottom(4).row();
-        tabla.add(campoActual).width(300).height(45).padBottom(5).row();
-        tabla.add(chkVer).left().width(300).padBottom(15).row();
-        tabla.add(lblNueva).left().width(300).padBottom(4).row();
-        tabla.add(campoNueva).width(300).height(45).padBottom(5).row();
-        tabla.add(checksLabel).left().width(300).padBottom(12).row();
-        tabla.add(mensaje).padBottom(10).row();
-        tabla.add(btnValidar).width(300).height(45).padBottom(10).row();
-        tabla.add(btnGuardar).width(300).height(45).padBottom(10).row();
-        tabla.add(btnVolver).width(300).height(45).row();
+       tabla.add(titulo).padBottom(16).row();
+tabla.add(lblActual).left().width(280).padBottom(2).row();
+tabla.add(campoActual).width(280).height(36).padBottom(3).row();
+tabla.add(chkVer).left().width(280).padBottom(8).row();
+tabla.add(lblNueva).left().width(280).padBottom(2).row();
+tabla.add(campoNueva).width(280).height(36).padBottom(3).row();
+tabla.add(checksLabel).left().width(280).padBottom(8).row();
+tabla.add(mensaje).padBottom(6).row();
+tabla.add(btnValidar).width(280).height(36).padBottom(6).row();
+tabla.add(btnGuardar).width(280).height(36).padBottom(6).row();
+tabla.add(btnVolver).width(280).height(36).row();
 
         escenario.addActor(tabla);
     }
@@ -429,7 +430,7 @@ public class PerfilScreen implements Screen{
     tabla.center();
 
     Label titulo = new Label("Cambiar Avatar", piel);
-    titulo.setFontScale(1.8f);
+    titulo.setFontScale(1.2f);
     titulo.setColor(VERDE);
 
     Label lblPass = crearLabel("Confirma tu contrasena");
@@ -478,13 +479,13 @@ public class PerfilScreen implements Screen{
         }
     });
 
-    tabla.add(titulo).padBottom(30).row();
-    tabla.add(lblPass).left().width(300).padBottom(4).row();
-    tabla.add(campoPass).width(300).height(45).padBottom(5).row();
-    tabla.add(chkVer).left().width(300).padBottom(15).row();
-    tabla.add(mensaje).padBottom(10).row();
-    tabla.add(btnValidar).width(300).height(45).padBottom(10).row();
-    tabla.add(btnVolver).width(300).height(45).row();
+ tabla.add(titulo).padBottom(16).row();
+tabla.add(lblPass).left().width(280).padBottom(2).row();
+tabla.add(campoPass).width(280).height(36).padBottom(3).row();
+tabla.add(chkVer).left().width(280).padBottom(8).row();
+tabla.add(mensaje).padBottom(6).row();
+tabla.add(btnValidar).width(280).height(36).padBottom(6).row();
+tabla.add(btnVolver).width(280).height(36).row();
 
     escenario.addActor(tabla);
 }
@@ -617,7 +618,7 @@ public class PerfilScreen implements Screen{
         FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("fonts/GOODDC__.TTF"));
         FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
         float escala = Math.min(Gdx.graphics.getWidth() / 640f, Gdx.graphics.getHeight() / 480f);
-        param.size = Math.round(18 * escala);
+        param.size = Math.round(14 * escala);
         param.characters = FreeTypeFontGenerator.DEFAULT_CHARS + "áéíóúÁÉÍÓÚñÑüÜ¡¿";
         BitmapFont fuente = gen.generateFont(param);
         fuente.getData().setScale(1f / escala);
