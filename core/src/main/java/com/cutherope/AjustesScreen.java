@@ -1,36 +1,36 @@
 
-package com.cutherope;
+        package com.cutherope;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import LOGIC.LoginManager;
+        import com.badlogic.gdx.Gdx;
+        import com.badlogic.gdx.Screen;
+        import com.badlogic.gdx.graphics.Color;
+        import com.badlogic.gdx.graphics.GL20;
+        import com.badlogic.gdx.graphics.Pixmap;
+        import com.badlogic.gdx.graphics.Texture;
+        import com.badlogic.gdx.graphics.g2d.BitmapFont;
+        import com.badlogic.gdx.scenes.scene2d.InputEvent;
+        import com.badlogic.gdx.scenes.scene2d.Stage;
+        import com.badlogic.gdx.scenes.scene2d.ui.*;
+        import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+        import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+        import com.badlogic.gdx.utils.viewport.FitViewport;
+        import LOGIC.LoginManager;
 
-public class AjustesScreen implements Screen {
+        public class AjustesScreen implements Screen {
 
-    private CutTheRope   juego;
-    private String       usuario;
-    private LoginManager gestor;
-    private Stage        escenario;
-    private Skin         piel;
+        private CutTheRope   juego;
+        private String       usuario;
+        private LoginManager gestor;
+        private Stage        escenario;
+        private Skin         piel;
 
-    private final Color FONDO   = new Color(0.96f, 0.92f, 0.82f, 1f);
-    private final Color VERDE   = new Color(0.33f, 0.59f, 0.31f, 1f);
-    private final Color CAFE    = new Color(0.23f, 0.16f, 0.08f, 1f);
-    private final Color NARANJA = new Color(0.78f, 0.63f, 0.31f, 1f);
-    private final Color ROJO    = new Color(0.70f, 0.27f, 0.20f, 1f);
+        private final Color FONDO   = new Color(0.96f, 0.92f, 0.82f, 1f);
+        private final Color VERDE   = new Color(0.33f, 0.59f, 0.31f, 1f);
+        private final Color CAFE    = new Color(0.23f, 0.16f, 0.08f, 1f);
+        private final Color NARANJA = new Color(0.78f, 0.63f, 0.31f, 1f);
+        private final Color ROJO    = new Color(0.70f, 0.27f, 0.20f, 1f);
 
-    public AjustesScreen(CutTheRope juego, String usuario, LoginManager gestor) {
+        public AjustesScreen(CutTheRope juego, String usuario, LoginManager gestor) {
         this.juego     = juego;
         this.usuario   = usuario;
         this.gestor    = gestor;
@@ -43,7 +43,6 @@ public class AjustesScreen implements Screen {
         tabla.center();
 
         Label titulo = new Label("Ajustes", piel);
-        titulo.setFontScale(2f);
         titulo.setColor(VERDE);
 
         TextButton btnPerfil       = crearBoton("Perfil",       VERDE);
@@ -51,17 +50,17 @@ public class AjustesScreen implements Screen {
         TextButton btnVolver       = crearBoton("Volver",       ROJO);
 
         btnPerfil.addListener(new ClickListener() {
-            public void clicked(InputEvent e, float x, float y) {
-                Gdx.app.postRunnable(() -> juego.setScreen(new PerfilScreen(juego, usuario, gestor)));
-            }
+        public void clicked(InputEvent e, float x, float y) {
+            Gdx.app.postRunnable(() -> juego.setScreen(new PerfilScreen(juego, usuario, gestor)));
+        }
         });
         btnPreferencias.addListener(new ClickListener() {
-            public void clicked(InputEvent e, float x, float y) { /*TODO: pantalla de preferencias*/ }
+        public void clicked(InputEvent e, float x, float y) { /*TODO: pantalla de preferencias*/ }
         });
         btnVolver.addListener(new ClickListener() {
-            public void clicked(InputEvent e, float x, float y) {
-                Gdx.app.postRunnable(() -> juego.setScreen(new MenuPrincipalScreen(juego, usuario, gestor)));
-            }
+        public void clicked(InputEvent e, float x, float y) {
+            Gdx.app.postRunnable(() -> juego.setScreen(new MenuPrincipalScreen(juego, usuario, gestor)));
+        }
         });
 
         tabla.add(titulo).padBottom(40).row();
@@ -69,17 +68,17 @@ public class AjustesScreen implements Screen {
         tabla.add(btnPreferencias).width(280).height(50).padBottom(12).row();
         tabla.add(btnVolver).width(280).height(50).row();
         escenario.addActor(tabla);
-    }
+        }
 
-    private TextButton crearBoton(String texto, Color color) {
+        private TextButton crearBoton(String texto, Color color) {
         TextButton btn = new TextButton(texto, piel);
         btn.getStyle().up   = piel.newDrawable("white", color);
         btn.getStyle().down = piel.newDrawable("white", color.cpy().mul(0.8f, 0.8f, 0.8f, 1f));
         btn.getStyle().over = piel.newDrawable("white", color.cpy().mul(1.1f, 1.1f, 1.1f, 1f));
         return btn;
-    }
+        }
 
-    private Skin crearPiel() {
+        private Skin crearPiel() {
         Skin skin = new Skin();
         Pixmap px = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         px.setColor(Color.WHITE); px.fill();
@@ -91,8 +90,21 @@ public class AjustesScreen implements Screen {
         param.characters = FreeTypeFontGenerator.DEFAULT_CHARS + "áéíóúÁÉÍÓÚñÑüÜ¡¿";
         BitmapFont f = gen.generateFont(param);
         f.getData().setScale(1f / escala);
-        gen.dispose();
         skin.add("default-font", f);
+        FreeTypeFontGenerator.FreeTypeFontParameter paramTitulo = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        paramTitulo.size = Math.round(50 * escala);
+        paramTitulo.characters = FreeTypeFontGenerator.DEFAULT_CHARS + "áéíóúÁÉÍÓÚñÑüÜ¡¿";
+        BitmapFont fuenteTitulo = gen.generateFont(paramTitulo);
+        fuenteTitulo.getData().setScale(1f / escala);
+        gen.dispose();
+
+        skin.add("font-titulo", fuenteTitulo);
+
+        Label.LabelStyle estiloTitulo = new Label.LabelStyle();
+        estiloTitulo.font = fuenteTitulo;
+        estiloTitulo.fontColor = CAFE;
+        skin.add("titulo", estiloTitulo);
+
         Label.LabelStyle ls = new Label.LabelStyle(); ls.font = f; ls.fontColor = CAFE;
         skin.add("default", ls);
         TextButton.TextButtonStyle bs = new TextButton.TextButtonStyle();
@@ -102,17 +114,17 @@ public class AjustesScreen implements Screen {
         bs.over = skin.newDrawable("white", VERDE.cpy().mul(1.1f, 1.1f, 1.1f, 1f));
         skin.add("default", bs);
         return skin;
-    }
+        }
 
-    @Override public void render(float delta) {
+        @Override public void render(float delta) {
         Gdx.gl.glClearColor(FONDO.r, FONDO.g, FONDO.b, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         escenario.act(delta); escenario.draw();
-    }
-    @Override public void resize(int w, int h) { escenario.getViewport().update(w, h, true); }
-    @Override public void show()    { Gdx.input.setInputProcessor(escenario); }
-    @Override public void pause()   {}
-    @Override public void resume()  {}
-    @Override public void hide()    {}
-    @Override public void dispose() { escenario.dispose(); piel.dispose(); }
-}
+        }
+        @Override public void resize(int w, int h) { escenario.getViewport().update(w, h, true); }
+        @Override public void show()    { Gdx.input.setInputProcessor(escenario); }
+        @Override public void pause()   {}
+        @Override public void resume()  {}
+        @Override public void hide()    {}
+        @Override public void dispose() { escenario.dispose(); piel.dispose(); }
+        }

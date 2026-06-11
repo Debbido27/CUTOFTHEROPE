@@ -1,60 +1,60 @@
-package com.cutherope;
+        package com.cutherope;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import LOGIC.LoginManager;
+        import com.badlogic.gdx.Gdx;
+        import com.badlogic.gdx.Screen;
+        import com.badlogic.gdx.graphics.Color;
+        import com.badlogic.gdx.graphics.GL20;
+        import com.badlogic.gdx.graphics.Pixmap;
+        import com.badlogic.gdx.graphics.Texture;
+        import com.badlogic.gdx.graphics.g2d.BitmapFont;
+        import com.badlogic.gdx.scenes.scene2d.Actor;
+        import com.badlogic.gdx.scenes.scene2d.InputEvent;
+        import com.badlogic.gdx.scenes.scene2d.Stage;
+        import com.badlogic.gdx.scenes.scene2d.ui.*;
+        import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+        import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+        import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+        import com.badlogic.gdx.utils.viewport.FitViewport;
+        import LOGIC.LoginManager;
 
-public class LoginScreen implements Screen {
+        public class LoginScreen implements Screen {
 
-    private CutTheRope game;
-    private Stage stage;
-    private LoginManager manager;
-    private Skin skin;
- 
-    private final Color FONDO   = new Color(0.96f, 0.92f, 0.82f, 1f);
-    private final Color VERDE   = new Color(0.33f, 0.59f, 0.31f, 1f);
-    private final Color CAFE    = new Color(0.23f, 0.16f, 0.08f, 1f);
-    private final Color NARANJA = new Color(0.78f, 0.63f, 0.31f, 1f);
-    private final Color ROJO    = new Color(0.70f, 0.27f, 0.20f, 1f);
-    private static final String DEFAULT_AVATAR = "AVATARS/X1.png";
-    private String avatarTemporal = DEFAULT_AVATAR;
-    private static final String[][] CATEGORIAS = {
-    { "Dragon Ball",       "AVATARS/DRAGON",      "D1","D2","D3","D4" },
-    { "Rapidos y Furiosos","AVATARS/FNR",          "R1","R2","R3","R4","R5" },
-    { "Invincible",        "AVATARS/INVINCIBLE",   "I1","I2","I3","I4" },
-    { "Transformers",      "AVATARS/TRANSFORMER",  "T1","T2","T3","T4" },
-    { "Futbol",            "AVATARS/futbol",        "F1","F2","F3","F4" }
-};
-    
-    private Label mensajeLabel;
-    private Label checksLabel;
-    private TextField campoUser, campoPass;
-    private TextField campoNombre, campoUserCrear, campoPassCrear;
+        private CutTheRope game;
+        private Stage stage;
+        private LoginManager manager;
+        private Skin skin;
+        private int categoriaActual = 0;
+        private final Color FONDO   = new Color(0.96f, 0.92f, 0.82f, 1f);
+        private final Color VERDE   = new Color(0.33f, 0.59f, 0.31f, 1f);
+        private final Color CAFE    = new Color(0.23f, 0.16f, 0.08f, 1f);
+        private final Color NARANJA = new Color(0.78f, 0.63f, 0.31f, 1f);
+        private final Color ROJO    = new Color(0.70f, 0.27f, 0.20f, 1f);
+        private static final String DEFAULT_AVATAR = "AVATARS/X1.png";
+        private String avatarTemporal = DEFAULT_AVATAR;
+        private static final String[][] CATEGORIAS = {
+        { "Dragon Ball",       "AVATARS/DRAGON",      "D1","D2","D3","D4" },
+        { "Rapidos y Furiosos","AVATARS/FNR",          "R1","R2","R3","R4","R5" },
+        { "Invincible",        "AVATARS/INVINCIBLE",   "I1","I2","I3","I4" },
+        { "Transformers",      "AVATARS/TRANSFORMER",  "T1","T2","T3","T4" },
+        { "Futbol",            "AVATARS/futbol",        "F1","F2","F3","F4" }
+        };
 
-    public LoginScreen(CutTheRope game) {
+        private Label mensajeLabel;
+        private Label checksLabel;
+        private TextField campoUser, campoPass;
+        private TextField campoNombre, campoUserCrear, campoPassCrear;
+
+        public LoginScreen(CutTheRope game) {
         this.game    = game;
         this.manager = new LoginManager();
         this.stage   = new Stage(new FitViewport(640, 480));
         this.skin    = crearSkin();
         Gdx.input.setInputProcessor(stage);
         construirMenu();
-    }
+        }
 
-    //panel menu
-    private void construirMenu() {
+        
+        private void construirMenu() {
         stage.clear();
 
           Table table = new Table();
@@ -62,7 +62,6 @@ public class LoginScreen implements Screen {
         table.center();
 
         Label titulo = new Label("Cut the Rope", skin);
-        titulo.setFontScale(2f);
         titulo.setColor(VERDE);
 
         Label sub = new Label("Alimenta a Om Nom!", skin);
@@ -89,10 +88,10 @@ public class LoginScreen implements Screen {
         table.add(btnSalir).width(280).height(50).row();
 
         stage.addActor(table);
-    }
+        }
 
-    //panel login
-    private void construirLogin() {
+        
+        private void construirLogin() {
         stage.clear();
 
         Table table = new Table();
@@ -100,7 +99,6 @@ public class LoginScreen implements Screen {
         table.center();
 
         Label titulo = new Label("Iniciar Sesion", skin);
-        titulo.setFontScale(1.8f);
         titulo.setColor(VERDE);
 
         campoUser = crearCampo("Usuario");
@@ -158,52 +156,51 @@ public class LoginScreen implements Screen {
         table.add(btnVolver).width(300).height(45).row();
 
         stage.addActor(table);
-    }
+        }
 
-    //crear jugador
-   private void construirCrear() {
-    stage.clear();
+       
+        private void construirCrear() {
+        stage.clear();
 
-    final String[] avatarSeleccionado = { avatarTemporal };
+        final String[] avatarSeleccionado = { avatarTemporal };
 
-final Table[] tableRef = { new Table() };
-Table table = tableRef[0];
-table.setFillParent(true);
-    table.center();
+        final Table[] tableRef = { new Table() };
+        Table table = tableRef[0];
+        table.setFillParent(true);
+        table.center();
 
-    Label titulo = new Label("Crear Jugador", skin);
-    titulo.setFontScale(1.2f);
-    titulo.setColor(VERDE);
+        Label titulo = new Label("Crear Jugador", skin);
+        titulo.setColor(VERDE);
 
-    campoNombre    = crearCampo("Nombre Completo");
-    campoUserCrear = crearCampo("Usuario");
-    campoPassCrear = crearCampo("Contrasena");
-    campoPassCrear.setPasswordMode(true);
-    campoPassCrear.setPasswordCharacter('*');
+        campoNombre    = crearCampo("Nombre Completo");
+        campoUserCrear = crearCampo("Usuario");
+        campoPassCrear = crearCampo("Contrasena");
+        campoPassCrear.setPasswordMode(true);
+        campoPassCrear.setPasswordCharacter('*');
 
-    CheckBox chkVerPassCrear = new CheckBox(" Ver contrasena", skin);
-    chkVerPassCrear.addListener(new ChangeListener() {
+        CheckBox chkVerPassCrear = new CheckBox(" Ver contrasena", skin);
+        chkVerPassCrear.addListener(new ChangeListener() {
         public void changed(ChangeEvent event, Actor actor) {
             campoPassCrear.setPasswordMode(!chkVerPassCrear.isChecked());
         }
-    });
+        });
 
-    checksLabel = new Label(
+        checksLabel = new Label(
         "X  Min 6 caracteres\nX  Una mayuscula\nX  Una minuscula\nX  Un numero", skin);
-    checksLabel.setColor(ROJO);
+        checksLabel.setColor(ROJO);
 
-    campoPassCrear.addListener(new ChangeListener() {
+        campoPassCrear.addListener(new ChangeListener() {
         public void changed(ChangeEvent event, Actor actor) {
             actualizarChecks(campoPassCrear.getText());
         }
-    });
+        });
 
-    Label lblAvatarElegido = new Label("Avatar: default", skin);
-    lblAvatarElegido.setColor(CAFE);
+        Label lblAvatarElegido = new Label("Avatar: default", skin);
+        lblAvatarElegido.setColor(CAFE);
 
-    TextButton btnAvatar = crearBoton("Elegir Avatar", NARANJA);
-    btnAvatar.addListener(new ClickListener() {
-    public void clicked(InputEvent e, float x, float y) {
+        TextButton btnAvatar = crearBoton("Elegir Avatar", NARANJA);
+        btnAvatar.addListener(new ClickListener() {
+        public void clicked(InputEvent e, float x, float y) {
         construirPanelAvatares(avatarSeleccionado, () -> {
             avatarTemporal = avatarSeleccionado[0];
             String nombre = avatarTemporal;
@@ -212,16 +209,16 @@ table.setFillParent(true);
             stage.clear();
             stage.addActor(table);
         });
-    }
-});
+        }
+        });
 
-    mensajeLabel = new Label("", skin);
-    mensajeLabel.setColor(ROJO);
+        mensajeLabel = new Label("", skin);
+        mensajeLabel.setColor(ROJO);
 
-    TextButton btnCrear  = crearBoton("Crear",  VERDE);
-    TextButton btnVolver = crearBoton("Volver", NARANJA);
+        TextButton btnCrear  = crearBoton("Crear",  VERDE);
+        TextButton btnVolver = crearBoton("Volver", NARANJA);
 
-    btnCrear.addListener(new ClickListener() {
+        btnCrear.addListener(new ClickListener() {
         public void clicked(InputEvent e, float x, float y) {
             String nombre = campoNombre.getText().trim();
             String user   = campoUserCrear.getText().trim();
@@ -240,14 +237,14 @@ table.setFillParent(true);
                 mostrarError("Error al crear jugador.");
             }
         }
-    });
+        });
 
-   btnVolver.addListener(new ClickListener() {
-    public void clicked(InputEvent e, float x, float y) {
+        btnVolver.addListener(new ClickListener() {
+        public void clicked(InputEvent e, float x, float y) {
         avatarTemporal = DEFAULT_AVATAR;
         construirMenu();
-    }
-});
+        }
+        });
 
         table.add(titulo).padBottom(6).row();
         table.add(campoNombre).width(260).height(32).padBottom(4).row();
@@ -261,67 +258,91 @@ table.setFillParent(true);
         table.add(btnCrear).width(260).height(32).padBottom(4).row();
         table.add(btnVolver).width(260).height(32).row();
 
-    stage.addActor(table);
-}
-    
-    private void construirPanelAvatares(String[] avatarSeleccionado, Runnable alVolver) {
-    stage.clear();
+        stage.addActor(table);
+        }
 
-    Table contenido = new Table();
-    contenido.top().pad(20);
+        private void construirPanelAvatares(String[] avatarSeleccionado, Runnable alVolver) {
+        stage.clear();
 
-    Label titulo = new Label("Elige tu Avatar", skin);
-    titulo.setFontScale(1.8f);
-    titulo.setColor(VERDE);
-    contenido.add(titulo).colspan(10).center().padBottom(20).row();
+        Table tabla = new Table();
+        tabla.setFillParent(true);
+        tabla.center();
 
-    for (String[] cat : CATEGORIAS) {
+        String[] cat     = CATEGORIAS[categoriaActual];
         String nombreCat = cat[0];
         String carpeta   = cat[1];
 
+        Label titulo = new Label("Elige tu Avatar", skin);
+        titulo.setColor(VERDE);
+
         Label lblCat = new Label(nombreCat, skin);
-        lblCat.setFontScale(1.3f);
         lblCat.setColor(NARANJA);
-        contenido.add(lblCat).colspan(10).left().padTop(16).padBottom(8).row();
 
-        Table fila = new Table();
+        Label lblPagina = new Label((categoriaActual + 1) + " / " + CATEGORIAS.length, skin);
+        lblPagina.setColor(CAFE);
+
+        Table filaAvatares = new Table();
         for (int i = 2; i < cat.length; i++) {
-            String archivo = cat[i] + ".png";
-            String ruta    = carpeta + "/" + archivo;
-            if (!Gdx.files.internal(ruta).exists()) continue;
+        String ruta = carpeta + "/" + cat[i] + ".png";
+        if (!Gdx.files.internal(ruta).exists()) continue;
 
-            Texture tex    = new Texture(Gdx.files.internal(ruta));
-            com.badlogic.gdx.scenes.scene2d.ui.Image img =
-                new com.badlogic.gdx.scenes.scene2d.ui.Image(tex);
+        Texture tex = new Texture(Gdx.files.internal(ruta));
+        tex.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        com.badlogic.gdx.scenes.scene2d.ui.Image img =
+            new com.badlogic.gdx.scenes.scene2d.ui.Image(tex);
 
-            img.addListener(new ClickListener() {
-                public void clicked(InputEvent e, float x, float y) {
-                    avatarSeleccionado[0] = ruta;
-                    alVolver.run();
-                }
-            });
-            fila.add(img).width(70).height(70).pad(6);
+        img.addListener(new ClickListener() {
+            public void clicked(InputEvent e, float x, float y) {
+                avatarSeleccionado[0] = ruta;
+                categoriaActual = 0;
+                alVolver.run();
+            }
+        });
+        filaAvatares.add(img).width(70).height(70).pad(8);
         }
-        contenido.add(fila).colspan(10).left().row();
-    }
 
-    TextButton btnVolver = crearBoton("Cancelar", ROJO);
-    btnVolver.addListener(new ClickListener() {
-        public void clicked(InputEvent e, float x, float y) { alVolver.run(); }
-    });
-    contenido.add(btnVolver).width(280).height(50).padTop(20).colspan(10).center().row();
+        TextButton btnAnterior  = crearBoton("< Anterior",  NARANJA);
+        TextButton btnSiguiente = crearBoton("Siguiente >", NARANJA);
+        TextButton btnCancelar  = crearBoton("Cancelar",    ROJO);
 
-    ScrollPane.ScrollPaneStyle spStyle = new ScrollPane.ScrollPaneStyle();
-    spStyle.background = skin.newDrawable("white", FONDO);
-    ScrollPane scroll = new ScrollPane(contenido, spStyle);
-    scroll.setFillParent(true);
-    scroll.setScrollingDisabled(true, false);
+        btnAnterior.setVisible(categoriaActual > 0);
+        btnSiguiente.setVisible(categoriaActual < CATEGORIAS.length - 1);
 
-    stage.addActor(scroll);
-}
-    
-    //helpers
-    private void actualizarChecks(String pass) {
+        btnAnterior.addListener(new ClickListener() {
+        public void clicked(InputEvent e, float x, float y) {
+            categoriaActual--;
+            construirPanelAvatares(avatarSeleccionado, alVolver);
+        }
+        });
+        btnSiguiente.addListener(new ClickListener() {
+        public void clicked(InputEvent e, float x, float y) {
+            categoriaActual++;
+            construirPanelAvatares(avatarSeleccionado, alVolver);
+        }
+        });
+        btnCancelar.addListener(new ClickListener() {
+        public void clicked(InputEvent e, float x, float y) {
+            categoriaActual = 0;
+            alVolver.run();
+        }
+        });
+
+        Table filaBotones = new Table();
+        filaBotones.add(btnAnterior).width(140).height(36).padRight(10);
+        filaBotones.add(btnSiguiente).width(140).height(36);
+
+        tabla.add(titulo).padBottom(10).row();
+        tabla.add(lblCat).padBottom(10).row();
+        tabla.add(filaAvatares).padBottom(10).row();
+        tabla.add(lblPagina).padBottom(10).row();
+        tabla.add(filaBotones).padBottom(16).row();
+        tabla.add(btnCancelar).width(200).height(36).row();
+
+        stage.addActor(tabla);
+        }
+
+        
+        private void actualizarChecks(String pass) {
         boolean lon = pass.length() >= 6;
         boolean may = pass.matches(".*[A-Z].*");
         boolean min = pass.matches(".*[a-z].*");
@@ -333,41 +354,41 @@ table.setFillParent(true);
             (num ? "OK " : "X  ") + "Un numero"
         );
         checksLabel.setColor(lon && may && min && num ? VERDE : ROJO);
-    }
+        }
 
-    private boolean validarPass(String pass) {
+        private boolean validarPass(String pass) {
         return pass.length() >= 6
             && pass.matches(".*[A-Z].*")
             && pass.matches(".*[a-z].*")
             && pass.matches(".*[0-9].*");
-    }
+        }
 
-    private void mostrarError(String msg) {
+        private void mostrarError(String msg) {
         mensajeLabel.setColor(ROJO);
         mensajeLabel.setText(msg);
-    }
+        }
 
-    private void mostrarExito(String msg) {
+        private void mostrarExito(String msg) {
         mensajeLabel.setColor(VERDE);
         mensajeLabel.setText(msg);
-    }
+        }
 
-    private TextField crearCampo(String placeholder) {
+        private TextField crearCampo(String placeholder) {
         TextField campo = new TextField("", skin);
         campo.setMessageText(placeholder);
         return campo;
-    }
+        }
 
-    private TextButton crearBoton(String texto, Color color) {
+        private TextButton crearBoton(String texto, Color color) {
         TextButton btn = new TextButton(texto, skin);
         btn.getStyle().up   = skin.newDrawable("white", color);
         btn.getStyle().down = skin.newDrawable("white", color.cpy().mul(0.8f, 0.8f, 0.8f, 1f));
         btn.getStyle().over = skin.newDrawable("white", color.cpy().mul(1.1f, 1.1f, 1.1f, 1f));
         return btn;
-    }
+        }
 
-    //skin
-    private Skin crearSkin() {
+        
+        private Skin crearSkin() {
         Skin skin = new Skin();
 
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
@@ -383,8 +404,23 @@ table.setFillParent(true);
         param.characters = FreeTypeFontGenerator.DEFAULT_CHARS + "áéíóúÁÉÍÓÚñÑüÜ¡¿";
         BitmapFont font = gen.generateFont(param);
         font.getData().setScale(1f / escala);
+         FreeTypeFontGenerator.FreeTypeFontParameter paramTitulo = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        paramTitulo.size = Math.round(200 * escala);
+        paramTitulo.characters = FreeTypeFontGenerator.DEFAULT_CHARS + "áéíóúÁÉÍÓÚñÑüÜ¡¿";
+        BitmapFont fuenteTitulo = gen.generateFont(paramTitulo);
+        fuenteTitulo.getData().setScale(1f / escala);
         gen.dispose();
+
+        skin.add("font-titulo", fuenteTitulo);
+
+        Label.LabelStyle estiloTitulo = new Label.LabelStyle();
+        estiloTitulo.font = fuenteTitulo;
+        estiloTitulo.fontColor = CAFE;
+        skin.add("titulo", estiloTitulo);
         skin.add("default-font", font);
+
+
+
 
         Label.LabelStyle lblStyle = new Label.LabelStyle();
         lblStyle.font      = font;
@@ -416,21 +452,21 @@ table.setFillParent(true);
         skin.add("default", chkStyle);
 
         return skin;
-    }
+        }
 
-    //screen
-    @Override
-    public void render(float delta) {
+        
+        @Override
+        public void render(float delta) {
         Gdx.gl.glClearColor(FONDO.r, FONDO.g, FONDO.b, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.act(delta);
         stage.draw();
-    }
+        }
 
-    @Override public void resize(int w, int h) { stage.getViewport().update(w, h, true); }
-    @Override public void show() { Gdx.input.setInputProcessor(stage); }
-    @Override public void pause() {}
-    @Override public void resume() {}
-    @Override public void hide() {}
-    @Override public void dispose() { stage.dispose(); skin.dispose(); }
-}
+        @Override public void resize(int w, int h) { stage.getViewport().update(w, h, true); }
+        @Override public void show() { Gdx.input.setInputProcessor(stage); }
+        @Override public void pause() {}
+        @Override public void resume() {}
+        @Override public void hide() {}
+        @Override public void dispose() { stage.dispose(); skin.dispose(); }
+        }
