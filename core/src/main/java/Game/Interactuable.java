@@ -9,5 +9,6 @@ package Game;
  * @author Dell
  */
 public interface Interactuable {
-    
+    void interactuar();
+    boolean estaActivo();
 }
