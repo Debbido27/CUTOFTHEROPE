@@ -85,21 +85,21 @@
         File file = new File(path);
         if (!file.exists()) return false;
         try {
-        BufferedReader br = new BufferedReader(new FileReader(file));
         StringBuilder sb = new StringBuilder();
-        String linea;
         boolean encontrado = false;
-        while ((linea = br.readLine()) != null) {
-            if (linea.equals(valor) && !encontrado) {
-                encontrado = true;
-            } else {
-                sb.append(linea).append(System.lineSeparator());
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                if (linea.equals(valor) && !encontrado) {
+                    encontrado = true;
+                } else {
+                    sb.append(linea).append(System.lineSeparator());
+                }
             }
         }
-        br.close();
-        BufferedWriter bw = new BufferedWriter(new FileWriter(file));
-        bw.write(sb.toString());
-        bw.close();
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
+            bw.write(sb.toString());
+        }
         return encontrado;
         } catch (IOException e) {
         System.out.println("Error eliminando linea: " + e.getMessage());

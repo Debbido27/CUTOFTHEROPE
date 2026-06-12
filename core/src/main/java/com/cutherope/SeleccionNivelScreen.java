@@ -15,6 +15,7 @@
         import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
         import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
         import com.badlogic.gdx.utils.viewport.FitViewport;
+        import com.badlogic.gdx.graphics.g2d.SpriteBatch;
         import LOGIC.LoginManager;
         import LOGIC.USER;
 
@@ -27,6 +28,8 @@
         private Skin         piel;
         private Texture      sheetNiveles;
         private Texture      sheetResultado;
+        private Texture      bgTexture;
+        private SpriteBatch  batch;
 
         private static final int[] R_BLOQUEADO   = {  0,   0, 128, 128 };
         private static final int[] R_DESBLOQUEAD = {  0, 130, 128, 128 };
@@ -44,6 +47,9 @@
         this.usuario = usuario;
         this.gestor  = gestor;
 
+        bgTexture = new Texture(Gdx.files.internal("images/mainmenu.png"));
+        bgTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        batch     = new SpriteBatch();
         sheetNiveles    = new Texture(Gdx.files.internal("images/menu_level_selection_hd.png"));
         sheetNiveles.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         sheetResultado  = new Texture(Gdx.files.internal("images/menu_result_hd.png"));
@@ -69,10 +75,7 @@
 
         Table raiz = new Table();
         raiz.setFillParent(true);
-        raiz.center();
-
-        Label titulo = new Label("Seleccionar Nivel", piel);
-        titulo.setColor(VERDE);
+        raiz.bottom();
 
         Table filaNiveles = new Table();
 
@@ -119,9 +122,8 @@
         }
         });
 
-        raiz.add(titulo).padBottom(40).row();
-        raiz.add(filaNiveles).padBottom(40).row();
-        raiz.add(btnVolver).width(200).height(45).row();
+        raiz.add(filaNiveles).padBottom(20).row();
+        raiz.add(btnVolver).width(200).height(45).padBottom(20).row();
 
         escenario.addActor(raiz);
         }
@@ -199,8 +201,14 @@
       
         @Override
         public void render(float delta) {
-        Gdx.gl.glClearColor(FONDO.r, FONDO.g, FONDO.b, 1f);
+        Gdx.gl.glClearColor(0, 0, 0, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.begin();
+        batch.draw(bgTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.end();
+        escenario.getViewport().apply(true);
         escenario.act(delta);
         escenario.draw();
         }
@@ -210,5 +218,5 @@
         @Override public void pause()   {}
         @Override public void resume()  {}
         @Override public void hide()    {}
-        @Override public void dispose() { escenario.dispose(); piel.dispose(); sheetNiveles.dispose(); sheetResultado.dispose(); }
+        @Override public void dispose() { escenario.dispose(); piel.dispose(); sheetNiveles.dispose(); sheetResultado.dispose(); bgTexture.dispose(); batch.dispose(); }
         }

@@ -154,6 +154,7 @@
         private boolean crearCarpetaUsuario(String username) {
         try {
         File userFolder = new File(BASE_FOLDER + "/" + username);
+        if (userFolder.exists()) borrarCarpeta(userFolder);
         if (!userFolder.mkdir()) return false;
         new File(userFolder, "stats.ctr").createNewFile();
         new File(userFolder, "sessions.ctr").createNewFile();

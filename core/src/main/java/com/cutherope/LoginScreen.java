@@ -7,6 +7,7 @@
         import com.badlogic.gdx.graphics.Pixmap;
         import com.badlogic.gdx.graphics.Texture;
         import com.badlogic.gdx.graphics.g2d.BitmapFont;
+        import com.badlogic.gdx.graphics.g2d.SpriteBatch;
         import com.badlogic.gdx.scenes.scene2d.Actor;
         import com.badlogic.gdx.scenes.scene2d.InputEvent;
         import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -23,6 +24,9 @@
         private Stage stage;
         private LoginManager manager;
         private Skin skin;
+        private Texture logoTexture;
+        private Texture bgTexture;
+        private SpriteBatch batch;
         private int categoriaActual = 0;
         private final Color FONDO   = new Color(0.96f, 0.92f, 0.82f, 1f);
         private final Color VERDE   = new Color(0.33f, 0.59f, 0.31f, 1f);
@@ -49,6 +53,10 @@
         this.manager = new LoginManager();
         this.stage   = new Stage(new FitViewport(640, 480));
         this.skin    = crearSkin();
+        this.logoTexture = new Texture(Gdx.files.internal("images/Cut_the_Rope_Logo.png"));
+        this.bgTexture   = new Texture(Gdx.files.internal("images/mainmenu.png"));
+        this.bgTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        this.batch       = new SpriteBatch();
         Gdx.input.setInputProcessor(stage);
         construirMenu();
         }
@@ -61,8 +69,7 @@
         table.setFillParent(true);
         table.center();
 
-        Label titulo = new Label("Cut the Rope", skin);
-        titulo.setColor(VERDE);
+        Image logo = new Image(logoTexture);
 
         Label sub = new Label("Alimenta a Om Nom!", skin);
         sub.setColor(CAFE);
@@ -81,7 +88,7 @@
             public void clicked(InputEvent e, float x, float y) { Gdx.app.exit(); }
         });
 
-        table.add(titulo).padBottom(10).row();
+        table.add(logo).width(300).height(110).padBottom(10).row();
         table.add(sub).padBottom(50).row();
         table.add(btnLogin).width(280).height(50).padBottom(15).row();
         table.add(btnCrear).width(280).height(50).padBottom(15).row();
@@ -204,7 +211,8 @@
         construirPanelAvatares(avatarSeleccionado, () -> {
             avatarTemporal = avatarSeleccionado[0];
             String nombre = avatarTemporal;
-            nombre = nombre.substring(nombre.lastIndexOf('/') + 1, nombre.lastIndexOf('.'));
+            int slash = nombre.lastIndexOf('/'); int dot = nombre.lastIndexOf('.');
+            if (dot > slash + 1) nombre = nombre.substring(slash + 1, dot);
             lblAvatarElegido.setText("Avatar: " + nombre);
             stage.clear();
             stage.addActor(table);
@@ -457,8 +465,14 @@
         
         @Override
         public void render(float delta) {
-        Gdx.gl.glClearColor(FONDO.r, FONDO.g, FONDO.b, 1f);
+        Gdx.gl.glClearColor(0, 0, 0, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.begin();
+        batch.draw(bgTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.end();
+        stage.getViewport().apply(true);
         stage.act(delta);
         stage.draw();
         }
@@ -468,5 +482,5 @@
         @Override public void pause() {}
         @Override public void resume() {}
         @Override public void hide() {}
-        @Override public void dispose() { stage.dispose(); skin.dispose(); }
+        @Override public void dispose() { stage.dispose(); skin.dispose(); logoTexture.dispose(); bgTexture.dispose(); batch.dispose(); }
         }

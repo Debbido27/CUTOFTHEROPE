@@ -10,6 +10,7 @@
         import com.badlogic.gdx.graphics.Pixmap;
         import com.badlogic.gdx.graphics.Texture;
         import com.badlogic.gdx.graphics.g2d.BitmapFont;
+        import com.badlogic.gdx.graphics.g2d.SpriteBatch;
         import com.badlogic.gdx.scenes.scene2d.Actor;
         import com.badlogic.gdx.scenes.scene2d.InputEvent;
         import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -35,6 +36,8 @@
         private LoginManager gestor;
         private Stage        escenario;
         private Skin         piel;
+        private Texture      bgTexture;
+        private SpriteBatch  batch;
         private int categoriaActual = 0;
 
         private final Color FONDO   = new Color(0.96f, 0.92f, 0.82f, 1f);
@@ -61,6 +64,9 @@
         this.gestor   = gestor;
         this.escenario = new Stage(new FitViewport(640, 480));
         this.piel      = crearPiel();
+        bgTexture = new Texture(Gdx.files.internal("images/mainmenu.png"));
+        bgTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        batch = new SpriteBatch();
         Gdx.input.setInputProcessor(escenario);
         construirMenuPerfil();
         }
@@ -831,8 +837,14 @@
 
         @Override
         public void render(float delta) {
-        Gdx.gl.glClearColor(FONDO.r, FONDO.g, FONDO.b, 1f);
+        Gdx.gl.glClearColor(0, 0, 0, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.begin();
+        batch.draw(bgTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.end();
+        escenario.getViewport().apply(true);
         escenario.act(delta);
         escenario.draw();
         }
@@ -842,7 +854,7 @@
         @Override public void pause()   {}
         @Override public void resume()  {}
         @Override public void hide()    {}
-        @Override public void dispose() { escenario.dispose(); piel.dispose(); }
+        @Override public void dispose() { escenario.dispose(); piel.dispose(); bgTexture.dispose(); batch.dispose(); }
 
 
 

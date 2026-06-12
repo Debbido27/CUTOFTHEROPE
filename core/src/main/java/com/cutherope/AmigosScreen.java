@@ -10,12 +10,14 @@
         import com.badlogic.gdx.graphics.Pixmap;
         import com.badlogic.gdx.graphics.Texture;
         import com.badlogic.gdx.graphics.g2d.BitmapFont;
+        import com.badlogic.gdx.graphics.g2d.SpriteBatch;
         import com.badlogic.gdx.scenes.scene2d.InputEvent;
         import com.badlogic.gdx.scenes.scene2d.Stage;
         import com.badlogic.gdx.scenes.scene2d.ui.*;
         import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
         import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
         import com.badlogic.gdx.utils.viewport.FitViewport;
+        import java.util.ArrayList;
 
         public class AmigosScreen implements Screen {
 
@@ -25,6 +27,9 @@
         private FriendsManager friendsManager;
         private Stage        escenario;
         private Skin         piel;
+        private ArrayList<Texture> texturasDinamicas = new ArrayList<>();
+        private Texture     bgTexture;
+        private SpriteBatch batch;
 
         private final Color FONDO   = new Color(0.96f, 0.92f, 0.82f, 1f);
         private final Color VERDE   = new Color(0.33f, 0.59f, 0.31f, 1f);
@@ -40,6 +45,9 @@
         this.friendsManager = new FriendsManager();
         this.escenario     = new Stage(new FitViewport(640, 480));
         this.piel          = crearPiel();
+        bgTexture = new Texture(Gdx.files.internal("images/mainmenu.png"));
+        bgTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        batch = new SpriteBatch();
         Gdx.input.setInputProcessor(escenario);
         construirMenu();
         }
@@ -160,7 +168,7 @@
         contenido.add(btnVolver).width(280).height(50).padTop(20).colspan(2).center().row();
 
         ScrollPane.ScrollPaneStyle spStyle = new ScrollPane.ScrollPaneStyle();
-        spStyle.background = piel.newDrawable("white", FONDO);
+        spStyle.background = null;
         ScrollPane scroll = new ScrollPane(contenido, spStyle);
         scroll.setFillParent(true);
         scroll.setScrollingDisabled(true, false);
@@ -345,7 +353,7 @@
         contenido.add(btnVolver).width(280).height(50).padTop(20).colspan(3).center().row();
 
         ScrollPane.ScrollPaneStyle spStyle = new ScrollPane.ScrollPaneStyle();
-        spStyle.background = piel.newDrawable("white", FONDO);
+        spStyle.background = null;
         ScrollPane scroll = new ScrollPane(contenido, spStyle);
         scroll.setFillParent(true);
         scroll.setScrollingDisabled(true, false);
@@ -355,6 +363,7 @@
 
         
         private void construirVerJugadores() {
+        limpiarTexturas();
         escenario.clear();
 
         Table contenido = new Table();
@@ -381,6 +390,7 @@
 
         if (Gdx.files.internal(rutaAvatar).exists()) {
         Texture tex = new Texture(Gdx.files.internal(rutaAvatar));
+        texturasDinamicas.add(tex);
         com.badlogic.gdx.scenes.scene2d.ui.Image imgAvatar =
             new com.badlogic.gdx.scenes.scene2d.ui.Image(tex);
         card.add(imgAvatar).width(40).height(40).padRight(8);
@@ -426,7 +436,7 @@
         contenido.add(btnVolver).width(280).height(50).padTop(20).colspan(3).center().row();
 
         ScrollPane.ScrollPaneStyle spStyle = new ScrollPane.ScrollPaneStyle();
-        spStyle.background = piel.newDrawable("white", FONDO);
+        spStyle.background = null;
         ScrollPane scroll = new ScrollPane(contenido, spStyle);
         scroll.setFillParent(true);
         scroll.setScrollingDisabled(true, false);
@@ -437,6 +447,7 @@
 
         
         private void construirDetallesAmigo(String usernameAmigo) {
+        limpiarTexturas();
         escenario.clear();
 
         USER u = gestor.buscarUser(usernameAmigo);
@@ -455,6 +466,7 @@
         ? u.getAvatarPath() : "AVATARS/X1.png";
         if (Gdx.files.internal(rutaAvatar).exists()) {
         Texture tex = new Texture(Gdx.files.internal(rutaAvatar));
+        texturasDinamicas.add(tex);
         com.badlogic.gdx.scenes.scene2d.ui.Image imgAvatar =
             new com.badlogic.gdx.scenes.scene2d.ui.Image(tex);
         contenido.add(imgAvatar).width(80).height(80).padBottom(16).colspan(2).center().row();
@@ -494,7 +506,7 @@
         contenido.add(btnVolver).width(280).height(50).padTop(10).colspan(2).center().row();
 
         ScrollPane.ScrollPaneStyle spStyle = new ScrollPane.ScrollPaneStyle();
-        spStyle.background = piel.newDrawable("white", FONDO);
+        spStyle.background = null;
         ScrollPane scroll = new ScrollPane(contenido, spStyle);
         scroll.setFillParent(true);
         scroll.setScrollingDisabled(true, false);
@@ -574,8 +586,14 @@
         
         @Override
         public void render(float delta) {
-        Gdx.gl.glClearColor(FONDO.r, FONDO.g, FONDO.b, 1f);
+        Gdx.gl.glClearColor(0, 0, 0, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.begin();
+        batch.draw(bgTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.end();
+        escenario.getViewport().apply(true);
         escenario.act(delta);
         escenario.draw();
         }
@@ -585,5 +603,7 @@
         @Override public void pause()   {}
         @Override public void resume()  {}
         @Override public void hide()    {}
-        @Override public void dispose() { escenario.dispose(); piel.dispose(); }
+        @Override public void dispose() { escenario.dispose(); piel.dispose(); bgTexture.dispose(); batch.dispose(); limpiarTexturas(); }
+
+        private void limpiarTexturas() { for (Texture t : texturasDinamicas) t.dispose(); texturasDinamicas.clear(); }
         }
