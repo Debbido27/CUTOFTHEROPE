@@ -107,6 +107,8 @@
         if (!bloqueado) {
             icono.addListener(new ClickListener() {
                 public void clicked(InputEvent e, float x, float y) {
+                    Gdx.app.postRunnable(() ->
+                        juego.setScreen(new NivelScreen(juego, usuario, gestor, nivel + 1)));
                 }
             });
         }
