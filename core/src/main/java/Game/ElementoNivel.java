@@ -5,6 +5,7 @@
 package Game;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 /**
  *
@@ -27,4 +28,17 @@ public abstract class ElementoNivel {
         this.textura=textura;
     }
     
+    public  abstract void actualizar(float delta);
+    
+    public abstract void dibujar(SpriteBatch batch);
+    
+    public float getX() {return x;}
+    public float getY() {return y;}
+    public float getAncho(){return ancho;}
+    public float getAlto(){return alto;}
+    public TipoElemento getTipo(){return tipo;}
+    
+    public void dispose(){
+        if(textura!=null) textura.dispose();
+    }
 }
