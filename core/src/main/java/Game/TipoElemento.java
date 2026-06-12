@@ -9,5 +9,7 @@ package Game;
  * @author Dell
  */
 public enum TipoElemento {
-    
+    ESTRELLA,
+    BOMBA,
+    BURBUJA
 }
