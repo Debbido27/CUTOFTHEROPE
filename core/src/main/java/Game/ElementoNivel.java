@@ -18,5 +18,13 @@ public abstract class ElementoNivel {
     protected TipoElemento tipo;
     protected Texture textura;
     
+    public ElementoNivel(float x, float y, float ancho, float alto, TipoElemento tipo, Texture textura){
+        this.x=x;
+        this.y=y;
+        this.ancho=ancho;
+        this.alto=alto;
+        this.tipo=tipo;
+        this.textura=textura;
+    }
     
 }
