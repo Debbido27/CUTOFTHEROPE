@@ -45,6 +45,21 @@ public class Pelota {
         Texture tex = new Texture(pixmap);
         pixmap.dispose();
         return tex;
-        
+    }
+
+    public void dibujar(SpriteBatch batch){
+        float diametro = radio*2;
+        batch.draw(textura,
+            body.getPosition().x-radio,
+            body.getPosition().y-radio,
+            diametro,diametro);
+    }
+
+    public Body getBody() {
+        return body;
+    }
+
+    public void dispose(){
+        textura.dispose();
     }
 }
