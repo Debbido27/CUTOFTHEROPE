@@ -20,7 +20,7 @@ public class Pelota {
         bodyDef.position.set(x,y);
 
         body = mundo.createBody(bodyDef);
-
+        body.setUserData(this);
         CircleShape forma = new CircleShape();
         forma.setRadius(radio);
 
