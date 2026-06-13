@@ -16,7 +16,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import LOGIC.LoginManager;
-import NIVELES.Nivel1Screen;
 import com.cutherope.CutTheRope;
 import com.cutherope.SeleccionNivelScreen;
 import java.util.ArrayList;
@@ -28,10 +27,12 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
     protected World              mundo;
     protected OrthographicCamera camaraFisica;
     protected Pelota             pelota;
-    protected Cuerda             cuerda;
-    protected Body               anclaBody;
-    protected Vector2            anclaPos;
     protected NomNom             nomnom;
+    
+    // ─── MÚLTIPLES CUERDAS Y ANCLAS ─────────────────────────────────
+    protected List<Cuerda>       cuerdas      = new ArrayList<>();
+    protected List<Body>         anclas       = new ArrayList<>();
+    protected List<Vector2>      posicionesAnclas = new ArrayList<>();
 
     protected List<Estrella>  estrellas  = new ArrayList<>();
     protected List<Obstaculo> obstaculos = new ArrayList<>();
@@ -41,9 +42,6 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
     private enum EstadoNivel { JUGANDO, GANANDO, PERDIENDO }
     private EstadoNivel estadoNivel     = EstadoNivel.JUGANDO;
     private float       timerTransicion = 0f;
-
-    // Límite inferior: si la pelota cae más abajo de esto → pierde
-    // Cada nivel puede sobreescribir este valor en crearNivel()
     protected float limiteInferior = -5f;
 
     // ── juego ────────────────────────────────────────────────────────
@@ -93,6 +91,32 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
     // ── abstractos ───────────────────────────────────────────────────
     protected abstract String rutaFondo();
     protected abstract void   crearNivel();
+
+    // ── Helper para crear anclas estáticas ───────────────────────────
+    protected Body crearAncla(float x, float y) {
+        BodyDef def = new BodyDef();
+        def.type = BodyDef.BodyType.StaticBody;
+        def.position.set(x, y);
+        Body ancla = mundo.createBody(def);
+        anclas.add(ancla);
+        posicionesAnclas.add(new Vector2(x, y));
+        return ancla;
+    }
+    
+    // ── Helper para crear cuerda entre un ancla y la pelota ──────────
+    protected Cuerda crearCuerda(Body ancla, Vector2 posAncla, int segmentos, float largoSeg) {
+        Cuerda cuerda = new Cuerda(mundo, ancla, posAncla, segmentos, largoSeg, pelota.getBody(), true);
+        cuerdas.add(cuerda);
+        return cuerda;
+    }
+    
+    // ── Helper para crear cuerda entre dos anclas (si hay cadena) ────
+    protected Cuerda crearCuerdaEntreAnclas(Body ancla1, Vector2 pos1, Body ancla2, Vector2 pos2, 
+                                             int segmentos, float largoSeg) {
+        Cuerda cuerda = new Cuerda(mundo, ancla1, pos1, segmentos, largoSeg, ancla2, false);
+        cuerdas.add(cuerda);
+        return cuerda;
+    }
 
     // ── UI ───────────────────────────────────────────────────────────
     private void construirUI() {
@@ -159,8 +183,16 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
         batch.setProjectionMatrix(camaraFisica.combined);
         batch.begin();
 
-        cuerda.dibujar(batch);
-        Cuerda.dibujarAncla(batch, anclaPos, 0.15f);
+        // Dibujar todas las cuerdas
+        for (Cuerda cuerda : cuerdas) {
+            cuerda.dibujar(batch);
+        }
+        
+        // Dibujar todas las anclas
+        for (Vector2 pos : posicionesAnclas) {
+            Cuerda.dibujarAncla(batch, pos, 0.15f);
+        }
+        
         pelota.dibujar(batch);
         if (nomnom != null) nomnom.dibujar(batch);
 
@@ -193,8 +225,12 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
             Vector3 raw = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
             camaraFisica.unproject(raw);
             Vector2 actual = new Vector2(raw.x, raw.y);
-            if (puntoAnteriorValido)
-                cuerda.revisarCorte(puntoAnterior, actual, mundo);
+            if (puntoAnteriorValido) {
+                // Revisar corte en TODAS las cuerdas
+                for (Cuerda cuerda : cuerdas) {
+                    cuerda.revisarCorte(puntoAnterior, actual, mundo);
+                }
+            }
             puntoAnterior.set(actual);
             puntoAnteriorValido = true;
         } else {
@@ -239,7 +275,6 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
         batch.setColor(1, 1, 1, 1);
         batch.draw(overlay, cx - w / 2f, cy - h / 2f, w, h);
         overlay.dispose();
-        // El texto del banner se puede mejorar con un BitmapFont si se desea
     }
 
     // ── contactos ────────────────────────────────────────────────────
@@ -320,6 +355,7 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
         if (pelota != null) pelota.dispose();
         if (nomnom != null) nomnom.dispose();
         Cuerda.disposeTextura();
+        for (Cuerda c : cuerdas) c.dispose();
         for (Obstaculo o : obstaculos) o.dispose();
         for (Burbuja   b : burbujas)   b.dispose();
         escenario.dispose();

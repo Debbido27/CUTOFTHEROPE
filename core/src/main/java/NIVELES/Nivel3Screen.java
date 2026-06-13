@@ -17,7 +17,7 @@ public class Nivel3Screen extends NivelBaseScreen {
 
     @Override
     protected String rutaFondo() {
-        return "images/lvl3.png";
+        return "images/lvl1.png"; // ← tu fondo específico
     }
 
     @Override

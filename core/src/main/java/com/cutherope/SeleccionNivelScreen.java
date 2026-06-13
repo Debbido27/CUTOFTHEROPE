@@ -104,14 +104,38 @@
         celda.add(icono).size(90, 90).padBottom(6).row();
         celda.add(filaEstrellas).row();
 
-        if (!bloqueado) {
-            icono.addListener(new ClickListener() {
-                public void clicked(InputEvent e, float x, float y) {
-                    Gdx.app.postRunnable(() ->
-                        juego.setScreen(new NivelScreen(juego, usuario, gestor, nivel + 1)));
+       // En la clase SeleccionNivelScreen, corrige el método construir() 
+// donde se crea el ClickListener del icono:
+
+if (!bloqueado) {
+    icono.addListener(new ClickListener() {
+        public void clicked(InputEvent e, float x, float y) {
+            Gdx.app.postRunnable(() -> {
+                // Llamar al nivel específico según el número
+                switch(nivel + 1) {
+                    case 1:
+                        juego.setScreen(new NIVELES.Nivel1Screen(juego, usuario, gestor));
+                        break;
+                    case 2:
+                        juego.setScreen(new NIVELES.Nivel2Screen(juego, usuario, gestor));
+                        break;
+                    case 3:
+                        juego.setScreen(new NIVELES.Nivel3Screen(juego, usuario, gestor));
+                        break;
+                    case 4:
+                        juego.setScreen(new NIVELES.Nivel4Screen(juego, usuario, gestor));
+                        break;
+                    case 5:
+                        juego.setScreen(new NIVELES.Nivel5Screen(juego, usuario, gestor));
+                        break;
+                    default:
+                        juego.setScreen(new SeleccionNivelScreen(juego, usuario, gestor));
+                        break;
                 }
             });
         }
+    });
+}
 
         filaNiveles.add(celda).top().padLeft(10).padRight(10);
         }

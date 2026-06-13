@@ -2,11 +2,10 @@ package NIVELES;
 
 import Game.*;
 import Game.Obstaculo.TipoObstaculo;
-import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.math.Vector2;
 import LOGIC.LoginManager;
 import com.cutherope.CutTheRope;
-
 
 public class Nivel2Screen extends NivelBaseScreen {
 
@@ -16,65 +15,91 @@ public class Nivel2Screen extends NivelBaseScreen {
 
     @Override
     protected String rutaFondo() {
-        return "images/lvl2.png";
+        return "images/lvl2_background.png"; // Cambia a fondo nivel 2
     }
 
     @Override
     protected void crearNivel() {
-        float anclaX = 7.5f;
-        float anclaY = 16f;
-        int   segmentos = 12;
-        float largoSeg  = 0.35f;
-
-        // ── ancla ────────────────────────────────────────────────────
-        BodyDef def = new BodyDef();
-        def.type = BodyDef.BodyType.StaticBody;
-        def.position.set(anclaX, anclaY);
-        anclaBody = mundo.createBody(def);
-        anclaPos  = new Vector2(anclaX, anclaY);
-
-        // ── pelota ───────────────────────────────────────────────────
-        float dist = segmentos * largoSeg;
-        pelota = new Pelota(mundo, anclaX, anclaY - dist, 0.3f);
-
-        // ── cuerda ───────────────────────────────────────────────────
-        cuerda = new Cuerda(mundo, anclaBody, anclaPos,
-                            segmentos, largoSeg, pelota.getBody(), true);
-
-        // ── obstáculos ───────────────────────────────────────────────
-        // Plataforma larga izquierda — desvía la pelota hacia la derecha
-        obstaculos.add(new Obstaculo(mundo,
-                anclaX - 2.5f, anclaY - dist - 0.5f,
-                3.0f, 0.35f, TipoObstaculo.LARGO));
-
-        // Plataforma larga derecha más abajo — rebota de vuelta al centro
-        obstaculos.add(new Obstaculo(mundo,
-                anclaX + 2.5f, anclaY - dist - 2.2f,
-                3.0f, 0.35f, TipoObstaculo.LARGO));
-
-        // Bloque cuadrado en el centro, justo encima de la estrella principal
-        obstaculos.add(new Obstaculo(mundo,
-                anclaX, anclaY - dist - 3.8f,
-                0.7f, 0.7f, TipoObstaculo.CORTO));
-
-        // ── burbuja (trampolín hacia arriba si caes mal) ─────────────
-        burbujas.add(new Burbuja(mundo,
-                anclaX - 3.5f, anclaY - dist - 3.0f,
-                0.4f, 6f));
-
-        // ── estrellas ────────────────────────────────────────────────
-        // Estrella 1: accesible, caída directa
-        estrellas.add(new Estrella(mundo, anclaX, anclaY - dist - 5.2f, 0.22f));
-
-        // Estrella 2: a la izquierda, detrás de la plataforma izquierda
-        estrellas.add(new Estrella(mundo, anclaX - 3.8f, anclaY - dist - 1.5f, 0.22f));
-
-        // Estrella 3: a la derecha abajo, hay que rebotar en plataforma derecha
-        estrellas.add(new Estrella(mundo, anclaX + 3.5f, anclaY - dist - 4.5f, 0.22f));
-
-        // ── cámara ───────────────────────────────────────────────────
-        camaraFisica.setToOrtho(false, 18f, 22f);
-        camaraFisica.position.set(anclaX, anclaY - 7f, 0);
+        // ─────────────────────────────────────────────────────────────
+        // NIVEL 2: "CUERDAS CRUZADAS"
+        // Puzzle: Cortar las cuerdas en el orden correcto para que la 
+        // pelota atraviese los obstáculos y llegue a NomNom
+        // ─────────────────────────────────────────────────────────────
+        
+        // Posición de la pelota
+        float pelotaX = 7.5f;
+        float pelotaY = 16f;
+        
+        // Crear la pelota
+        pelota = new Pelota(mundo, pelotaX, pelotaY, 0.3f);
+        
+        // ─── CREAR ANCLAS (puntos fijos donde cuelgan las cuerdas) ───
+        
+        // Ancla principal (arriba izquierda)
+        Body ancla1 = crearAncla(5.5f, 16.5f);
+        
+        // Ancla superior derecha
+        Body ancla2 = crearAncla(9.5f, 16.5f);
+        
+        // Ancla intermedia (centro)
+        Body ancla3 = crearAncla(7.5f, 13.5f);
+        
+        // Ancla baja izquierda
+        Body ancla4 = crearAncla(4.5f, 10f);
+        
+        // ─── CREAR CUERDAS ───────────────────────────────────────────
+        
+        // Cuerda 1: Ancla1 -> Pelota (primera cuerda que sostiene la pelota)
+        crearCuerda(ancla1, posicionesAnclas.get(0), 10, 0.32f);
+        
+        // Cuerda 2: Ancla2 -> Pelota (segunda cuerda, crea tensión cruzada)
+        crearCuerda(ancla2, posicionesAnclas.get(1), 10, 0.32f);
+        
+        // Cuerda 3: Ancla3 -> Pelota (cuerda de seguridad intermedia)
+        crearCuerda(ancla3, posicionesAnclas.get(2), 6, 0.32f);
+        
+        // ─── OBSTÁCULOS ESTRATÉGICOS ─────────────────────────────────
+        
+        // Plataforma inclinada izquierda - guía la pelota hacia la derecha
+        obstaculos.add(new Obstaculo(mundo, 3.5f, 12f, 2.5f, 0.25f, TipoObstaculo.LARGO));
+        
+        // Plataforma inclinada derecha (rotada ligeramente)
+        obstaculos.add(new Obstaculo(mundo, 10.5f, 9f, 2.5f, 0.25f, TipoObstaculo.LARGO));
+        
+        // Bloque central - divide el camino
+        obstaculos.add(new Obstaculo(mundo, 7.5f, 7.5f, 1.2f, 1.2f, TipoObstaculo.CORTO));
+        
+        // Pequeño obstáculo en el fondo
+        obstaculos.add(new Obstaculo(mundo, 6f, 4.5f, 0.8f, 0.8f, TipoObstaculo.CORTO));
+        
+        // ─── BURBUJAS (ayudan a subir) ───────────────────────────────
+        
+        // Burbuja izquierda - permite alcanzar estrella escondida
+        burbujas.add(new Burbuja(mundo, 3f, 10.5f, 0.4f, 7f));
+        
+        // Burbuja derecha - ayuda a subir al segundo nivel
+        burbujas.add(new Burbuja(mundo, 10f, 5f, 0.4f, 7f));
+        
+        // ─── ESTRELLAS (coleccionables) ──────────────────────────────
+        
+        // Estrella 1: Fácil, en el camino directo
+        estrellas.add(new Estrella(mundo, 7.5f, 14.5f, 0.22f));
+        
+        // Estrella 2: Difícil, requiere cortar cuerdas en orden específico
+        estrellas.add(new Estrella(mundo, 4f, 8.5f, 0.22f));
+        
+        // Estrella 3: Muy difícil, requiere usar burbuja
+        estrellas.add(new Estrella(mundo, 10.5f, 3f, 0.22f));
+        
+        // ─── NOMNOM (objetivo) ───────────────────────────────────────
+        nomnom = new NomNom(mundo, 7.5f, 1.5f, 0.35f);
+        
+        // ─── LIMITE INFERIOR ─────────────────────────────────────────
+        limiteInferior = -2f;
+        
+        // ─── CONFIGURAR CÁMARA ───────────────────────────────────────
+        camaraFisica.setToOrtho(false, 18f, 20f);
+        camaraFisica.position.set(7.5f, 9f, 0);
         camaraFisica.update();
     }
 }
