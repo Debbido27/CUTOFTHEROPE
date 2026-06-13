@@ -33,4 +33,18 @@ public class Pelota {
         body.createFixture(fixtureDef);
         forma.dispose();
     }
+
+    private Texture crearTexturaPlaceHolder (float radio){
+        int diametroPx = (int)(radio*100);
+        if(diametroPx<2) diametroPx = 2;
+
+        Pixmap pixmap = new Pixmap(diametroPx, diametroPx, Pixmap.Format.RGBA8888);
+        pixmap.setColor(Color.RED);
+        pixmap.fillCircle(diametroPx/2, diametroPx/2, diametroPx/2);
+
+        Texture tex = new Texture(pixmap);
+        pixmap.dispose();
+        return tex;
+        
+    }
 }
