@@ -3,15 +3,18 @@ package Game;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 
 public class Cuerda {
+    private static Texture texturaSoga;
     private Body body;
     private Joint joint;
     private Cuerda siguiente;
     private float largoSegmento;
+    private float grosor;
 
     public Cuerda(World mundo, Body anclaBody, Vector2 anclaPos, int segmentos,
                   float largoSegmento, Body cuerpoFinal) {
@@ -91,6 +94,45 @@ public class Cuerda {
         textura.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.ClampToEdge);
         pixmap.dispose();
         return textura;
+    }
+
+
+    public void dibujar(SpriteBatch batch) {
+        Vector2 pos = body.getPosition();
+        float angulo = (float) Math.toDegrees(body.getAngle()) - 90f;
+
+        batch.draw(texturaSoga,
+            pos.x, pos.y,
+            0, largoSegmento / 2f,
+            grosor, largoSegmento,
+            1f, 1f,
+            angulo,
+            0, 0, texturaSoga.getWidth(), texturaSoga.getHeight(),
+            false, false);
+
+        if (siguiente != null) {
+            siguiente.dibujar(batch);
+        }
+    }
+
+    public int contarSegmentos() {
+        return 1 + (siguiente != null ? siguiente.contarSegmentos() : 0);
+    }
+
+    public Body getBody() {
+        return body;
+    }
+
+    public Cuerda getSiguiente() {
+        return siguiente;
+    }
+
+    /** Libera la textura compartida. Llamar solo una vez al cerrar el nivel. */
+    public static void disposeTextura() {
+        if (texturaSoga != null) {
+            texturaSoga.dispose();
+            texturaSoga = null;
+        }
     }
 
 
