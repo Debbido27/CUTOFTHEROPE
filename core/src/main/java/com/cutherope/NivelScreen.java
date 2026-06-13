@@ -1,13 +1,16 @@
 package com.cutherope;
 
+import Game.Cuerda;
+import Game.Pelota;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -18,6 +21,11 @@ import LOGIC.LoginManager;
 
 public class NivelScreen implements Screen {
 
+    private World mundo;
+    private OrthographicCamera camaraFisica;
+    private Pelota pelota;
+    private Cuerda cuerda;
+    private Body anclaBody;
     private CutTheRope   juego;
     private String       usuario;
     private LoginManager gestor;
@@ -40,6 +48,13 @@ public class NivelScreen implements Screen {
         bgTexture = cargarFondo(nivel);
         bgTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         batch = new SpriteBatch();
+
+        mundo = new World(new Vector2(0, -10), true);
+        camaraFisica = new OrthographicCamera(8, 6); // 8x6 metros visibles
+        camaraFisica.position.set(4, 3, 0);
+        camaraFisica.update();
+
+        crearNivel();
 
         escenario = new Stage(new FitViewport(640, 480));
         piel = crearPiel();
@@ -77,6 +92,20 @@ public class NivelScreen implements Screen {
 
         raiz.add(btnVolver).width(120).height(38).pad(12);
         escenario.addActor(raiz);
+    }
+
+
+    private void crearNivel() {
+        BodyDef anclaDef = new BodyDef();
+        anclaDef.type = BodyDef.BodyType.StaticBody;
+        anclaDef.position.set(4, 5.5f); // posición del ancla en metros (centro arriba)
+        anclaBody = mundo.createBody(anclaDef);
+
+        Vector2 anclaPos = new Vector2(4, 5.5f);
+
+        pelota = new Pelota(mundo, 4, 3f, 0.3f);
+
+        cuerda = new Cuerda(mundo, anclaBody, anclaPos, 6, 0.4f, pelota.getBody());
     }
 
     private TextButton crearBoton(String texto, Color color) {
@@ -126,10 +155,16 @@ public class NivelScreen implements Screen {
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        mundo.step(delta, 6, 2);
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.begin();
         batch.draw(bgTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.end();
+        batch.setProjectionMatrix(camaraFisica.combined);
+        batch.begin();
+        cuerda.dibujar(batch);
+        pelota.dibujar(batch);
         batch.end();
         escenario.getViewport().apply(true);
         escenario.act(delta);
@@ -141,5 +176,5 @@ public class NivelScreen implements Screen {
     @Override public void pause()   {}
     @Override public void resume()  {}
     @Override public void hide()    {}
-    @Override public void dispose() { escenario.dispose(); piel.dispose(); bgTexture.dispose(); batch.dispose(); }
+    @Override public void dispose() { mundo.dispose();pelota.dispose();Cuerda.disposeTextura();escenario.dispose(); piel.dispose(); bgTexture.dispose(); batch.dispose(); }
 }
