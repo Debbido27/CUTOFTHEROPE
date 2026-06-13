@@ -1,5 +1,8 @@
 package Game;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
@@ -52,6 +55,45 @@ public class Cuerda {
         }
     }
 
-}
+
+    private static Texture crearTexturaSoga() {
+        int ancho = 32;
+        int alto = 32;
+        Pixmap pixmap = new Pixmap(ancho, alto, Pixmap.Format.RGBA8888);
+
+        Color base = new Color(0.55f, 0.35f, 0.18f, 1f);
+        Color oscuro = new Color(0.35f, 0.20f, 0.08f, 1f);
+        Color claro = new Color(0.75f, 0.55f, 0.30f, 1f);
+
+        pixmap.setColor(base);
+        pixmap.fill();
+
+        pixmap.setColor(claro);
+        pixmap.fillRectangle(0, alto / 2 - 3, ancho, 4);
+
+        pixmap.setColor(oscuro);
+        int paso = 8;
+        for (int offset = -alto; offset < ancho; offset += paso) {
+            for (int x = 0; x < ancho; x++) {
+                int y = x - offset;
+                if (y >= 0 && y < alto) {
+                    pixmap.drawPixel(x, y);
+                    if (y + 1 < alto) pixmap.drawPixel(x, y + 1);
+                }
+            }
+        }
+
+        pixmap.setColor(oscuro);
+        pixmap.drawLine(0, 0, ancho, 0);
+        pixmap.drawLine(0, alto - 1, ancho, alto - 1);
+
+        Texture textura = new Texture(pixmap);
+        textura.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.ClampToEdge);
+        pixmap.dispose();
+        return textura;
+    }
+
 
 }
+
+
