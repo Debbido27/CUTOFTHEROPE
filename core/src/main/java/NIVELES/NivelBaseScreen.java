@@ -23,40 +23,39 @@ import java.util.List;
 
 public abstract class NivelBaseScreen implements Screen, ContactListener {
 
-    // ── objetos de juego ─────────────────────────────────────────────
+    // ── objetos de juego ──────────────────────────────────────────────────────
     protected World              mundo;
     protected OrthographicCamera camaraFisica;
     protected Pelota             pelota;
     protected NomNom             nomnom;
-    
-    // ─── MÚLTIPLES CUERDAS Y ANCLAS ─────────────────────────────────
-    protected List<Cuerda>       cuerdas      = new ArrayList<>();
-    protected List<Body>         anclas       = new ArrayList<>();
-    protected List<Vector2>      posicionesAnclas = new ArrayList<>();
+
+    protected List<Cuerda>   cuerdas          = new ArrayList<>();
+    protected List<Body>     anclas           = new ArrayList<>();
+    protected List<Vector2>  posicionesAnclas = new ArrayList<>();
 
     protected List<Estrella>  estrellas  = new ArrayList<>();
     protected List<Obstaculo> obstaculos = new ArrayList<>();
     protected List<Burbuja>   burbujas   = new ArrayList<>();
 
-    // ── estado del nivel ─────────────────────────────────────────────
+    // ── estado del nivel ──────────────────────────────────────────────────────
     private enum EstadoNivel { JUGANDO, GANANDO, PERDIENDO }
     private EstadoNivel estadoNivel     = EstadoNivel.JUGANDO;
     private float       timerTransicion = 0f;
-    protected float limiteInferior = -5f;
+    protected float     limiteInferior  = -5f;
 
-    // ── juego ────────────────────────────────────────────────────────
+    // ── referencias del juego ─────────────────────────────────────────────────
     protected CutTheRope   juego;
     protected String       usuario;
     protected LoginManager gestor;
     protected int          nivel;
 
-    // ── UI ───────────────────────────────────────────────────────────
-    protected Stage       escenario;
-    protected Skin        piel;
-    protected Texture     bgTexture;
+    // ── UI ────────────────────────────────────────────────────────────────────
+    protected Stage   escenario;
+    protected Skin    piel;
+    protected Texture bgTexture;
     protected SpriteBatch batch;
 
-    // ── corte con dedo ───────────────────────────────────────────────
+    // ── corte con dedo ────────────────────────────────────────────────────────
     private Vector2 puntoAnterior       = new Vector2();
     private boolean puntoAnteriorValido = false;
 
@@ -64,7 +63,7 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
     protected final Color CAFE  = new Color(0.23f, 0.16f, 0.08f, 1f);
     protected final Color ROJO  = new Color(0.70f, 0.27f, 0.20f, 1f);
 
-    // ─────────────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────────────────────
     public NivelBaseScreen(CutTheRope juego, String usuario,
                            LoginManager gestor, int nivel) {
         this.juego   = juego;
@@ -88,11 +87,11 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
         construirUI();
     }
 
-    // ── abstractos ───────────────────────────────────────────────────
+    // ── abstractos ────────────────────────────────────────────────────────────
     protected abstract String rutaFondo();
     protected abstract void   crearNivel();
 
-    // ── Helper para crear anclas estáticas ───────────────────────────
+    // ── helpers de construcción ───────────────────────────────────────────────
     protected Body crearAncla(float x, float y) {
         BodyDef def = new BodyDef();
         def.type = BodyDef.BodyType.StaticBody;
@@ -102,52 +101,38 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
         posicionesAnclas.add(new Vector2(x, y));
         return ancla;
     }
-    
-    // ── Helper para crear cuerda entre un ancla y la pelota ──────────
-    protected Cuerda crearCuerda(Body ancla, Vector2 posAncla, int segmentos, float largoSeg) {
-        Cuerda cuerda = new Cuerda(mundo, ancla, posAncla, segmentos, largoSeg, pelota.getBody(), true);
-        cuerdas.add(cuerda);
-        return cuerda;
-    }
-    
-    // ── Helper para crear cuerda entre dos anclas (si hay cadena) ────
-    protected Cuerda crearCuerdaEntreAnclas(Body ancla1, Vector2 pos1, Body ancla2, Vector2 pos2, 
-                                             int segmentos, float largoSeg) {
-        Cuerda cuerda = new Cuerda(mundo, ancla1, pos1, segmentos, largoSeg, ancla2, false);
-        cuerdas.add(cuerda);
-        return cuerda;
+
+    protected Cuerda crearCuerda(Body ancla, Vector2 posAncla,
+                                  int segmentos, float largoSeg) {
+        Cuerda c = new Cuerda(mundo, ancla, posAncla,
+                               segmentos, largoSeg, pelota.getBody(), true);
+        cuerdas.add(c);
+        return c;
     }
 
-    
-    /**
- * Crea pelota en la posición dada.
- * Llamar SIEMPRE antes de anclarCuerda().
- */
-protected void crearPelota(float x, float y, float radio) {
-    pelota = new Pelota(mundo, x, y, radio);
-}
+    protected void crearPelota(float x, float y, float radio) {
+        pelota = new Pelota(mundo, x, y, radio);
+    }
 
-/**
- * Ancla una cuerda nueva desde (anclaX, anclaY) hacia la pelota.
- * Llamar tantas veces como cuerdas quieras, cada una con su propia posición.
- */
-protected void anclarCuerda(float anclaX, float anclaY, int segmentos, float largoSeg) {
-    BodyDef def = new BodyDef();
-    def.type = BodyDef.BodyType.StaticBody;
-    def.position.set(anclaX, anclaY);
-    Body anclaBody = mundo.createBody(def);
-    posicionesAnclas.add(new Vector2(anclaX, anclaY));
-    Cuerda c = new Cuerda(mundo, anclaBody, new Vector2(anclaX, anclaY),
-                          segmentos, largoSeg, pelota.getBody(), true);
-    cuerdas.add(c);
-}
+    protected void anclarCuerda(float anclaX, float anclaY,
+                                 int segmentos, float largoSeg) {
+        BodyDef def = new BodyDef();
+        def.type = BodyDef.BodyType.StaticBody;
+        def.position.set(anclaX, anclaY);
+        Body anclaBody = mundo.createBody(def);
+        posicionesAnclas.add(new Vector2(anclaX, anclaY));
+        Cuerda c = new Cuerda(mundo, anclaBody,
+                               new Vector2(anclaX, anclaY),
+                               segmentos, largoSeg,
+                               pelota.getBody(), true);
+        cuerdas.add(c);
+    }
 
+    protected void colocarNomNom(float x, float y, float radio) {
+        nomnom = new NomNom(mundo, x, y, radio);
+    }
 
-protected void colocarNomNom(float x, float y, float radio) {
-    nomnom = new NomNom(mundo, x, y, radio);
-}
-
-    // ── UI ───────────────────────────────────────────────────────────
+    // ── UI ────────────────────────────────────────────────────────────────────
     private void construirUI() {
         Table raiz = new Table();
         raiz.setFillParent(true);
@@ -164,7 +149,7 @@ protected void colocarNomNom(float x, float y, float radio) {
         escenario.addActor(raiz);
     }
 
-    // ── render ───────────────────────────────────────────────────────
+    // ── render principal ──────────────────────────────────────────────────────
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1f);
@@ -173,9 +158,7 @@ protected void colocarNomNom(float x, float y, float radio) {
         switch (estadoNivel) {
             case JUGANDO:
                 mundo.step(delta, 12, 8);
-for (Burbuja b : burbujas) {
-    b.aplicarFlotacion(pelota);
-}
+
                 if (nomnom != null) {
                     nomnom.actualizar(delta);
                     if (nomnom.comioLaPelota()) {
@@ -183,11 +166,19 @@ for (Burbuja b : burbujas) {
                         timerTransicion = 1.8f;
                     }
                 }
+
                 if (pelotaCayoFuera()) {
                     estadoNivel     = EstadoNivel.PERDIENDO;
                     timerTransicion = 1.0f;
                 }
+
                 procesarCorte();
+
+                // ── detección de toque sobre burbujas ─────────────────────────
+                // Se hace AQUÍ (no en actualizar de Burbuja) porque necesitamos
+                // desprojectar con la cámara física y tenemos referencia a pelota.
+                procesarToqueBurbujas();
+
                 break;
 
             case GANANDO:
@@ -203,7 +194,7 @@ for (Burbuja b : burbujas) {
                 break;
         }
 
-        // Fondo
+        // ── fondo ─────────────────────────────────────────────────────────────
         batch.getProjectionMatrix().setToOrtho2D(
             0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.begin();
@@ -211,31 +202,20 @@ for (Burbuja b : burbujas) {
             Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.end();
 
-        // Mundo físico
+        // ── mundo físico ──────────────────────────────────────────────────────
         batch.setProjectionMatrix(camaraFisica.combined);
-        // Después del switch, ANTES de dibujar:
-for (Burbuja b : burbujas) b.actualizar(delta);
-
-// Luego dibujas...
         batch.begin();
 
-        // Dibujar todas las cuerdas
-        for (Cuerda cuerda : cuerdas) {
-            cuerda.dibujar(batch);
-        }
-        
-        // Dibujar todas las anclas
-        for (Vector2 pos : posicionesAnclas) {
-            Cuerda.dibujarAncla(batch, pos, 0.15f);
-        }
-        
+        for (Cuerda c : cuerdas)          c.dibujar(batch);
+        for (Vector2 pos : posicionesAnclas) Cuerda.dibujarAncla(batch, pos, 0.15f);
+
         pelota.dibujar(batch);
         if (nomnom != null) nomnom.dibujar(batch);
 
         for (Estrella  e : estrellas)  e.dibujar(batch);
         for (Obstaculo o : obstaculos) o.dibujar(batch);
-        for (Burbuja   b : burbujas)   b.dibujar(batch);
-        // Overlay encima de todo
+        for (Burbuja   b : burbujas)   b.dibujar(batch);  // dibuja solo si activa
+
         if (estadoNivel == EstadoNivel.GANANDO)
             dibujarBannerTexto("¡NomNom comió!", VERDE);
         if (estadoNivel == EstadoNivel.PERDIENDO)
@@ -248,7 +228,29 @@ for (Burbuja b : burbujas) b.actualizar(delta);
         escenario.draw();
     }
 
-    // ── lógica de estado ─────────────────────────────────────────────
+    // ── detección de toque sobre burbujas ─────────────────────────────────────
+    /**
+     * Convierte el toque de pantalla a coordenadas del mundo físico y le pregunta
+     * a cada burbuja activa si fue tocada. Si la burbuja responde true, explota
+     * y la pelota recupera gravedad normal inmediatamente.
+     *
+     * IMPORTANTE: justTouched() solo es true el primer frame del toque,
+     * así que no hay riesgo de detectar un "hold" como explosiones repetidas.
+     */
+    private void procesarToqueBurbujas() {
+        if (!Gdx.input.justTouched()) return;
+
+        Vector3 raw = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+        camaraFisica.unproject(raw);
+
+        for (Burbuja b : burbujas) {
+            if (b.revisarToque(raw.x, raw.y, pelota)) {
+                break; // solo explotar una burbuja por toque
+            }
+        }
+    }
+
+    // ── lógica de estado ──────────────────────────────────────────────────────
     private boolean pelotaCayoFuera() {
         if (pelota == null) return false;
         Vector2 pos = pelota.getBody().getPosition();
@@ -261,9 +263,8 @@ for (Burbuja b : burbujas) b.actualizar(delta);
             camaraFisica.unproject(raw);
             Vector2 actual = new Vector2(raw.x, raw.y);
             if (puntoAnteriorValido) {
-                // Revisar corte en TODAS las cuerdas
-                for (Cuerda cuerda : cuerdas) {
-                    cuerda.revisarCorte(puntoAnterior, actual, mundo);
+                for (Cuerda c : cuerdas) {
+                    c.revisarCorte(puntoAnterior, actual, mundo);
                 }
             }
             puntoAnterior.set(actual);
@@ -294,7 +295,7 @@ for (Burbuja b : burbujas) b.actualizar(delta);
         }
     }
 
-    // ── banner de ganar/perder ────────────────────────────────────────
+    // ── banner de ganar/perder ────────────────────────────────────────────────
     private void dibujarBannerTexto(String texto, Color color) {
         float cx = camaraFisica.position.x;
         float cy = camaraFisica.position.y;
@@ -312,38 +313,65 @@ for (Burbuja b : burbujas) b.actualizar(delta);
         overlay.dispose();
     }
 
-    // ── contactos ────────────────────────────────────────────────────
+    // ── ContactListener ───────────────────────────────────────────────────────
+    /**
+     * beginContact:
+     *   - Burbuja ↔ Pelota → activa flotación (gravityScale negativo)
+     *   - NomNom  ↔ Pelota → NomNom come la pelota
+     *   - Estrella ↔ Pelota → recoge estrella
+     *   - Obstaculo ↔ Pelota → activa obstáculo
+     *
+     * El orden de los checks de Burbuja va PRIMERO para que el cambio de
+     * gravityScale ocurra antes de que Box2D procese fuerzas del siguiente frame.
+     */
     @Override
     public void beginContact(Contact contact) {
         Object a = contact.getFixtureA().getBody().getUserData();
         Object b = contact.getFixtureB().getBody().getUserData();
 
-        if      (a instanceof NomNom  && b instanceof Pelota) ((NomNom)  a).interactuar();
+        // ── Burbuja ↔ Pelota ────────────────────────────────────────────────
+        if (a instanceof Burbuja && b instanceof Pelota) {
+            ((Burbuja) a).entrar((Pelota) b);
+        } else if (b instanceof Burbuja && a instanceof Pelota) {
+            ((Burbuja) b).entrar((Pelota) a);
+        }
+
+        // ── NomNom ↔ Pelota ─────────────────────────────────────────────────
+        if (a instanceof NomNom  && b instanceof Pelota) ((NomNom)  a).interactuar();
         else if (b instanceof NomNom  && a instanceof Pelota) ((NomNom)  b).interactuar();
 
-        if      (a instanceof Estrella && b instanceof Pelota) ((Estrella) a).interactuar();
+        // ── Estrella ↔ Pelota ────────────────────────────────────────────────
+        if (a instanceof Estrella && b instanceof Pelota) ((Estrella) a).interactuar();
         else if (b instanceof Estrella && a instanceof Pelota) ((Estrella) b).interactuar();
 
-                    if (a instanceof Burbuja && b instanceof Pelota) {
-                 ((Burbuja) a).entrar();
-             }
-             else if (b instanceof Burbuja && a instanceof Pelota) {
-                 ((Burbuja) b).entrar();
-             }
-        if      (a instanceof Obstaculo && b instanceof Pelota) ((Obstaculo) a).interactuar();
+        // ── Obstáculo ↔ Pelota ───────────────────────────────────────────────
+        if (a instanceof Obstaculo && b instanceof Pelota) ((Obstaculo) a).interactuar();
         else if (b instanceof Obstaculo && a instanceof Pelota) ((Obstaculo) b).interactuar();
     }
 
-@Override
-public void endContact(Contact contact) {
-    Object a = contact.getFixtureA().getBody().getUserData();
-    Object b = contact.getFixtureB().getBody().getUserData();
-   if (a instanceof Burbuja && b instanceof Pelota) ((Burbuja) a).salir();
-   else if (b instanceof Burbuja && a instanceof Pelota) ((Burbuja) b).salir();
-}    @Override public void preSolve(Contact c, Manifold m) {}
+    /**
+     * endContact:
+     *   - Burbuja ↔ Pelota → restaura gravedad normal.
+     *
+     * Si la burbuja ya fue explotada (activa=false), salir() sigue funcionando
+     * correctamente porque solo restaura el gravityScale si pelotaDentro=true.
+     */
+    @Override
+    public void endContact(Contact contact) {
+        Object a = contact.getFixtureA().getBody().getUserData();
+        Object b = contact.getFixtureB().getBody().getUserData();
+
+        if (a instanceof Burbuja && b instanceof Pelota) {
+            ((Burbuja) a).salir((Pelota) b);
+        } else if (b instanceof Burbuja && a instanceof Pelota) {
+            ((Burbuja) b).salir((Pelota) a);
+        }
+    }
+
+    @Override public void preSolve(Contact c, Manifold m) {}
     @Override public void postSolve(Contact c, ContactImpulse i) {}
 
-    // ── helpers ──────────────────────────────────────────────────────
+    // ── helpers ───────────────────────────────────────────────────────────────
     protected TextButton crearBoton(String texto, Color color) {
         TextButton btn = new TextButton(texto, piel);
         btn.getStyle().up   = piel.newDrawable("blanco", color);
@@ -387,10 +415,10 @@ public void endContact(Contact contact) {
     }
 
     @Override public void resize(int w, int h) { escenario.getViewport().update(w, h, true); }
-    @Override public void show()    { Gdx.input.setInputProcessor(escenario); }
-    @Override public void pause()   {}
-    @Override public void resume()  {}
-    @Override public void hide()    {}
+    @Override public void show()   { Gdx.input.setInputProcessor(escenario); }
+    @Override public void pause()  {}
+    @Override public void resume() {}
+    @Override public void hide()   {}
 
     @Override
     public void dispose() {
@@ -398,7 +426,7 @@ public void endContact(Contact contact) {
         if (pelota != null) pelota.dispose();
         if (nomnom != null) nomnom.dispose();
         Cuerda.disposeTextura();
-        for (Cuerda c : cuerdas) c.dispose();
+        for (Cuerda    c : cuerdas)    c.dispose();
         for (Obstaculo o : obstaculos) o.dispose();
         for (Burbuja   b : burbujas)   b.dispose();
         escenario.dispose();
