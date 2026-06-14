@@ -118,6 +118,35 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
         return cuerda;
     }
 
+    
+    /**
+ * Crea pelota en la posición dada.
+ * Llamar SIEMPRE antes de anclarCuerda().
+ */
+protected void crearPelota(float x, float y, float radio) {
+    pelota = new Pelota(mundo, x, y, radio);
+}
+
+/**
+ * Ancla una cuerda nueva desde (anclaX, anclaY) hacia la pelota.
+ * Llamar tantas veces como cuerdas quieras, cada una con su propia posición.
+ */
+protected void anclarCuerda(float anclaX, float anclaY, int segmentos, float largoSeg) {
+    BodyDef def = new BodyDef();
+    def.type = BodyDef.BodyType.StaticBody;
+    def.position.set(anclaX, anclaY);
+    Body anclaBody = mundo.createBody(def);
+    posicionesAnclas.add(new Vector2(anclaX, anclaY));
+    Cuerda c = new Cuerda(mundo, anclaBody, new Vector2(anclaX, anclaY),
+                          segmentos, largoSeg, pelota.getBody(), true);
+    cuerdas.add(c);
+}
+
+
+protected void colocarNomNom(float x, float y, float radio) {
+    nomnom = new NomNom(mundo, x, y, radio);
+}
+
     // ── UI ───────────────────────────────────────────────────────────
     private void construirUI() {
         Table raiz = new Table();
