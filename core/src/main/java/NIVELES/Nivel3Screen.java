@@ -3,11 +3,8 @@ package NIVELES;
 
 import Game.*;
 import Game.Obstaculo.TipoObstaculo;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.math.Vector2;
 import LOGIC.LoginManager;
 import com.cutherope.CutTheRope;
-
 
 public class Nivel3Screen extends NivelBaseScreen {
 
@@ -21,73 +18,51 @@ public class Nivel3Screen extends NivelBaseScreen {
     }
 
     @Override
-    protected void crearNivel() {
-        float anclaX = 7.5f;
-        float anclaY = 18f;
-        int   segmentos = 16;
-        float largoSeg  = 0.35f;
+protected void crearNivel() {
+    // Pelota en el centro izquierdo
+    float pelotaX = 4.5f;
+    float pelotaY = 13f;
+    crearPelota(pelotaX, pelotaY, 0.3f);
 
-        // ── ancla ────────────────────────────────────────────────────
-        BodyDef def = new BodyDef();
-        def.type = BodyDef.BodyType.StaticBody;
-        def.position.set(anclaX, anclaY);
-        anclaBody = mundo.createBody(def);
-        anclaPos  = new Vector2(anclaX, anclaY);
+    // Cuerda 1: arriba de la pelota, corta, casi perpendicular
+    anclarCuerda(pelotaX, pelotaY + 3.5f, 8, 0.32f);
 
-        float dist = segmentos * largoSeg;
-        pelota = new Pelota(mundo, anclaX, anclaY - dist, 0.3f);
-        cuerda = new Cuerda(mundo, anclaBody, anclaPos,
-                            segmentos, largoSeg, pelota.getBody(), true);
+    // Cuerda 2: misma altura que cuerda 1 pero más a la derecha, más larga
+    anclarCuerda(pelotaX + 4.5f, pelotaY + 3.5f, 13, 0.32f);
 
-        float base = anclaY - dist; // posición Y de la pelota al soltar
+    // Cuerda 3: centro, alineada con cuerda 2 pero más abajo
+    // su base está ligeramente por debajo de la pelota
+    anclarCuerda(pelotaX + 2.5f, pelotaY - 1.5f, 10, 0.32f);
 
-        // ── ZIGZAG de plataformas ─────────────────────────────────────
-        // Pared izquierda alta — primer rebote
-        obstaculos.add(new Obstaculo(mundo,
-                anclaX - 3.0f, base - 0.8f,
-                3.5f, 0.35f, TipoObstaculo.LARGO));
+    // Cuerda 4: centro, debajo del obstáculo 1 y encima del obstáculo 2
+    anclarCuerda(pelotaX + 2.5f, pelotaY - 5.5f, 8, 0.32f);
 
-        // Pared derecha — segundo rebote
-        obstaculos.add(new Obstaculo(mundo,
-                anclaX + 3.0f, base - 2.2f,
-                3.5f, 0.35f, TipoObstaculo.LARGO));
+    // Obstáculo 1: entre base de cuerda 3 y base de cuerda 4
+    obstaculos.add(new Obstaculo(mundo,
+            pelotaX + 2.5f, pelotaY - 3.5f,
+            4.5f, 0.3f, TipoObstaculo.LARGO));
 
-        // Pared izquierda baja — tercer rebote
-        obstaculos.add(new Obstaculo(mundo,
-                anclaX - 2.8f, base - 3.6f,
-                3.2f, 0.35f, TipoObstaculo.LARGO));
+    // Obstáculo 2: debajo de la base de cuerda 4
+    obstaculos.add(new Obstaculo(mundo,
+            pelotaX + 2.5f, pelotaY - 7.5f,
+            4.5f, 0.3f, TipoObstaculo.LARGO));
 
-        // Pared derecha baja — cuarto rebote
-        obstaculos.add(new Obstaculo(mundo,
-                anclaX + 2.8f, base - 5.0f,
-                3.2f, 0.35f, TipoObstaculo.LARGO));
+    // Estrella 1: derecha de cuerda 3, junto al lado derecho del obstáculo 1
+    estrellas.add(new Estrella(mundo, pelotaX + 5.5f, pelotaY - 2.0f, 0.22f));
 
-        // Bloques cuadrados que tapan el camino recto hacia abajo
-        obstaculos.add(new Obstaculo(mundo,
-                anclaX + 0.5f, base - 1.5f,
-                0.7f, 0.7f, TipoObstaculo.CORTO));
+    // Estrella 2: debajo de estrella 1, lado derecho de cuerda 4
+    estrellas.add(new Estrella(mundo, pelotaX + 4.2f, pelotaY - 6.5f, 0.22f));
 
-        obstaculos.add(new Obstaculo(mundo,
-                anclaX - 0.5f, base - 4.3f,
-                0.7f, 0.7f, TipoObstaculo.CORTO));
+    // Estrella 3: misma altura que estrella 2, lado izquierdo de cuerda 4
+    estrellas.add(new Estrella(mundo, pelotaX + 0.8f, pelotaY - 6.5f, 0.22f));
 
-        // ── BURBUJAS (trampa: te empujan contra pared) ───────────────
-        burbujas.add(new Burbuja(mundo, anclaX + 3.8f, base - 1.2f, 0.38f, 5f));
-        burbujas.add(new Burbuja(mundo, anclaX - 3.8f, base - 3.0f, 0.38f, 5f));
+    // NomNom abajo al centro
+    colocarNomNom(pelotaX + 2.5f, pelotaY - 11f, 0.6f);
 
-        // ── ESTRELLAS ────────────────────────────────────────────────
-        // Estrella 1: en el primer hueco del zigzag (accesible si cortas bien)
-        estrellas.add(new Estrella(mundo, anclaX - 4.5f, base - 1.5f, 0.22f));
+    limiteInferior = pelotaY - 14f;
 
-        // Estrella 2: al final del zigzag derecho
-        estrellas.add(new Estrella(mundo, anclaX + 4.5f, base - 4.0f, 0.22f));
-
-        // Estrella 3: en el fondo, debajo de todo el zigzag (la más difícil)
-        estrellas.add(new Estrella(mundo, anclaX, base - 6.5f, 0.22f));
-
-        // ── cámara ───────────────────────────────────────────────────
-        camaraFisica.setToOrtho(false, 20f, 26f);
-        camaraFisica.position.set(anclaX, anclaY - 9f, 0);
-        camaraFisica.update();
-    }
+    camaraFisica.setToOrtho(false, 18f, 24f);
+    camaraFisica.position.set(pelotaX + 2f, pelotaY - 5f, 0);
+    camaraFisica.update();
+}
 }
