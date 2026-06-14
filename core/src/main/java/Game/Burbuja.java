@@ -4,17 +4,16 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 
 public class Burbuja extends ElementoNivel implements Interactuable {
     private boolean activa;
-private float fuerzaElevacion;
-private Body body;
-private World mundo;
-private float radio;
-private boolean pelotaAdentro = false;
-private Pelota pelotaRef = null;
-    
+    private float fuerzaElevacion;
+    private Body body;
+    private World mundo;
+    private float radio;
+    private boolean pelotaDentro = false;
     public Burbuja(World mundo, float x, float y, float radio, float fuerzaElevacion) {
         super(x, y, radio * 2, radio * 2, TipoElemento.BURBUJA, crearTexturaBurbuja(radio));
         this.mundo = mundo;
@@ -36,7 +35,10 @@ private Pelota pelotaRef = null;
         
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.isSensor = true; // Sensor para solo detectar colisión sin rebote
+        fixtureDef.isSensor = true; 
+// Sensor para solo detectar colisión sin rebote
+fixtureDef.filter.categoryBits = 0x0002; // BURBUJA
+fixtureDef.filter.maskBits = 0x0001;      // SOLO PELOTA
         body.createFixture(fixtureDef);
         
         shape.dispose();
@@ -69,20 +71,8 @@ private Pelota pelotaRef = null;
         return tex;
     }
     
-@Override
-public void actualizar(float delta) {
-    if (activa && pelotaAdentro && pelotaRef != null) {
-        Body cuerpoPelota = pelotaRef.getBody();
-        // Fuerza suave continua hacia arriba
-        cuerpoPelota.applyForceToCenter(0, fuerzaElevacion, true);
-        // Frena caída pero no cancela velocidad horizontal
-        float vy = cuerpoPelota.getLinearVelocity().y;
-        if (vy < -2f) {
-            cuerpoPelota.setLinearVelocity(
-                cuerpoPelota.getLinearVelocity().x, vy * 0.85f);
-        }
-    }
-}
+  
+    
     @Override
     public void dibujar(SpriteBatch batch) {
         if (activa) {
@@ -111,14 +101,32 @@ public void actualizar(float delta) {
         return body;
     }
     
-public void aplicarElevacion(Pelota pelota) {
-    if (activa) {
-        pelotaAdentro = true;
-        pelotaRef = pelota;
+    public void aplicarElevacion(Pelota pelota) {
+        if (activa) {
+            Body cuerpoPelota = pelota.getBody();
+            cuerpoPelota.setLinearVelocity(cuerpoPelota.getLinearVelocity().x, 0);
+            cuerpoPelota.applyLinearImpulse(0, fuerzaElevacion, 
+                cuerpoPelota.getPosition().x, cuerpoPelota.getPosition().y, true);
+            interactuar(); // La burbuja desaparece
+        }
     }
+    public void entrar() {
+    pelotaDentro = true;
 }
 
-public void pelotaSalio() {
-    pelotaAdentro = false;
+public void salir() {
+    pelotaDentro = false;
+}
+
+public void aplicarFlotacion(Pelota pelota) {
+    if (pelotaDentro && activa) {
+        Body b = pelota.getBody();
+
+        b.applyForceToCenter(0, fuerzaElevacion, true);
+    }
+}
+@Override
+public void actualizar(float delta) {
+    // flotación continua
 }
 }

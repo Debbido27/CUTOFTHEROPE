@@ -173,6 +173,9 @@ protected void colocarNomNom(float x, float y, float radio) {
         switch (estadoNivel) {
             case JUGANDO:
                 mundo.step(delta, 12, 8);
+for (Burbuja b : burbujas) {
+    b.aplicarFlotacion(pelota);
+}
                 if (nomnom != null) {
                     nomnom.actualizar(delta);
                     if (nomnom.comioLaPelota()) {
@@ -210,6 +213,10 @@ protected void colocarNomNom(float x, float y, float radio) {
 
         // Mundo físico
         batch.setProjectionMatrix(camaraFisica.combined);
+        // Después del switch, ANTES de dibujar:
+for (Burbuja b : burbujas) b.actualizar(delta);
+
+// Luego dibujas...
         batch.begin();
 
         // Dibujar todas las cuerdas
@@ -228,7 +235,6 @@ protected void colocarNomNom(float x, float y, float radio) {
         for (Estrella  e : estrellas)  e.dibujar(batch);
         for (Obstaculo o : obstaculos) o.dibujar(batch);
         for (Burbuja   b : burbujas)   b.dibujar(batch);
-
         // Overlay encima de todo
         if (estadoNivel == EstadoNivel.GANANDO)
             dibujarBannerTexto("¡NomNom comió!", VERDE);
@@ -318,15 +324,23 @@ protected void colocarNomNom(float x, float y, float radio) {
         if      (a instanceof Estrella && b instanceof Pelota) ((Estrella) a).interactuar();
         else if (b instanceof Estrella && a instanceof Pelota) ((Estrella) b).interactuar();
 
-        if      (a instanceof Burbuja && b instanceof Pelota) ((Burbuja) a).aplicarElevacion(pelota);
-        else if (b instanceof Burbuja && a instanceof Pelota) ((Burbuja) b).aplicarElevacion(pelota);
-
+                    if (a instanceof Burbuja && b instanceof Pelota) {
+                 ((Burbuja) a).entrar();
+             }
+             else if (b instanceof Burbuja && a instanceof Pelota) {
+                 ((Burbuja) b).entrar();
+             }
         if      (a instanceof Obstaculo && b instanceof Pelota) ((Obstaculo) a).interactuar();
         else if (b instanceof Obstaculo && a instanceof Pelota) ((Obstaculo) b).interactuar();
     }
 
-    @Override public void endContact(Contact c) {}
-    @Override public void preSolve(Contact c, Manifold m) {}
+@Override
+public void endContact(Contact contact) {
+    Object a = contact.getFixtureA().getBody().getUserData();
+    Object b = contact.getFixtureB().getBody().getUserData();
+   if (a instanceof Burbuja && b instanceof Pelota) ((Burbuja) a).salir();
+   else if (b instanceof Burbuja && a instanceof Pelota) ((Burbuja) b).salir();
+}    @Override public void preSolve(Contact c, Manifold m) {}
     @Override public void postSolve(Contact c, ContactImpulse i) {}
 
     // ── helpers ──────────────────────────────────────────────────────

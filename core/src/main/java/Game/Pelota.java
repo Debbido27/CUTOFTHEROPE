@@ -29,9 +29,11 @@ public class Pelota {
         fixtureDef.density=1f;
         fixtureDef.friction=0.3f;
         fixtureDef.restitution=0.2f;
-
+      fixtureDef.filter.categoryBits = 0x0001; // PELOTA
+fixtureDef.filter.maskBits = (short) 0xFFFF;      // choca con todo
         body.createFixture(fixtureDef);
         forma.dispose();
+        
     }
 
     private Texture crearTexturaPlaceHolder (float radio){

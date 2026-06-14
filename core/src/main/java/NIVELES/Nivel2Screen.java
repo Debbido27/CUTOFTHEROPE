@@ -38,7 +38,7 @@ protected void crearNivel() {
     colocarNomNom(pelotaX, 17.5f, 0.6f);
 
     // Burbuja en la parte inferior, contiene Estrella 1
-    burbujas.add(new Burbuja(mundo, pelotaX, pelotaY - 3f, 0.6f, 9f));
+    burbujas.add(new Burbuja(mundo, pelotaX, pelotaY - 3f, 0.6f, 18f));
 
     // Estrella 1: dentro de la burbuja
     estrellas.add(new Estrella(mundo, pelotaX, pelotaY - 3f, 0.22f));
