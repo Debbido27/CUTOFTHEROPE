@@ -12,7 +12,7 @@ import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 public class Burbuja extends ElementoNivel implements Interactuable {
 
     // ── constantes ───────────────────────────────────────────────────
-    private static final float GRAVITY_BURBUJA  = -3f;
+    private static final float GRAVITY_BURBUJA  = -1f;
     private static final float DAMPING_BURBUJA  = 2f;
     private static final float DAMPING_NORMAL   = 0f;
 
