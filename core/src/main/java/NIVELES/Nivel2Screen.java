@@ -27,37 +27,43 @@ public class Nivel2Screen extends NivelBaseScreen {
      * Constructora de Burbuja: new Burbuja(mundo, x, y, radio)
      *   → ya NO recibe fuerzaElevacion (la flotación la controla gravityScale).
      */
-    @Override
-    protected void crearNivel() {
-        final float pelotaX = 7.5f;
-        final float pelotaY = 8f;
+@Override
+protected void crearNivel() {
+    float bajar = 2.5f;
 
-        // ── pelota ────────────────────────────────────────────────────────────
-        crearPelota(pelotaX, pelotaY, 0.3f);
+    float pelotaX = 7.5f;
+    float pelotaY = 15f - bajar;
 
-        // ── cuerdas ───────────────────────────────────────────────────────────
-        anclarCuerda(pelotaX,        16f,  8, 1.0f);   // central → hacia NomNom
-        anclarCuerda(pelotaX + 4f,   14f,  8, 0.9f);   // derecha
-        anclarCuerda(pelotaX - 3.5f,  6f,  4, 1.0f);   // izquierda baja
+    crearPelota(pelotaX, pelotaY, 0.3f);
 
-        // ── NomNom ────────────────────────────────────────────────────────────
-        colocarNomNom(pelotaX, 17.5f, 0.6f);
+    // Cuerda 1: corta, vertical, sostiene la pelota justo bajo NomNom (TAUT)
+    anclarCuerda(pelotaX, 18f - bajar, 3, 1.0f);
 
-        // ── burbuja ───────────────────────────────────────────────────────────
-        // Está debajo de la pelota. El jugador corta la cuerda inferior,
-        // la pelota cae hacia la burbuja, queda atrapada y flota hacia NomNom.
-        // El usuario puede tocar la burbuja para que explote antes de llegar.
-        burbujas.add(new Burbuja(mundo, pelotaX, pelotaY - 3f, 0.65f));
+    // Cuerda 2: arriba-derecha, MUCHA holgura para no frenar la caída
+    anclarCuerda(pelotaX + 5f, 15f - bajar, 10, 0.95f);
 
-        // ── estrellas ─────────────────────────────────────────────────────────
-        estrellas.add(new Estrella(mundo, pelotaX,        pelotaY - 3f, 0.22f)); // dentro de la burbuja
-        estrellas.add(new Estrella(mundo, pelotaX - 3.5f, 7f,           0.22f)); // izquierda
-        estrellas.add(new Estrella(mundo, pelotaX + 1f,   13f,          0.22f)); // en la subida
+    // Cuerda 3: izquierda, holgura moderada
+    anclarCuerda(pelotaX - 3.5f, 9f - bajar, 5, 1.5f);
 
-        // ── cámara ────────────────────────────────────────────────────────────
-        limiteInferior = 1f;
-        camaraFisica.setToOrtho(false, 18f, 22f);
-        camaraFisica.position.set(7.5f, 9f, 0);
-        camaraFisica.update();
-    }
+    // NomNom arriba (NO SE TOCA)
+    colocarNomNom(pelotaX, 19f, 0.6f);
+
+    // Burbuja justo debajo de la pelota
+    burbujas.add(new Burbuja(mundo, pelotaX, 7f - bajar, 0.6f, 9f));
+
+    // Estrella 1 dentro de la burbuja
+    estrellas.add(new Estrella(mundo, pelotaX, 7f - bajar, 0.22f));
+
+    // Estrella 2
+    estrellas.add(new Estrella(mundo, pelotaX - 3f, 10f - bajar, 0.22f));
+
+    // Estrella 3
+    estrellas.add(new Estrella(mundo, pelotaX + 1.5f, 13f - bajar, 0.22f));
+
+    limiteInferior = 1f;
+
+    camaraFisica.setToOrtho(false, 18f, 22f);
+    camaraFisica.position.set(7.5f, 11f, 0);
+    camaraFisica.update();
+}
 }

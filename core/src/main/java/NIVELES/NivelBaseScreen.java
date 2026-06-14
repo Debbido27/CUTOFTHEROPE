@@ -203,6 +203,7 @@ if (burbujaActiva != null) burbujaActiva.entrar(pelota);
         batch.end();
 
         // ── mundo físico ──────────────────────────────────────────────────────
+        
         batch.setProjectionMatrix(camaraFisica.combined);
         batch.begin();
 
