@@ -29,29 +29,25 @@ public class Nivel1Screen extends NivelBaseScreen {
     }
 
     @Override
-    protected void crearNivel() {
-        // Nivel 1: fácil, cuerda corta, estrellas accesibles
-        float anclaX = 4f, anclaY = 5.5f;
-        int segmentos = 10;
-        float largoSeg = 0.3f;
+protected void crearNivel() {
+    float anclaX = 4f, anclaY = 5.5f;
+    int   segmentos = 10;
+    float largoSeg  = 0.3f;
+    float dist = segmentos * largoSeg;
 
-        BodyDef def = new BodyDef();
-        def.type = BodyDef.BodyType.StaticBody;
-        def.position.set(anclaX, anclaY);
-        anclaBody = mundo.createBody(def);
-        anclaPos  = new Vector2(anclaX, anclaY);
+    crearPelota(anclaX, anclaY - dist, 0.3f);
+    anclarCuerda(anclaX, anclaY, segmentos, largoSeg);
 
-        float dist = segmentos * largoSeg;
-        pelota = new Pelota(mundo, anclaX, anclaY - dist, 0.3f);
-        cuerda = new Cuerda(mundo, anclaBody, anclaPos, segmentos, largoSeg, pelota.getBody(), true);
+    float ey = anclaY - dist - 0.8f;
+    estrellas.add(new Estrella(mundo, anclaX, ey,        0.2f));
+    estrellas.add(new Estrella(mundo, anclaX, ey - 0.8f, 0.2f));
+    estrellas.add(new Estrella(mundo, anclaX, ey - 1.6f, 0.2f));
 
-        float ex = anclaX, ey = anclaY - dist - 0.8f;
-        estrellas.add(new Estrella(mundo, ex, ey,        0.2f));
-        estrellas.add(new Estrella(mundo, ex, ey - 0.8f, 0.2f));
-        estrellas.add(new Estrella(mundo, ex, ey - 1.6f, 0.2f));
+    colocarNomNom(anclaX, ey - 2.6f, 0.5f);
+    limiteInferior = anclaY - dist - 6f;
 
-        camaraFisica.setToOrtho(false, 16f, 12f);
-        camaraFisica.position.set(anclaX, anclaY - 4f, 0);
-        camaraFisica.update();
-    }
+    camaraFisica.setToOrtho(false, 16f, 12f);
+    camaraFisica.position.set(anclaX, anclaY - 4f, 0);
+    camaraFisica.update();
+}
 }

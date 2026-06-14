@@ -197,6 +197,11 @@ public boolean revisarCorte(Vector2 p1, Vector2 p2, World mundo) {
     public Cuerda getSiguiente() {
         return siguiente;
     }
+    
+    /** Libera el body de este segmento y los siguientes recursivamente. */
+public void dispose() {
+    if (siguiente != null) siguiente.dispose();
+}
 
     /** Libera la textura compartida. Llamar solo una vez al cerrar el nivel. */
     public static void disposeTextura() {
