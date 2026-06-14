@@ -42,7 +42,7 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
     private EstadoNivel estadoNivel     = EstadoNivel.JUGANDO;
     private float       timerTransicion = 0f;
     protected float     limiteInferior  = -5f;
-
+    private Burbuja burbujaActiva = null;
     // ── referencias del juego ─────────────────────────────────────────────────
     protected CutTheRope   juego;
     protected String       usuario;
@@ -158,7 +158,7 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
         switch (estadoNivel) {
             case JUGANDO:
                 mundo.step(delta, 12, 8);
-
+if (burbujaActiva != null) burbujaActiva.entrar(pelota);
                 if (nomnom != null) {
                     nomnom.actualizar(delta);
                     if (nomnom.comioLaPelota()) {
@@ -330,12 +330,8 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
         Object b = contact.getFixtureB().getBody().getUserData();
 
         // ── Burbuja ↔ Pelota ────────────────────────────────────────────────
-        if (a instanceof Burbuja && b instanceof Pelota) {
-            ((Burbuja) a).entrar((Pelota) b);
-        } else if (b instanceof Burbuja && a instanceof Pelota) {
-            ((Burbuja) b).entrar((Pelota) a);
-        }
-
+       if (a instanceof Burbuja && b instanceof Pelota) burbujaActiva = (Burbuja) a;
+else if (b instanceof Burbuja && a instanceof Pelota) burbujaActiva = (Burbuja) b;
         // ── NomNom ↔ Pelota ─────────────────────────────────────────────────
         if (a instanceof NomNom  && b instanceof Pelota) ((NomNom)  a).interactuar();
         else if (b instanceof NomNom  && a instanceof Pelota) ((NomNom)  b).interactuar();
@@ -361,11 +357,8 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
         Object a = contact.getFixtureA().getBody().getUserData();
         Object b = contact.getFixtureB().getBody().getUserData();
 
-        if (a instanceof Burbuja && b instanceof Pelota) {
-            ((Burbuja) a).salir((Pelota) b);
-        } else if (b instanceof Burbuja && a instanceof Pelota) {
-            ((Burbuja) b).salir((Pelota) a);
-        }
+        if (a instanceof Burbuja && b instanceof Pelota) { burbujaActiva = null; ((Burbuja) a).salir(pelota); }
+else if (b instanceof Burbuja && a instanceof Pelota) { burbujaActiva = null; ((Burbuja) b).salir(pelota); }
     }
 
     @Override public void preSolve(Contact c, Manifold m) {}

@@ -7,48 +7,26 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 
-/**
- * Burbuja — mecánica idéntica a Cut the Rope.
- *
- * Principio clave: en lugar de aplicar fuerzas repetidas (que generan jitter),
- * se cambia el gravityScale del cuerpo de la pelota:
- *   - Al entrar: gravityScale = -FACTOR  → la pelota "flota" (gravedad invertida suave)
- *   - Al salir o explotar: gravityScale = 1f → gravedad normal
- *
- * La burbuja es un sensor (isSensor = true), así que NO produce rebotes físicos.
- * La detección de tap/clic se hace en actualizar() comparando la posición del toque
- * con el centro de la burbuja.
- */
 public class Burbuja extends ElementoNivel implements Interactuable {
 
-    // ── constantes ──────────────────────────────────────────────────────────
-    /**
-     * Escala de gravedad negativa que se aplica a la pelota mientras flota.
-     * -0.35f → sube suavemente (35% de la gravedad invertida).
-     * Ajusta este valor para cambiar la "potencia" de la burbuja.
-     */
-    private static final float GRAVITY_SCALE_FLOTANDO = -0.35f;
+    // ── constantes ───────────────────────────────────────────────────
+    private static final float GRAVITY_BURBUJA  = -3f;
+    private static final float DAMPING_BURBUJA  = 2f;
+    private static final float DAMPING_NORMAL   = 0f;
 
-    /**
-     * Amortiguación lineal extra que se aplica a la pelota dentro de la burbuja
-     * para suavizar los movimientos y evitar que acelere indefinidamente.
-     */
-    private static final float DAMPING_DENTRO = 1.8f;
+    // ── estado ───────────────────────────────────────────────────────
+    private boolean activa       = true;
+    private boolean pelotaDentro = false;
 
-    /** Amortiguación normal de la pelota fuera de la burbuja. */
-    private static final float DAMPING_NORMAL  = 0.0f;
+    // ── física ───────────────────────────────────────────────────────
+    private final World mundo;
+    private final Body  body;
+    private final float radio;
+    private       Joint jointBurbuja = null;
 
-    // ── estado ──────────────────────────────────────────────────────────────
-    private boolean activa        = true;
-    private boolean pelotaDentro  = false;
-
-    // ── física ──────────────────────────────────────────────────────────────
-    private final World   mundo;
-    private final Body    body;
-    private final float   radio;
-
-    // ── constructor ─────────────────────────────────────────────────────────
+    // ── constructores ────────────────────────────────────────────────
     public Burbuja(World mundo, float x, float y, float radio) {
         super(x, y, radio * 2, radio * 2, TipoElemento.BURBUJA,
               crearTexturaBurbuja(radio));
@@ -57,10 +35,14 @@ public class Burbuja extends ElementoNivel implements Interactuable {
         this.body  = crearCuerpoFisico(x, y, radio);
     }
 
-    // ── creación del cuerpo Box2D ────────────────────────────────────────────
+    public Burbuja(World mundo, float x, float y, float radio, float ignorado) {
+        this(mundo, x, y, radio);
+    }
+
+    // ── cuerpo físico ────────────────────────────────────────────────
     private Body crearCuerpoFisico(float cx, float cy, float r) {
         BodyDef def = new BodyDef();
-        def.type     = BodyDef.BodyType.StaticBody;
+        def.type = BodyDef.BodyType.StaticBody; // empieza estática
         def.position.set(cx, cy);
 
         Body b = mundo.createBody(def);
@@ -70,92 +52,91 @@ public class Burbuja extends ElementoNivel implements Interactuable {
         shape.setRadius(r);
 
         FixtureDef fix = new FixtureDef();
-        fix.shape    = shape;
-        fix.isSensor = true;                // sin rebote, solo detección
-        fix.filter.categoryBits = 0x0002;   // categoría BURBUJA
-        fix.filter.maskBits     = 0x0001;   // solo colisiona con PELOTA
-
+        fix.shape           = shape;
+        fix.isSensor        = true;
+        fix.filter.categoryBits = 0x0004;
+        fix.filter.maskBits     = 0x0001;
         b.createFixture(fix);
         shape.dispose();
         return b;
     }
 
-    // ── textura procedural ───────────────────────────────────────────────────
-    private static Texture crearTexturaBurbuja(float radio) {
-        int d = Math.max(4, (int)(radio * 100));
-        Pixmap pm = new Pixmap(d, d, Pixmap.Format.RGBA8888);
-
-        // fondo transparente
-        pm.setColor(0, 0, 0, 0);
-        pm.fill();
-
-        // círculo principal semitransparente (azul claro)
-        pm.setColor(new Color(0.55f, 0.80f, 1f, 0.55f));
-        pm.fillCircle(d / 2, d / 2, d / 2 - 1);
-
-        // borde sutil
-        pm.setColor(new Color(0.7f, 0.9f, 1f, 0.85f));
-        pm.drawCircle(d / 2, d / 2, d / 2 - 1);
-
-        // reflejo superior izquierdo
-        int br = Math.max(1, d / 6);
-        pm.setColor(new Color(1, 1, 1, 0.75f));
-        pm.fillCircle(d / 3, d / 3, br);
-
-        Texture tex = new Texture(pm);
-        pm.dispose();
-        return tex;
-    }
-
-    // ── API pública (llamada desde NivelBaseScreen) ──────────────────────────
+    // ── API pública ──────────────────────────────────────────────────
 
     /**
-     * Llamar en beginContact cuando la pelota entra en la burbuja.
-     * Activa la gravedad invertida y mayor amortiguación.
+     * Pelota entra a la burbuja:
+     * - Burbuja se vuelve dinámica y empieza a flotar
+     * - Pelota se pega a la burbuja con WeldJoint
+     * - Ambas suben juntas
      */
     public void entrar(Pelota pelota) {
         if (!activa || pelotaDentro) return;
         pelotaDentro = true;
 
-        Body pb = pelota.getBody();
-        pb.setGravityScale(GRAVITY_SCALE_FLOTANDO);
-        pb.setLinearDamping(DAMPING_DENTRO);
+        // Burbuja pasa a dinámica y flota
+        body.setType(BodyDef.BodyType.DynamicBody);
+        body.setGravityScale(GRAVITY_BURBUJA);
+        body.setLinearDamping(DAMPING_BURBUJA);
 
-        // cancelar velocidad vertical brusca para arranque suave
+        // Pelota también flota
+        Body pb = pelota.getBody();
+        pb.setGravityScale(GRAVITY_BURBUJA);
+        pb.setLinearDamping(DAMPING_BURBUJA);
+
+        // Cancelar velocidad brusca para arranque suave
         Vector2 vel = pb.getLinearVelocity();
         pb.setLinearVelocity(vel.x * 0.3f, 0f);
+
+        // Pegar burbuja y pelota
+       WeldJointDef weld = new WeldJointDef();
+weld.bodyA = body;
+weld.bodyB = pb;
+weld.localAnchorA.set(0, 0);
+weld.localAnchorB.set(0, 0);
+weld.referenceAngle = 0f;
+jointBurbuja = mundo.createJoint(weld);
     }
 
     /**
-     * Llamar en endContact cuando la pelota sale de la burbuja.
-     * Restaura la gravedad normal.
+     * No se usa — la pelota solo se separa al explotar la burbuja.
      */
     public void salir(Pelota pelota) {
-        if (!pelotaDentro) return;
-        pelotaDentro = false;
-        restaurarGravedad(pelota);
+        // intencional vacío
     }
 
     /**
-     * Llamar cada frame desde render() para detectar si el usuario
-     * toca/hace clic sobre la burbuja y hacerla explotar.
+     * Explotar la burbuja:
+     * - Destruye el joint
+     * - Burbuja vuelve a estática y desaparece
+     * - Pelota recupera gravedad normal
      */
-    @Override
-    public void actualizar(float delta) {
+    public void explotar(Pelota pelota) {
         if (!activa) return;
 
-        if (Gdx.input.justTouched()) {
-            // La detección en coordenadas de mundo se hace en NivelBaseScreen
-            // con camaraFisica.unproject(). Aquí solo exponemos el método
-            // revisarToque() para que NivelBaseScreen lo llame.
+        // Destruir joint
+        if (jointBurbuja != null) {
+            mundo.destroyJoint(jointBurbuja);
+            jointBurbuja = null;
+        }
+
+        // Burbuja desaparece
+        body.setType(BodyDef.BodyType.StaticBody);
+        activa       = false;
+        pelotaDentro = false;
+
+        // Pelota recupera física normal
+        if (pelota != null) {
+            Body pb = pelota.getBody();
+            pb.setGravityScale(1f);
+            pb.setLinearDamping(DAMPING_NORMAL);
+            // Dar pequeño impulso hacia arriba para que no caiga brutal
+            pb.setLinearVelocity(pb.getLinearVelocity().x, 2f);
         }
     }
 
     /**
-     * Llama a esto desde NivelBaseScreen.procesarToqueBurbujas()
-     * con las coordenadas ya desprojectadas al mundo físico.
-     *
-     * @return true si la burbuja explotó
+     * Revisar si el toque del jugador cayó sobre la burbuja.
+     * Llamar desde NivelBaseScreen con coordenadas ya desprojectadas.
      */
     public boolean revisarToque(float mundoX, float mundoY, Pelota pelota) {
         if (!activa) return false;
@@ -168,27 +149,20 @@ public class Burbuja extends ElementoNivel implements Interactuable {
         return false;
     }
 
-    /** Hace explotar la burbuja (la desactiva y restaura gravedad). */
-    public void explotar(Pelota pelota) {
-        if (!activa) return;
-        activa       = false;
-        pelotaDentro = false;
-        if (pelota != null) restaurarGravedad(pelota);
-    }
-
-    // ── Interactuable (legacy: explotar sin referencia a pelota) ────────────
+    // ── Interactuable ────────────────────────────────────────────────
     @Override
     public void interactuar() {
-        // No usar — usar explotar(pelota) para restaurar gravedad correctamente
-        activa = false;
+        activa = false; // legacy, no restaura gravedad
     }
 
     @Override
-    public boolean estaActivo() {
-        return activa;
-    }
+    public boolean estaActivo() { return activa; }
 
-    // ── dibujo ───────────────────────────────────────────────────────────────
+    // ── actualizar ───────────────────────────────────────────────────
+    @Override
+    public void actualizar(float delta) {}
+
+    // ── dibujar ──────────────────────────────────────────────────────
     @Override
     public void dibujar(SpriteBatch batch) {
         if (!activa) return;
@@ -197,15 +171,31 @@ public class Burbuja extends ElementoNivel implements Interactuable {
         batch.draw(textura, cx - radio, cy - radio, radio * 2, radio * 2);
     }
 
-    // ── helpers privados ─────────────────────────────────────────────────────
-    private void restaurarGravedad(Pelota pelota) {
-        Body pb = pelota.getBody();
-        pb.setGravityScale(1f);
-        pb.setLinearDamping(DAMPING_NORMAL);
+    // ── textura ──────────────────────────────────────────────────────
+    private static Texture crearTexturaBurbuja(float radio) {
+        int d = Math.max(4, (int)(radio * 100));
+        Pixmap pm = new Pixmap(d, d, Pixmap.Format.RGBA8888);
+
+        pm.setColor(0, 0, 0, 0);
+        pm.fill();
+
+        pm.setColor(new Color(0.55f, 0.80f, 1f, 0.55f));
+        pm.fillCircle(d / 2, d / 2, d / 2 - 1);
+
+        pm.setColor(new Color(0.7f, 0.9f, 1f, 0.85f));
+        pm.drawCircle(d / 2, d / 2, d / 2 - 1);
+
+        int br = Math.max(1, d / 6);
+        pm.setColor(new Color(1, 1, 1, 0.75f));
+        pm.fillCircle(d / 3, d / 3, br);
+
+        Texture tex = new Texture(pm);
+        pm.dispose();
+        return tex;
     }
 
-    // ── getters ───────────────────────────────────────────────────────────────
-    public Body    getBody()         { return body; }
-    public float   getRadio()        { return radio; }
-    public boolean isPelotaDentro()  { return pelotaDentro; }
+    // ── getters ──────────────────────────────────────────────────────
+    public Body    getBody()        { return body; }
+    public float   getRadio()       { return radio; }
+    public boolean isPelotaDentro() { return pelotaDentro; }
 }
