@@ -40,13 +40,13 @@ public class Nivel4Screen extends NivelBaseScreen {
         BodyDef def = new BodyDef();
         def.type = BodyDef.BodyType.StaticBody;
         def.position.set(anclaX, anclaY);
-        anclaBody = mundo.createBody(def);
-        anclaPos  = new Vector2(anclaX, anclaY);
+     //   anclaBody = mundo.createBody(def);
+     //   anclaPos  = new Vector2(anclaX, anclaY);
 
         float dist = segmentos * largoSeg;
         pelota = new Pelota(mundo, anclaX, anclaY - dist, 0.3f);
-        cuerda = new Cuerda(mundo, anclaBody, anclaPos,
-                            segmentos, largoSeg, pelota.getBody(), true);
+      //  cuerda = new Cuerda(mundo, anclaBody, anclaPos,
+                     //       segmentos, largoSeg, pelota.getBody(), true);
 
         float base = anclaY - dist;
 

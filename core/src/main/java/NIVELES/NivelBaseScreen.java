@@ -172,7 +172,7 @@ protected void colocarNomNom(float x, float y, float radio) {
 
         switch (estadoNivel) {
             case JUGANDO:
-                mundo.step(delta, 6, 2);
+                mundo.step(delta, 12, 8);
                 if (nomnom != null) {
                     nomnom.actualizar(delta);
                     if (nomnom.comioLaPelota()) {

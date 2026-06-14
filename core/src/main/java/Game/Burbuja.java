@@ -8,10 +8,12 @@ import com.badlogic.gdx.physics.box2d.*;
 
 public class Burbuja extends ElementoNivel implements Interactuable {
     private boolean activa;
-    private float fuerzaElevacion;
-    private Body body;
-    private World mundo;
-    private float radio;
+private float fuerzaElevacion;
+private Body body;
+private World mundo;
+private float radio;
+private boolean pelotaAdentro = false;
+private Pelota pelotaRef = null;
     
     public Burbuja(World mundo, float x, float y, float radio, float fuerzaElevacion) {
         super(x, y, radio * 2, radio * 2, TipoElemento.BURBUJA, crearTexturaBurbuja(radio));
@@ -67,11 +69,20 @@ public class Burbuja extends ElementoNivel implements Interactuable {
         return tex;
     }
     
-    @Override
-    public void actualizar(float delta) {
-        // La burbuja no se mueve (estática)
+@Override
+public void actualizar(float delta) {
+    if (activa && pelotaAdentro && pelotaRef != null) {
+        Body cuerpoPelota = pelotaRef.getBody();
+        // Fuerza suave continua hacia arriba
+        cuerpoPelota.applyForceToCenter(0, fuerzaElevacion, true);
+        // Frena caída pero no cancela velocidad horizontal
+        float vy = cuerpoPelota.getLinearVelocity().y;
+        if (vy < -2f) {
+            cuerpoPelota.setLinearVelocity(
+                cuerpoPelota.getLinearVelocity().x, vy * 0.85f);
+        }
     }
-    
+}
     @Override
     public void dibujar(SpriteBatch batch) {
         if (activa) {
@@ -100,13 +111,14 @@ public class Burbuja extends ElementoNivel implements Interactuable {
         return body;
     }
     
-    public void aplicarElevacion(Pelota pelota) {
-        if (activa) {
-            Body cuerpoPelota = pelota.getBody();
-            cuerpoPelota.setLinearVelocity(cuerpoPelota.getLinearVelocity().x, 0);
-            cuerpoPelota.applyLinearImpulse(0, fuerzaElevacion, 
-                cuerpoPelota.getPosition().x, cuerpoPelota.getPosition().y, true);
-            interactuar(); // La burbuja desaparece
-        }
+public void aplicarElevacion(Pelota pelota) {
+    if (activa) {
+        pelotaAdentro = true;
+        pelotaRef = pelota;
     }
+}
+
+public void pelotaSalio() {
+    pelotaAdentro = false;
+}
 }

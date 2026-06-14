@@ -15,7 +15,7 @@ public class Nivel2Screen extends NivelBaseScreen {
 
     @Override
     protected String rutaFondo() {
-        return "images/lvl2_background.png";
+        return "images/lvl1.png"; // ← tu fondo específico
     }
 
     @Override
@@ -26,13 +26,13 @@ protected void crearNivel() {
     crearPelota(pelotaX, pelotaY, 0.3f);
 
     // Cuerda 1: debajo de NomNom, parte superior central
-    anclarCuerda(pelotaX, 16f, 14, 0.32f);
+    anclarCuerda(pelotaX, 16f, 8, 1f);
 
     // Cuerda 2: parte superior derecha
-    anclarCuerda(pelotaX + 4f, 14f, 12, 0.32f);
+    anclarCuerda(pelotaX + 4f, 14f, 8, 0.9f);
 
     // Cuerda 3: parte inferior izquierda
-    anclarCuerda(pelotaX - 3.5f, 6f, 8, 0.32f);
+    anclarCuerda(pelotaX - 3.5f, 6f, 4, 1.0f);
 
     // NomNom arriba esperando, encima de la ancla de cuerda 1
     colocarNomNom(pelotaX, 17.5f, 0.6f);
