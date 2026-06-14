@@ -19,18 +19,40 @@ public class Nivel2Screen extends NivelBaseScreen {
     }
 
     @Override
-    protected void crearNivel() {
-        float pelotaX = 7.5f;
-        float pelotaY = 16f;
-        
-        pelota = new Pelota(mundo, pelotaX, pelotaY, 0.3f);
-        
-   
-        
-        limiteInferior = -2f;
-        
-        camaraFisica.setToOrtho(false, 18f, 20f);
-        camaraFisica.position.set(7.5f, 9f, 0);
-        camaraFisica.update();
-    }
+protected void crearNivel() {
+    // Pelota suspendida en el centro
+    float pelotaX = 7.5f;
+    float pelotaY = 8f;
+    crearPelota(pelotaX, pelotaY, 0.3f);
+
+    // Cuerda 1: debajo de NomNom, parte superior central
+    anclarCuerda(pelotaX, 16f, 14, 0.32f);
+
+    // Cuerda 2: parte superior derecha
+    anclarCuerda(pelotaX + 4f, 14f, 12, 0.32f);
+
+    // Cuerda 3: parte inferior izquierda
+    anclarCuerda(pelotaX - 3.5f, 6f, 8, 0.32f);
+
+    // NomNom arriba esperando, encima de la ancla de cuerda 1
+    colocarNomNom(pelotaX, 17.5f, 0.6f);
+
+    // Burbuja en la parte inferior, contiene Estrella 1
+    burbujas.add(new Burbuja(mundo, pelotaX, pelotaY - 3f, 0.6f, 9f));
+
+    // Estrella 1: dentro de la burbuja
+    estrellas.add(new Estrella(mundo, pelotaX, pelotaY - 3f, 0.22f));
+
+    // Estrella 2: cerca de la base de la cuerda 3 (izquierda, altura media)
+    estrellas.add(new Estrella(mundo, pelotaX - 3.5f, 7f, 0.22f));
+
+    // Estrella 3: más arriba, en la trayectoria ascendente hacia NomNom
+    estrellas.add(new Estrella(mundo, pelotaX + 1f, 13f, 0.22f));
+
+    limiteInferior = 1f;
+
+    camaraFisica.setToOrtho(false, 18f, 22f);
+    camaraFisica.position.set(7.5f, 9f, 0);
+    camaraFisica.update();
+}
 }
