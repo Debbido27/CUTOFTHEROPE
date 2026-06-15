@@ -30,20 +30,20 @@ public class Nivel2Screen extends NivelBaseScreen {
 @Override
 protected void crearNivel() {
     float bajar = 2.5f;
-
     float pelotaX = 7.5f;
-    float pelotaY = 15f - bajar;
+    float pelotaY = 15f - bajar; // 12.5f
 
     crearPelota(pelotaX, pelotaY, 0.3f);
 
-    // Cuerda 1: corta, vertical, sostiene la pelota justo bajo NomNom (TAUT)
+    // Cuerda 1: corta, vertical, sostiene la pelota justo bajo NomNom
     anclarCuerda(pelotaX, 18f - bajar, 3, 1.0f);
 
-    // Cuerda 2: arriba-derecha, MUCHA holgura para no frenar la caída
+    // Cuerda 2: arriba-derecha, holgura para no frenar la caída
     anclarCuerda(pelotaX + 5f, 15f - bajar, 10, 0.95f);
 
-    // Cuerda 3: izquierda, holgura moderada
-    anclarCuerda(pelotaX - 3.5f, 9f - bajar, 5, 1.5f);
+    // Cuerda 3: ancla subida para que la cuerda sea más corta
+    // Ancla en (4.0, 10.5) → distancia a pelota ≈ 3.2u, cuerda justa
+anclarCuerda(pelotaX - 3.5f, 5f, 5, 1.5f);
 
     // NomNom arriba (NO SE TOCA)
     colocarNomNom(pelotaX, 19f, 0.6f);
@@ -51,17 +51,17 @@ protected void crearNivel() {
     // Burbuja justo debajo de la pelota
     burbujas.add(new Burbuja(mundo, pelotaX, 7f - bajar, 0.6f, 9f));
 
-    // Estrella 1 dentro de la burbuja
+    // Estrella 1: dentro de la burbuja
     estrellas.add(new Estrella(mundo, pelotaX, 7f - bajar, 0.22f));
 
-    // Estrella 2
-    estrellas.add(new Estrella(mundo, pelotaX - 3f, 10f - bajar, 0.22f));
+    // Estrella 2: subida para coincidir con la trayectoria de cuerda 3
+    // Antes: (4.5f, 7.5f) → Ahora: (5.5f, 8.5f) — más alta y más central
+    estrellas.add(new Estrella(mundo, pelotaX - 2.5f, 9f, 0.22f));
 
-    // Estrella 3
+    // Estrella 3: en la trayectoria hacia NomNom
     estrellas.add(new Estrella(mundo, pelotaX + 1.5f, 13f - bajar, 0.22f));
 
     limiteInferior = 1f;
-
     camaraFisica.setToOrtho(false, 18f, 22f);
     camaraFisica.position.set(7.5f, 11f, 0);
     camaraFisica.update();
