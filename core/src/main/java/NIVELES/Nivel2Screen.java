@@ -8,7 +8,7 @@ import com.cutherope.CutTheRope;
 public class Nivel2Screen extends NivelBaseScreen {
 
     public Nivel2Screen(CutTheRope juego, String usuario, LoginManager gestor) {
-        super(juego, usuario, gestor, 2);
+        super(juego, usuario, gestor, 1);
     }
 
     @Override

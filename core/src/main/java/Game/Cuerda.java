@@ -170,20 +170,27 @@ public class Cuerda {
     }
  
     private static Texture crearTexturaAncla() {
-        int d = 24;
-        Pixmap px = new Pixmap(d, d, Pixmap.Format.RGBA8888);
-        px.setColor(new Color(0.5f, 0.5f, 0.5f, 1f));
-        px.fillCircle(d / 2, d / 2, d / 2);
-        Texture t = new Texture(px);
-        px.dispose();
-        return t;
-    }
+    int d = 70; // antes 24, ahora más grande
+    Pixmap px = new Pixmap(d, d, Pixmap.Format.RGBA8888);
+    
+    // Círculo gris claro exterior
+    px.setColor(new Color(0.75f, 0.75f, 0.75f, 1f)); // gris claro
+px.fillCircle(d / 2, d / 2, d / 4); // antes d/6, ahora d/4 - más grande
+    
+    // Círculo gris oscuro en el centro
+    px.setColor(new Color(0.35f, 0.35f, 0.35f, 1f)); // gris oscuro
+    px.fillCircle(d / 2, d / 2, d / 6); // círculo pequeño central
+    
+    Texture t = new Texture(px);
+    px.dispose();
+    return t;
+}
  
-    public static void dibujarAncla(SpriteBatch batch, Vector2 pos, float radio) {
-        if (texturaAncla == null) texturaAncla = crearTexturaAncla();
-        batch.draw(texturaAncla, pos.x - radio, pos.y - radio, radio * 2, radio * 2);
-    }
- 
+   public static void dibujarAncla(SpriteBatch batch, Vector2 pos, float radio) {
+    if (texturaAncla == null) texturaAncla = crearTexturaAncla();
+    float radioVisual = radio * 2.5f; // antes radio * 2, ahora más grande
+    batch.draw(texturaAncla, pos.x - radioVisual, pos.y - radioVisual, radioVisual * 2, radioVisual * 2);
+}
     public int contarSegmentos() {
         return 1 + (siguiente != null ? siguiente.contarSegmentos() : 0);
     }
