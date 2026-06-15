@@ -1,68 +1,62 @@
 
-package NIVELES;
+        package NIVELES;
 
-import Game.*;
-import Game.Obstaculo.TipoObstaculo;
-import LOGIC.LoginManager;
-import com.cutherope.CutTheRope;
+        import Game.*;
+        import Game.Obstaculo.TipoObstaculo;
+        import LOGIC.LoginManager;
+        import com.cutherope.CutTheRope;
 
-public class Nivel3Screen extends NivelBaseScreen {
+        public class Nivel3Screen extends NivelBaseScreen {
 
-    public Nivel3Screen(CutTheRope juego, String usuario, LoginManager gestor) {
+        public Nivel3Screen(CutTheRope juego, String usuario, LoginManager gestor) {
         super(juego, usuario, gestor, 3);
-    }
+        }
 
-    @Override
-    protected String rutaFondo() {
+        @Override
+        protected String rutaFondo() {
         return "images/lvl1.png"; // ← tu fondo específico
-    }
+        }
 
-    @Override
-protected void crearNivel() {
-    // Pelota en el centro izquierdo
-    float pelotaX = 4.5f;
-    float pelotaY = 13f;
-    crearPelota(pelotaX, pelotaY, 0.3f);
+        @Override
+        protected void crearNivel() {
+        float pelotaX = 4.5f;
+        float pelotaY = 13f;
 
-    // Cuerda 1: arriba de la pelota, corta, casi perpendicular
-    anclarCuerda(pelotaX, pelotaY + 3.5f, 8, 0.32f);
+        // Pelota (candy)
+        crearPelota(pelotaX, pelotaY, 0.3f);
 
-    // Cuerda 2: misma altura que cuerda 1 pero más a la derecha, más larga
-    anclarCuerda(pelotaX + 4.5f, pelotaY + 3.5f, 13, 0.32f);
+        // Cuerda 1: arriba-izquierda (más a la izquierda, corta pero con más segmentos para suavidad)
+        anclarCuerda(pelotaX - 6.0f, pelotaY + 3.5f, 10, 0.6f);
 
-    // Cuerda 3: centro, alineada con cuerda 2 pero más abajo
-    // su base está ligeramente por debajo de la pelota
-    anclarCuerda(pelotaX + 2.5f, pelotaY - 1.5f, 10, 0.32f);
+        // Cuerda 2: arriba-centro (misma altura, floja con holgura moderada)
+        anclarCuerda(pelotaX, pelotaY + 3.5f, 9, 0.75f);
 
-    // Cuerda 4: centro, debajo del obstáculo 1 y encima del obstáculo 2
-    anclarCuerda(pelotaX + 2.5f, pelotaY - 5.5f, 8, 0.32f);
+        // Cuerda 3: centro, más abajo (más corta pero con segmentos suficientes)
+        anclarCuerda(pelotaX, pelotaY - 2.5f, 7, 0.65f);
 
-    // Obstáculo 1: entre base de cuerda 3 y base de cuerda 4
-    obstaculos.add(new Obstaculo(mundo,
-            pelotaX + 2.5f, pelotaY - 3.5f,
-            4.5f, 0.3f, TipoObstaculo.LARGO));
+        // Cuerda 4: centro, todavía más abajo (larga pero equilibrada)
+        anclarCuerda(pelotaX, pelotaY - 6.0f, 9, 0.7f);
 
-    // Obstáculo 2: debajo de la base de cuerda 4
-    obstaculos.add(new Obstaculo(mundo,
-            pelotaX + 2.5f, pelotaY - 7.5f,
-            4.5f, 0.3f, TipoObstaculo.LARGO));
+        // Obstáculos
+        obstaculos.add(new Obstaculo(mundo, pelotaX, pelotaY - 4.0f, 4.5f, 0.3f, TipoObstaculo.LARGO));
+        obstaculos.add(new Obstaculo(mundo, pelotaX, pelotaY - 8.0f, 4.5f, 0.3f, TipoObstaculo.LARGO));
 
-    // Estrella 1: derecha de cuerda 3, junto al lado derecho del obstáculo 1
-    estrellas.add(new Estrella(mundo, pelotaX + 5.5f, pelotaY - 2.0f, 0.22f));
+        // Estrellas
+        estrellas.add(new Estrella(mundo, pelotaX + 2.0f, pelotaY - 2.0f, 0.22f));
+        estrellas.add(new Estrella(mundo, pelotaX, pelotaY - 5.0f, 0.22f));
+        estrellas.add(new Estrella(mundo, pelotaX - 2.0f, pelotaY - 7.0f, 0.22f));
 
-    // Estrella 2: debajo de estrella 1, lado derecho de cuerda 4
-    estrellas.add(new Estrella(mundo, pelotaX + 4.2f, pelotaY - 6.5f, 0.22f));
+        // Om Nom
+        colocarNomNom(pelotaX, pelotaY - 11f, 0.6f);
 
-    // Estrella 3: misma altura que estrella 2, lado izquierdo de cuerda 4
-    estrellas.add(new Estrella(mundo, pelotaX + 0.8f, pelotaY - 6.5f, 0.22f));
+        // Límite inferior
+        limiteInferior = pelotaY - 14f;
 
-    // NomNom abajo al centro
-    colocarNomNom(pelotaX + 2.5f, pelotaY - 11f, 0.6f);
+        // Cámara
+        camaraFisica.setToOrtho(false, 18f, 24f);
+        camaraFisica.position.set(pelotaX + 2f, pelotaY - 5f, 0);
+        camaraFisica.update();
+        }
 
-    limiteInferior = pelotaY - 14f;
 
-    camaraFisica.setToOrtho(false, 18f, 24f);
-    camaraFisica.position.set(pelotaX + 2f, pelotaY - 5f, 0);
-    camaraFisica.update();
-}
-}
+        }

@@ -1,35 +1,35 @@
 
-package NIVELES;
+        package NIVELES;
 
-import Game.*;
-import Game.Obstaculo.TipoObstaculo;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.math.Vector2;
-import LOGIC.LoginManager;
-import com.cutherope.CutTheRope;
+        import Game.*;
+        import Game.Obstaculo.TipoObstaculo;
+        import com.badlogic.gdx.physics.box2d.BodyDef;
+        import com.badlogic.gdx.math.Vector2;
+        import LOGIC.LoginManager;
+        import com.cutherope.CutTheRope;
 
-/**
- * NIVEL 5 — Caos Total
- * - Cuerda máxima (24 segmentos, segmentos cortos) → muy pesada, oscila mucho
- * - Laberinto complejo con obstáculos en diagonal (LARGO rotado ~30°)
- * - Bloques cuadrados dispersos en toda la zona de caída
- * - Burbujas en posiciones estratégicamente malas
- * - Estrellas en las tres esquinas más lejanas e inaccesibles
- * - El jugador tiene que hacer cortes múltiples y precisos
- */
-public class Nivel5Screen extends NivelBaseScreen {
+        /**
+        * NIVEL 5 — Caos Total
+        * - Cuerda máxima (24 segmentos, segmentos cortos) → muy pesada, oscila mucho
+        * - Laberinto complejo con obstáculos en diagonal (LARGO rotado ~30°)
+        * - Bloques cuadrados dispersos en toda la zona de caída
+        * - Burbujas en posiciones estratégicamente malas
+        * - Estrellas en las tres esquinas más lejanas e inaccesibles
+        * - El jugador tiene que hacer cortes múltiples y precisos
+        */
+        public class Nivel5Screen extends NivelBaseScreen {
 
-    public Nivel5Screen(CutTheRope juego, String usuario, LoginManager gestor) {
+        public Nivel5Screen(CutTheRope juego, String usuario, LoginManager gestor) {
         super(juego, usuario, gestor, 5);
-    }
+        }
 
-    @Override
-    protected String rutaFondo() {
+        @Override
+        protected String rutaFondo() {
         return "images/lvl1.png"; // ← tu fondo específico
-    }
+        }
 
-    @Override
-    protected void crearNivel() {
+        @Override
+        protected void crearNivel() {
         float anclaX = 7.5f;
         float anclaY = 22f;
         int   segmentos = 24;
@@ -39,12 +39,12 @@ public class Nivel5Screen extends NivelBaseScreen {
         BodyDef def = new BodyDef();
         def.type = BodyDef.BodyType.StaticBody;
         def.position.set(anclaX, anclaY);
-       // anclaBody = mundo.createBody(def);
+        // anclaBody = mundo.createBody(def);
         //anclaPos  = new Vector2(anclaX, anclaY);
 
         float dist = segmentos * largoSeg;
         pelota = new Pelota(mundo, anclaX, anclaY - dist, 0.3f);
-      //  cuerda = new Cuerda(mundo, anclaBody, anclaPos,
+        //  cuerda = new Cuerda(mundo, anclaBody, anclaPos,
         //                    segmentos, largoSeg, pelota.getBody(), true);
 
         float base = anclaY - dist; // Y donde cuelga la pelota
@@ -113,5 +113,5 @@ public class Nivel5Screen extends NivelBaseScreen {
         camaraFisica.setToOrtho(false, 24f, 32f);
         camaraFisica.position.set(anclaX, anclaY - 12f, 0);
         camaraFisica.update();
-    }
-}
+        }
+        }
