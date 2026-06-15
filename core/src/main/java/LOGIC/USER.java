@@ -35,7 +35,7 @@
         this.ultimaSesion = System.currentTimeMillis();
         this.avatarPath = "";
         this.nivelActual = 1;
-        this.nivelesDesbloqueados = new boolean[]{true, false, false, false, false};
+        this.nivelesDesbloqueados = new boolean[]{true, true, true, true, true};
         this.puntajesPorNivel = new int[5];
         this.tiempoTotalJugado = 0;
         this.partidasJugadas = 0;
