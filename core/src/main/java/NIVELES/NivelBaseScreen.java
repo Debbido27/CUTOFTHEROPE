@@ -23,7 +23,6 @@
 
         public abstract class NivelBaseScreen implements Screen, ContactListener {
 
-        // ── objetos de juego ──────────────────────────────────────────────────────
         protected World              mundo;
         protected OrthographicCamera camaraFisica;
         protected Pelota             pelota;
@@ -37,25 +36,21 @@
         protected List<Obstaculo> obstaculos = new ArrayList<>();
         protected List<Burbuja>   burbujas   = new ArrayList<>();
 
-        // ── estado del nivel ──────────────────────────────────────────────────────
         private enum EstadoNivel { JUGANDO, GANANDO, PERDIENDO }
         private EstadoNivel estadoNivel     = EstadoNivel.JUGANDO;
         private float       timerTransicion = 0f;
         protected float     limiteInferior  = -5f;
         private Burbuja burbujaActiva = null;
-        // ── referencias del juego ─────────────────────────────────────────────────
         protected CutTheRope   juego;
         protected String       usuario;
         protected LoginManager gestor;
         protected int          nivel;
 
-        // ── UI ────────────────────────────────────────────────────────────────────
         protected Stage   escenario;
         protected Skin    piel;
         protected Texture bgTexture;
         protected SpriteBatch batch;
 
-        // ── corte con dedo ────────────────────────────────────────────────────────
         private Vector2 puntoAnterior       = new Vector2();
         private boolean puntoAnteriorValido = false;
 
@@ -63,7 +58,6 @@
         protected final Color CAFE  = new Color(0.23f, 0.16f, 0.08f, 1f);
         protected final Color ROJO  = new Color(0.70f, 0.27f, 0.20f, 1f);
 
-        // ─────────────────────────────────────────────────────────────────────────
         public NivelBaseScreen(CutTheRope juego, String usuario,
                        LoginManager gestor, int nivel) {
         this.juego   = juego;
@@ -87,11 +81,10 @@
         construirUI();
         }
 
-        // ── abstractos ────────────────────────────────────────────────────────────
+       
         protected abstract String rutaFondo();
         protected abstract void   crearNivel();
 
-        // ── helpers de construcción ───────────────────────────────────────────────
         protected Body crearAncla(float x, float y) {
         BodyDef def = new BodyDef();
         def.type = BodyDef.BodyType.StaticBody;
@@ -132,7 +125,6 @@
         nomnom = new NomNom(mundo, x, y, radio);
         }
 
-        // ── UI ────────────────────────────────────────────────────────────────────
         private void construirUI() {
         Table raiz = new Table();
         raiz.setFillParent(true);
@@ -149,7 +141,6 @@
         escenario.addActor(raiz);
         }
 
-        // ── render principal ──────────────────────────────────────────────────────
         @Override
         public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1f);
@@ -174,9 +165,7 @@
 
             procesarCorte();
 
-            // ── detección de toque sobre burbujas ─────────────────────────
-            // Se hace AQUÍ (no en actualizar de Burbuja) porque necesitamos
-            // desprojectar con la cámara física y tenemos referencia a pelota.
+          
             procesarToqueBurbujas();
 
             break;
@@ -194,7 +183,6 @@
             break;
         }
 
-        // ── fondo ─────────────────────────────────────────────────────────────
         batch.getProjectionMatrix().setToOrtho2D(
         0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.begin();
@@ -202,7 +190,6 @@
         Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.end();
 
-        // ── mundo físico ──────────────────────────────────────────────────────
 
         batch.setProjectionMatrix(camaraFisica.combined);
         batch.begin();
@@ -215,7 +202,7 @@
 
         for (Estrella  e : estrellas)  e.dibujar(batch);
         for (Obstaculo o : obstaculos) o.dibujar(batch);
-        for (Burbuja   b : burbujas)   b.dibujar(batch);  // dibuja solo si activa
+        for (Burbuja   b : burbujas)   b.dibujar(batch);  
 
         if (estadoNivel == EstadoNivel.GANANDO)
         dibujarBannerTexto("¡NomNom comió!", VERDE);
@@ -229,15 +216,6 @@
         escenario.draw();
         }
 
-        // ── detección de toque sobre burbujas ─────────────────────────────────────
-        /**
-        * Convierte el toque de pantalla a coordenadas del mundo físico y le pregunta
-        * a cada burbuja activa si fue tocada. Si la burbuja responde true, explota
-        * y la pelota recupera gravedad normal inmediatamente.
-        *
-        * IMPORTANTE: justTouched() solo es true el primer frame del toque,
-        * así que no hay riesgo de detectar un "hold" como explosiones repetidas.
-        */
         private void procesarToqueBurbujas() {
         if (!Gdx.input.justTouched()) return;
 
@@ -246,12 +224,11 @@
 
         for (Burbuja b : burbujas) {
         if (b.revisarToque(raw.x, raw.y, pelota)) {
-            break; // solo explotar una burbuja por toque
+            break;
         }
         }
         }
 
-        // ── lógica de estado ──────────────────────────────────────────────────────
         private boolean pelotaCayoFuera() {
         if (pelota == null) return false;
         Vector2 pos = pelota.getBody().getPosition();
@@ -296,7 +273,6 @@
         }
         }
 
-        // ── banner de ganar/perder ────────────────────────────────────────────────
         private void dibujarBannerTexto(String texto, Color color) {
         float cx = camaraFisica.position.x;
         float cy = camaraFisica.position.y;
@@ -314,45 +290,24 @@
         overlay.dispose();
         }
 
-        // ── ContactListener ───────────────────────────────────────────────────────
-        /**
-        * beginContact:
-        *   - Burbuja ↔ Pelota → activa flotación (gravityScale negativo)
-        *   - NomNom  ↔ Pelota → NomNom come la pelota
-        *   - Estrella ↔ Pelota → recoge estrella
-        *   - Obstaculo ↔ Pelota → activa obstáculo
-        *
-        * El orden de los checks de Burbuja va PRIMERO para que el cambio de
-        * gravityScale ocurra antes de que Box2D procese fuerzas del siguiente frame.
-        */
         @Override
         public void beginContact(Contact contact) {
         Object a = contact.getFixtureA().getBody().getUserData();
         Object b = contact.getFixtureB().getBody().getUserData();
 
-        // ── Burbuja ↔ Pelota ────────────────────────────────────────────────
         if (a instanceof Burbuja && b instanceof Pelota) burbujaActiva = (Burbuja) a;
         else if (b instanceof Burbuja && a instanceof Pelota) burbujaActiva = (Burbuja) b;
-        // ── NomNom ↔ Pelota ─────────────────────────────────────────────────
         if (a instanceof NomNom  && b instanceof Pelota) ((NomNom)  a).interactuar();
         else if (b instanceof NomNom  && a instanceof Pelota) ((NomNom)  b).interactuar();
 
-        // ── Estrella ↔ Pelota ────────────────────────────────────────────────
         if (a instanceof Estrella && b instanceof Pelota) ((Estrella) a).interactuar();
         else if (b instanceof Estrella && a instanceof Pelota) ((Estrella) b).interactuar();
 
-        // ── Obstáculo ↔ Pelota ───────────────────────────────────────────────
         if (a instanceof Obstaculo && b instanceof Pelota) ((Obstaculo) a).interactuar();
         else if (b instanceof Obstaculo && a instanceof Pelota) ((Obstaculo) b).interactuar();
         }
 
-        /**
-        * endContact:
-        *   - Burbuja ↔ Pelota → restaura gravedad normal.
-        *
-        * Si la burbuja ya fue explotada (activa=false), salir() sigue funcionando
-        * correctamente porque solo restaura el gravityScale si pelotaDentro=true.
-        */
+     
         @Override
         public void endContact(Contact contact) {
         Object a = contact.getFixtureA().getBody().getUserData();
@@ -365,7 +320,7 @@
         @Override public void preSolve(Contact c, Manifold m) {}
         @Override public void postSolve(Contact c, ContactImpulse i) {}
 
-        // ── helpers ───────────────────────────────────────────────────────────────
+       
         protected TextButton crearBoton(String texto, Color color) {
         TextButton btn = new TextButton(texto, piel);
         btn.getStyle().up   = piel.newDrawable("blanco", color);

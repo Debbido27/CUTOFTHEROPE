@@ -15,22 +15,21 @@
     private float friction;
 
     public enum TipoObstaculo {
-    CORTO,   // Cuadrado
-    LARGO    // Rectangular alargado
+    CORTO,   
+    LARGO   
     }
 
     public Obstaculo(World mundo, float x, float y, float ancho, float alto, TipoObstaculo tipo) {
-    super(x, y, ancho, alto, TipoElemento.ESTRELLA, null); // Tipo temporal, luego se cambia
+    super(x, y, ancho, alto, TipoElemento.ESTRELLA, null); 
     this.mundo = mundo;
     this.tipoObstaculo = tipo;
     this.activo = true;
-    this.restitution = 0.5f; // Rebotar medio
+    this.restitution = 0.5f; 
     this.friction = 0.3f;
 
-    // Ajustar dimensiones según tipo si es necesario
     if (tipo == TipoObstaculo.CORTO) {
     this.ancho = ancho;
-    this.alto = ancho; // Hacerlo cuadrado
+    this.alto = ancho; 
     }
 
     this.textura = crearTexturaRedondeada(this.ancho, this.alto, tipo);
@@ -63,29 +62,26 @@
 
     Pixmap pixmap = new Pixmap(anchoPx, altoPx, Pixmap.Format.RGBA8888);
 
-    // Color según tipo
     Color colorBase;
     Color colorBorde;
 
     if (tipo == TipoObstaculo.CORTO) {
-    colorBase = new Color(0.8f, 0.3f, 0.2f, 1f); // Rojo ladrillo
+    colorBase = new Color(0.8f, 0.3f, 0.2f, 1f); 
     colorBorde = new Color(0.9f, 0.5f, 0.3f, 1f);
     } else {
-    colorBase = new Color(0.3f, 0.4f, 0.7f, 1f); // Azul acero
+    colorBase = new Color(0.3f, 0.4f, 0.7f, 1f); 
     colorBorde = new Color(0.5f, 0.6f, 0.9f, 1f);
     }
 
-    // Fondo
     pixmap.setColor(colorBase);
     pixmap.fill();
 
-    // Bordes redondeados simulados (píxeles esquina)
     int radioBorde = Math.min(anchoPx, altoPx) / 6;
     if(radioBorde < 2) radioBorde = 2;
 
     pixmap.setColor(colorBorde);
 
-    // Esquinas redondeadas
+  
     for(int i = 0; i < radioBorde; i++) {
     for(int j = 0; j < radioBorde; j++) {
         if(Math.sqrt(Math.pow(i - radioBorde, 2) + Math.pow(j - radioBorde, 2)) > radioBorde) {
@@ -97,7 +93,6 @@
     }
     }
 
-    // Marco
     pixmap.setColor(colorBorde);
     for(int i = 0; i < anchoPx; i++) {
     pixmap.drawPixel(i, 0);
@@ -115,7 +110,6 @@
 
     @Override
     public void actualizar(float delta) {
-    // Los obstáculos no se actualizan (estáticos)
     }
 
     @Override
@@ -127,7 +121,6 @@
 
     @Override
     public void interactuar() {
-    // Aquí podrías agregar efectos como sonido o partículas
     }
 
     @Override
@@ -145,7 +138,6 @@
 
     public void setRebote(float restitution) {
     this.restitution = restitution;
-    // Actualizar fixture (requiere recrear el fixture)
-    // Para simplificar, se puede recrear el cuerpo completo
+   
     }
     }

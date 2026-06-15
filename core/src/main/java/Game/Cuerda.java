@@ -9,22 +9,14 @@
     import com.badlogic.gdx.physics.box2d.*;
     import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 
-    /**
-    * Cuerda tipo Cut the Rope: una cadena recursiva de eslabones (bodies pequeños
-    * y livianos) unidos por RevoluteJoint. Se dobla con naturalidad, no se
-    * estira como elástico ni queda rígida como tabla.
-    *
-    * Los eslabones NO colisionan entre sí ni con la pelota (maskBits = 0),
-    * así que pueden existir varias cuerdas sosteniendo la misma pelota sin
-    * causar jitter/temblor.
-    */
+  
     public class Cuerda {
 
     private static Texture texturaSoga;
     private static Texture texturaAncla;
 
     private Body body;
-    private Joint joint;        // joint que une este eslabón con el anterior (null si cortado)
+    private Joint joint;        
     private Cuerda siguiente;
     private final float largoSegmento;
 
@@ -52,9 +44,9 @@
 
     FixtureDef fixtureDef = new FixtureDef();
     fixtureDef.shape = forma;
-    fixtureDef.density = 0.3f;   // muy liviano: la pelota domina el movimiento
+    fixtureDef.density = 0.3f;  
     fixtureDef.friction = 0.1f;
-    fixtureDef.filter.maskBits = 0; // no colisiona con NADA (evita jitter entre cuerdas/pelota)
+    fixtureDef.filter.maskBits = 0; 
     body.createFixture(fixtureDef);
     forma.dispose();
 
@@ -80,7 +72,6 @@
     }
     }
 
-    /** Dibuja recursivamente este eslabón y los siguientes, usando textura tileada. */
     public void dibujar(SpriteBatch batch) {
     Vector2 pos = body.getPosition();
     float angulo = (float) Math.toDegrees(body.getAngle());
@@ -102,16 +93,6 @@
     }
     }
 
-    /**
-    * Revisa recursivamente si el trazo (p1->p2) cruza este eslabón.
-    * Si cruza, destruye el joint que lo une al eslabón anterior, separando
-    * la cadena en dos mitades independientes.
-    */
-    /**
-    * Revisa recursivamente si el trazo (p1->p2) cruza este eslabón.
-    * Si cruza, destruye el joint que lo une al eslabón anterior, separando
-    * la cadena en dos mitades independientes.
-    */
     public boolean revisarCorte(Vector2 p1, Vector2 p2, World mundo) {
     if (joint == null) {
     return siguiente != null && siguiente.revisarCorte(p1, p2, mundo);
@@ -126,7 +107,6 @@
     Vector2 extremoA = new Vector2(pos.x - dx, pos.y - dy);
     Vector2 extremoB = new Vector2(pos.x + dx, pos.y + dy);
 
-    // Verificar si el segmento de corte cruza este eslabón O si está lo suficientemente cerca
     if (segmentosSeCruzan(p1, p2, extremoA, extremoB) || distanciaPuntoASegmento(p1, extremoA, extremoB) < 0.15f || distanciaPuntoASegmento(p2, extremoA, extremoB) < 0.15f) {
     mundo.destroyJoint(joint);
     joint = null;
@@ -145,7 +125,6 @@
     float d3 = dir(a1, a2, b1);
     float d4 = dir(a1, a2, b2);
 
-    // Incluir casos donde los segmentos se tocan en los extremos
     if (Math.abs(d1) < 0.001f && puntoEnSegmento(b1, b2, a1)) return true;
     if (Math.abs(d2) < 0.001f && puntoEnSegmento(b1, b2, a2)) return true;
     if (Math.abs(d3) < 0.001f && puntoEnSegmento(a1, a2, b1)) return true;
@@ -170,7 +149,6 @@
 
 
 
-    /** Textura tileable tipo cuerda: franja clara central + marcas de trenzado. */
     private static Texture crearTexturaSoga() {
     int s = TEX_SIZE;
     Pixmap pm = new Pixmap(s, s, Pixmap.Format.RGBA8888);
@@ -200,12 +178,11 @@
     Pixmap px = new Pixmap(d, d, Pixmap.Format.RGBA8888);
 
     // Círculo gris claro exterior
-    px.setColor(new Color(0.75f, 0.75f, 0.75f, 1f)); // gris claro
-    px.fillCircle(d / 2, d / 2, d / 4); // antes d/6, ahora d/4 - más grande
+    px.setColor(new Color(0.75f, 0.75f, 0.75f, 1f)); 
+    px.fillCircle(d / 2, d / 2, d / 4); 
 
-    // Círculo gris oscuro en el centro
-    px.setColor(new Color(0.35f, 0.35f, 0.35f, 1f)); // gris oscuro
-    px.fillCircle(d / 2, d / 2, d / 6); // círculo pequeño central
+    px.setColor(new Color(0.35f, 0.35f, 0.35f, 1f)); 
+    px.fillCircle(d / 2, d / 2, d / 6); 
 
     Texture t = new Texture(px);
     px.dispose();
@@ -214,7 +191,7 @@
 
     public static void dibujarAncla(SpriteBatch batch, Vector2 pos, float radio) {
     if (texturaAncla == null) texturaAncla = crearTexturaAncla();
-    float radioVisual = radio * 2.5f; // antes radio * 2, ahora más grande
+    float radioVisual = radio * 2.5f; 
     batch.draw(texturaAncla, pos.x - radioVisual, pos.y - radioVisual, radioVisual * 2, radioVisual * 2);
     }
     public int contarSegmentos() {
@@ -229,7 +206,6 @@
     return siguiente;
     }
 
-    /** Libera este eslabón y los siguientes recursivamente (no destruye bodies del World). */
     public void dispose() {
     if (siguiente != null) siguiente.dispose();
     }
