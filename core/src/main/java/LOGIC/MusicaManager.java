@@ -1,4 +1,4 @@
-package com.cutherope;
+package LOGIC;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
