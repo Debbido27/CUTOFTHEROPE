@@ -1,5 +1,7 @@
         package com.cutherope;
 
+        import LOGIC.Idioma;
+        import LOGIC.USER;
         import com.badlogic.gdx.Gdx;
         import com.badlogic.gdx.Screen;
         import com.badlogic.gdx.graphics.Color;
@@ -45,7 +47,7 @@
         construirMenu();
         }
 
-       
+
         private void construirMenu() {
         escenario.clear();
 
@@ -56,20 +58,22 @@
         Label titulo = new Label("Cut the Rope", piel);
         titulo.setColor(VERDE);
 
-        Label bienvenida = new Label("Bienvenido, " + usuario + "!", piel);
-        bienvenida.setColor(CAFE);
+        USER u = gestor.buscarUser(usuario);
+        if (u != null) Idioma.setIngles(u.isIngles());
 
-        TextButton btnJugar        = crearBoton("Jugar",          VERDE);
-        TextButton btnEstadisticas = crearBoton("Estadisticas",   NARANJA);
-        TextButton btnRanking      = crearBoton("Ranking",        NARANJA);
-        TextButton btnAmigos       = crearBoton("Amigos",         NARANJA);
-        TextButton btnAjustes      = crearBoton("Ajustes",        NARANJA);
-        TextButton btnCerrarSesion = crearBoton("Cerrar Sesion",  ROJO);
 
+        Label bienvenida = new Label(Idioma.get(Idioma.Clave.BIENVENIDO) + ", " + usuario + "!", piel);
+
+        TextButton btnJugar        = crearBoton(Idioma.get(Idioma.Clave.JUGAR),         VERDE);
+        TextButton btnEstadisticas = crearBoton(Idioma.get(Idioma.Clave.ESTADISTICAS),  NARANJA);
+        TextButton btnRanking      = crearBoton(Idioma.get(Idioma.Clave.RANKING),       NARANJA);
+        TextButton btnAmigos       = crearBoton(Idioma.get(Idioma.Clave.AMIGOS),        NARANJA);
+        TextButton btnAjustes      = crearBoton(Idioma.get(Idioma.Clave.AJUSTES),       NARANJA);
+        TextButton btnCerrarSesion = crearBoton(Idioma.get(Idioma.Clave.CERRAR_SESION), ROJO);
         btnJugar.addListener(new ClickListener() {
         public void clicked(InputEvent e, float x, float y) {
-            Gdx.app.postRunnable(() ->
-                juego.setScreen(new SeleccionNivelScreen(juego, usuario, gestor)));
+        Gdx.app.postRunnable(() ->
+        juego.setScreen(new SeleccionNivelScreen(juego, usuario, gestor)));
         }
         });
         btnEstadisticas.addListener(new ClickListener() {
@@ -92,7 +96,7 @@
         });
         btnCerrarSesion.addListener(new ClickListener() {
         public void clicked(InputEvent e, float x, float y) {
-            Gdx.app.postRunnable(() -> juego.setScreen(new LoginScreen(juego)));
+        Gdx.app.postRunnable(() -> juego.setScreen(new LoginScreen(juego)));
         }
         });
 
@@ -108,7 +112,7 @@
         escenario.addActor(tabla);
         }
 
-     
+
         private TextButton crearBoton(String texto, Color color) {
         TextButton btn = new TextButton(texto, piel);
         btn.getStyle().up   = piel.newDrawable("blanco", color);
@@ -117,7 +121,7 @@
         return btn;
         }
 
-        
+
         private Skin crearPiel() {
         Skin skin = new Skin();
 
@@ -167,7 +171,7 @@
         return skin;
         }
 
-        
+
         @Override
         public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1f);

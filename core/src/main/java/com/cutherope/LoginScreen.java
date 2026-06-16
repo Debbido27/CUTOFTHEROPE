@@ -1,5 +1,6 @@
         package com.cutherope;
 
+        import LOGIC.Idioma;
         import com.badlogic.gdx.Gdx;
         import com.badlogic.gdx.Screen;
         import com.badlogic.gdx.graphics.Color;
@@ -61,31 +62,31 @@
         construirMenu();
         }
 
-        
+
         private void construirMenu() {
         stage.clear();
-
-          Table table = new Table();
+        LOGIC.USER ultimo = manager.getCurrentUser();
+        if (ultimo != null) Idioma.setIngles(ultimo.isIngles());
+        Table table = new Table();
         table.setFillParent(true);
         table.center();
 
         Image logo = new Image(logoTexture);
 
-        Label sub = new Label("Alimenta a Om Nom!", skin);
-        sub.setColor(CAFE);
 
-        TextButton btnLogin = crearBoton("Iniciar Sesion", VERDE);
-        TextButton btnCrear = crearBoton("Crear Jugador",  NARANJA);
-        TextButton btnSalir = crearBoton("Salir",          ROJO);
+        Label sub = new Label(Idioma.get(Idioma.Clave.ALIMENTA), skin);
+        TextButton btnLogin = crearBoton(Idioma.get(Idioma.Clave.INICIAR_SESION), VERDE);
+        TextButton btnCrear = crearBoton(Idioma.get(Idioma.Clave.CREAR_JUGADOR),  NARANJA);
+        TextButton btnSalir = crearBoton(Idioma.get(Idioma.Clave.SALIR),          ROJO);
 
         btnLogin.addListener(new ClickListener() {
-            public void clicked(InputEvent e, float x, float y) { construirLogin(); }
+        public void clicked(InputEvent e, float x, float y) { construirLogin(); }
         });
         btnCrear.addListener(new ClickListener() {
-            public void clicked(InputEvent e, float x, float y) { construirCrear(); }
+        public void clicked(InputEvent e, float x, float y) { construirCrear(); }
         });
         btnSalir.addListener(new ClickListener() {
-            public void clicked(InputEvent e, float x, float y) { Gdx.app.exit(); }
+        public void clicked(InputEvent e, float x, float y) { Gdx.app.exit(); }
         });
 
         table.add(logo).width(300).height(110).padBottom(10).row();
@@ -97,7 +98,7 @@
         stage.addActor(table);
         }
 
-        
+
         private void construirLogin() {
         stage.clear();
 
@@ -105,53 +106,51 @@
         table.setFillParent(true);
         table.center();
 
-        Label titulo = new Label("Iniciar Sesion", skin);
-        titulo.setColor(VERDE);
-
-        campoUser = crearCampo("Usuario");
-        campoPass = crearCampo("Contrasena");
+        Label titulo = new Label(Idioma.get(Idioma.Clave.INICIAR_SESION), skin);
+        campoUser = crearCampo(Idioma.get(Idioma.Clave.USUARIO));
+        campoPass = crearCampo(Idioma.get(Idioma.Clave.CONTRASENA));
         campoPass.setPasswordMode(true);
         campoPass.setPasswordCharacter('*');
 
-        CheckBox chkVerPass = new CheckBox(" Ver contrasena", skin);
+        CheckBox chkVerPass = new CheckBox(Idioma.get(Idioma.Clave.VER_CONTRASENA), skin);
         chkVerPass.addListener(new ChangeListener() {
-            public void changed(ChangeEvent event, Actor actor) {
-                campoPass.setPasswordMode(!chkVerPass.isChecked());
-            }
+        public void changed(ChangeEvent event, Actor actor) {
+            campoPass.setPasswordMode(!chkVerPass.isChecked());
+        }
         });
 
         mensajeLabel = new Label("", skin);
         mensajeLabel.setColor(ROJO);
 
-        TextButton btnAceptar = crearBoton("Ingresar", VERDE);
-        TextButton btnVolver  = crearBoton("Volver",   NARANJA);
+        TextButton btnAceptar = crearBoton(Idioma.get(Idioma.Clave.INGRESAR), VERDE);
+        TextButton btnVolver  = crearBoton(Idioma.get(Idioma.Clave.VOLVER),   NARANJA);
 
         btnAceptar.addListener(new ClickListener() {
-            public void clicked(InputEvent e, float x, float y) {
-                String user = campoUser.getText().trim();
-                String pass = campoPass.getText().trim();
-                if (user.isEmpty() || pass.isEmpty()) {
-                    mensajeLabel.setText("Completa todos los campos.");
-                } else if (!manager.userExiste(user)) {
-                    mensajeLabel.setText("Usuario no existe.");
-                } else if (manager.login(user, pass)) {
-                    final String u = user;
-                    Gdx.app.postRunnable(() -> {
-                        game.setScreen(new MenuPrincipalScreen(game, u, manager));
-                    });
-                } else {
-                    mensajeLabel.setText("Contrasena incorrecta.");
-                }
+        public void clicked(InputEvent e, float x, float y) {
+            String user = campoUser.getText().trim();
+            String pass = campoPass.getText().trim();
+            if (user.isEmpty() || pass.isEmpty()) {
+                mensajeLabel.setText(Idioma.get(Idioma.Clave.CAMPOS_VACIOS));
+            } else if (!manager.userExiste(user)) {
+                mensajeLabel.setText(Idioma.get(Idioma.Clave.USUARIO_NO_EXISTE));
+            } else if (manager.login(user, pass)) {
+                final String u = user;
+                Gdx.app.postRunnable(() -> {
+                    game.setScreen(new MenuPrincipalScreen(game, u, manager));
+                });
+            } else {
+                mensajeLabel.setText(Idioma.get(Idioma.Clave.CONTRASENA_INCORRECTA));
             }
+        }
         });
 
         btnVolver.addListener(new ClickListener() {
-            public void clicked(InputEvent e, float x, float y) {
-                campoUser.setText("");
-                campoPass.setText("");
-                mensajeLabel.setText("");
-                construirMenu();
-            }
+        public void clicked(InputEvent e, float x, float y) {
+            campoUser.setText("");
+            campoPass.setText("");
+            mensajeLabel.setText("");
+            construirMenu();
+        }
         });
 
         table.add(titulo).padBottom(30).row();
@@ -165,7 +164,7 @@
         stage.addActor(table);
         }
 
-       
+
         private void construirCrear() {
         stage.clear();
 
@@ -176,46 +175,47 @@
         table.setFillParent(true);
         table.center();
 
-        Label titulo = new Label("Crear Jugador", skin);
-        titulo.setColor(VERDE);
-
-        campoNombre    = crearCampo("Nombre Completo");
-        campoUserCrear = crearCampo("Usuario");
-        campoPassCrear = crearCampo("Contrasena");
+        Label titulo = new Label(Idioma.get(Idioma.Clave.CREAR_JUGADOR), skin);
+        campoNombre    = crearCampo(Idioma.get(Idioma.Clave.NOMBRE_COMPLETO));
+        campoUserCrear = crearCampo(Idioma.get(Idioma.Clave.USUARIO));
+        campoPassCrear = crearCampo(Idioma.get(Idioma.Clave.CONTRASENA));
         campoPassCrear.setPasswordMode(true);
         campoPassCrear.setPasswordCharacter('*');
 
-        CheckBox chkVerPassCrear = new CheckBox(" Ver contrasena", skin);
+        CheckBox chkVerPassCrear = new CheckBox(Idioma.get(Idioma.Clave.VER_CONTRASENA), skin);
         chkVerPassCrear.addListener(new ChangeListener() {
         public void changed(ChangeEvent event, Actor actor) {
-            campoPassCrear.setPasswordMode(!chkVerPassCrear.isChecked());
+        campoPassCrear.setPasswordMode(!chkVerPassCrear.isChecked());
         }
         });
 
         checksLabel = new Label(
-        "X  Min 6 caracteres\nX  Una mayuscula\nX  Una minuscula\nX  Un numero", skin);
+            "X  " + Idioma.get(Idioma.Clave.CHECK_MIN6) + "\n" +
+                "X  " + Idioma.get(Idioma.Clave.CHECK_MAYUS) + "\n" +
+                "X  " + Idioma.get(Idioma.Clave.CHECK_MINUS) + "\n" +
+                "X  " + Idioma.get(Idioma.Clave.CHECK_NUM), skin);
         checksLabel.setColor(ROJO);
 
         campoPassCrear.addListener(new ChangeListener() {
         public void changed(ChangeEvent event, Actor actor) {
-            actualizarChecks(campoPassCrear.getText());
+        actualizarChecks(campoPassCrear.getText());
         }
         });
 
         Label lblAvatarElegido = new Label("Avatar: default", skin);
         lblAvatarElegido.setColor(CAFE);
 
-        TextButton btnAvatar = crearBoton("Elegir Avatar", NARANJA);
+        TextButton btnAvatar = crearBoton(Idioma.get(Idioma.Clave.ELEGIR_AVATAR), NARANJA);
         btnAvatar.addListener(new ClickListener() {
         public void clicked(InputEvent e, float x, float y) {
         construirPanelAvatares(avatarSeleccionado, () -> {
-            avatarTemporal = avatarSeleccionado[0];
-            String nombre = avatarTemporal;
-            int slash = nombre.lastIndexOf('/'); int dot = nombre.lastIndexOf('.');
-            if (dot > slash + 1) nombre = nombre.substring(slash + 1, dot);
-            lblAvatarElegido.setText("Avatar: " + nombre);
-            stage.clear();
-            stage.addActor(table);
+        avatarTemporal = avatarSeleccionado[0];
+        String nombre = avatarTemporal;
+        int slash = nombre.lastIndexOf('/'); int dot = nombre.lastIndexOf('.');
+        if (dot > slash + 1) nombre = nombre.substring(slash + 1, dot);
+        lblAvatarElegido.setText("Avatar: " + nombre);
+        stage.clear();
+        stage.addActor(table);
         });
         }
         });
@@ -223,27 +223,27 @@
         mensajeLabel = new Label("", skin);
         mensajeLabel.setColor(ROJO);
 
-        TextButton btnCrear  = crearBoton("Crear",  VERDE);
-        TextButton btnVolver = crearBoton("Volver", NARANJA);
+        TextButton btnCrear  = crearBoton(Idioma.get(Idioma.Clave.CREAR),  VERDE);
+        TextButton btnVolver = crearBoton(Idioma.get(Idioma.Clave.VOLVER), NARANJA);
 
         btnCrear.addListener(new ClickListener() {
         public void clicked(InputEvent e, float x, float y) {
-            String nombre = campoNombre.getText().trim();
-            String user   = campoUserCrear.getText().trim();
-            String pass   = campoPassCrear.getText().trim();
-            if (nombre.isEmpty() || user.isEmpty() || pass.isEmpty()) {
-                mostrarError("Completa todos los campos.");
-            } else if (manager.userExiste(user)) {
-                mostrarError("Usuario ya existe.");
-            } else if (!validarPass(pass)) {
-                mostrarError("La contrasena no cumple los requisitos.");
-            } else if (manager.crearUser(user, pass, nombre, avatarSeleccionado[0])) {
-                final String u = user;
-                Gdx.app.postRunnable(() ->
-                    game.setScreen(new MenuPrincipalScreen(game, u, manager)));
-            } else {
-                mostrarError("Error al crear jugador.");
-            }
+        String nombre = campoNombre.getText().trim();
+        String user   = campoUserCrear.getText().trim();
+        String pass   = campoPassCrear.getText().trim();
+        if (nombre.isEmpty() || user.isEmpty() || pass.isEmpty()) {
+            mostrarError(Idioma.get(Idioma.Clave.CAMPOS_VACIOS));
+        } else if (manager.userExiste(user)) {
+            mostrarError(Idioma.get(Idioma.Clave.USUARIO_YA_EXISTE));
+        } else if (!validarPass(pass)) {
+            mostrarError(Idioma.get(Idioma.Clave.PASS_NO_CUMPLE));
+        } else if (manager.crearUser(user, pass, nombre, avatarSeleccionado[0])) {
+            final String u = user;
+            Gdx.app.postRunnable(() ->
+                game.setScreen(new MenuPrincipalScreen(game, u, manager)));
+        } else {
+            mostrarError(Idioma.get(Idioma.Clave.ERROR_CREAR));
+        }
         }
         });
 
@@ -280,7 +280,7 @@
         String nombreCat = cat[0];
         String carpeta   = cat[1];
 
-        Label titulo = new Label("Elige tu Avatar", skin);
+        Label titulo = new Label(Idioma.get(Idioma.Clave.ELIGE_AVATAR), skin);
         titulo.setColor(VERDE);
 
         Label lblCat = new Label(nombreCat, skin);
@@ -297,41 +297,41 @@
         Texture tex = new Texture(Gdx.files.internal(ruta));
         tex.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         com.badlogic.gdx.scenes.scene2d.ui.Image img =
-            new com.badlogic.gdx.scenes.scene2d.ui.Image(tex);
+        new com.badlogic.gdx.scenes.scene2d.ui.Image(tex);
 
         img.addListener(new ClickListener() {
-            public void clicked(InputEvent e, float x, float y) {
-                avatarSeleccionado[0] = ruta;
-                categoriaActual = 0;
-                alVolver.run();
-            }
+        public void clicked(InputEvent e, float x, float y) {
+            avatarSeleccionado[0] = ruta;
+            categoriaActual = 0;
+            alVolver.run();
+        }
         });
         filaAvatares.add(img).width(70).height(70).pad(8);
         }
 
-        TextButton btnAnterior  = crearBoton("< Anterior",  NARANJA);
-        TextButton btnSiguiente = crearBoton("Siguiente >", NARANJA);
-        TextButton btnCancelar  = crearBoton("Cancelar",    ROJO);
+        TextButton btnAnterior  = crearBoton(Idioma.get(Idioma.Clave.ANTERIOR),  NARANJA);
+        TextButton btnSiguiente = crearBoton(Idioma.get(Idioma.Clave.SIGUIENTE), NARANJA);
+        TextButton btnCancelar  = crearBoton(Idioma.get(Idioma.Clave.CANCELAR),  ROJO);
 
         btnAnterior.setVisible(categoriaActual > 0);
         btnSiguiente.setVisible(categoriaActual < CATEGORIAS.length - 1);
 
         btnAnterior.addListener(new ClickListener() {
         public void clicked(InputEvent e, float x, float y) {
-            categoriaActual--;
-            construirPanelAvatares(avatarSeleccionado, alVolver);
+        categoriaActual--;
+        construirPanelAvatares(avatarSeleccionado, alVolver);
         }
         });
         btnSiguiente.addListener(new ClickListener() {
         public void clicked(InputEvent e, float x, float y) {
-            categoriaActual++;
-            construirPanelAvatares(avatarSeleccionado, alVolver);
+        categoriaActual++;
+        construirPanelAvatares(avatarSeleccionado, alVolver);
         }
         });
         btnCancelar.addListener(new ClickListener() {
         public void clicked(InputEvent e, float x, float y) {
-            categoriaActual = 0;
-            alVolver.run();
+        categoriaActual = 0;
+        alVolver.run();
         }
         });
 
@@ -349,26 +349,26 @@
         stage.addActor(tabla);
         }
 
-        
+
         private void actualizarChecks(String pass) {
         boolean lon = pass.length() >= 6;
         boolean may = pass.matches(".*[A-Z].*");
         boolean min = pass.matches(".*[a-z].*");
         boolean num = pass.matches(".*[0-9].*");
         checksLabel.setText(
-            (lon ? "OK " : "X  ") + "Min 6 caracteres\n" +
-            (may ? "OK " : "X  ") + "Una mayuscula\n"    +
-            (min ? "OK " : "X  ") + "Una minuscula\n"    +
-            (num ? "OK " : "X  ") + "Un numero"
+            (lon ? "OK " : "X  ") + Idioma.get(Idioma.Clave.CHECK_MIN6) + "\n" +
+                (may ? "OK " : "X  ") + Idioma.get(Idioma.Clave.CHECK_MAYUS) + "\n" +
+                (min ? "OK " : "X  ") + Idioma.get(Idioma.Clave.CHECK_MINUS) + "\n" +
+                (num ? "OK " : "X  ") + Idioma.get(Idioma.Clave.CHECK_NUM)
         );
         checksLabel.setColor(lon && may && min && num ? VERDE : ROJO);
         }
 
         private boolean validarPass(String pass) {
         return pass.length() >= 6
-            && pass.matches(".*[A-Z].*")
-            && pass.matches(".*[a-z].*")
-            && pass.matches(".*[0-9].*");
+        && pass.matches(".*[A-Z].*")
+        && pass.matches(".*[a-z].*")
+        && pass.matches(".*[0-9].*");
         }
 
         private void mostrarError(String msg) {
@@ -395,7 +395,7 @@
         return btn;
         }
 
-        
+
         private Skin crearSkin() {
         Skin skin = new Skin();
 
@@ -412,7 +412,7 @@
         param.characters = FreeTypeFontGenerator.DEFAULT_CHARS + "áéíóúÁÉÍÓÚñÑüÜ¡¿";
         BitmapFont font = gen.generateFont(param);
         font.getData().setScale(1f / escala);
-         FreeTypeFontGenerator.FreeTypeFontParameter paramTitulo = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        FreeTypeFontGenerator.FreeTypeFontParameter paramTitulo = new FreeTypeFontGenerator.FreeTypeFontParameter();
         paramTitulo.size = Math.round(200 * escala);
         paramTitulo.characters = FreeTypeFontGenerator.DEFAULT_CHARS + "áéíóúÁÉÍÓÚñÑüÜ¡¿";
         BitmapFont fuenteTitulo = gen.generateFont(paramTitulo);
@@ -462,7 +462,7 @@
         return skin;
         }
 
-        
+
         @Override
         public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1f);

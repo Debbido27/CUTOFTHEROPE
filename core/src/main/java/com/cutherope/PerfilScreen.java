@@ -21,7 +21,7 @@
         import com.badlogic.gdx.scenes.scene2d.ui.Table;
         import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
         import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-
+        import LOGIC.Idioma;
         import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
         import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
         import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -78,7 +78,7 @@
         tabla.setFillParent(true);
         tabla.center();
 
-        Label titulo = new Label("Mi perfil", piel);
+        Label titulo = new Label(Idioma.get(Idioma.Clave.MI_PERFIL), piel);
 
         titulo.setColor(VERDE);
 
@@ -95,11 +95,11 @@
         Label subUsuario = new Label("@" + usuario, piel);
         subUsuario.setColor(NARANJA);
 
-        TextButton btnVerInfo      = crearBoton("Ver Informacion",      NARANJA);
-        TextButton btnCambiarUser  = crearBoton("Cambiar Usuario",      VERDE);
-        TextButton btnCambiarPass  = crearBoton("Cambiar Contrasena",   VERDE);
-        TextButton btnCambiarAvatar= crearBoton("Cambiar Avatar",       VERDE);
-        TextButton btnVolver       = crearBoton("Volver",               ROJO);
+        TextButton btnVerInfo       = crearBoton(Idioma.get(Idioma.Clave.VER_INFORMACION),    NARANJA);
+        TextButton btnCambiarUser   = crearBoton(Idioma.get(Idioma.Clave.CAMBIAR_USUARIO),    VERDE);
+        TextButton btnCambiarPass   = crearBoton(Idioma.get(Idioma.Clave.CAMBIAR_CONTRASENA), VERDE);
+        TextButton btnCambiarAvatar = crearBoton(Idioma.get(Idioma.Clave.CAMBIAR_AVATAR),     VERDE);
+        TextButton btnVolver        = crearBoton(Idioma.get(Idioma.Clave.VOLVER),               ROJO);
 
         btnVerInfo.addListener(new ClickListener() {
         @Override
@@ -116,8 +116,8 @@
         });
         btnVolver.addListener(new ClickListener() {
         public void clicked(InputEvent e, float x, float y) {
-            Gdx.app.postRunnable(() ->
-                juego.setScreen(new MenuPrincipalScreen(juego, usuario, gestor)));
+        Gdx.app.postRunnable(() ->
+            juego.setScreen(new MenuPrincipalScreen(juego, usuario, gestor)));
         }
         });
 
@@ -145,37 +145,37 @@
         tabla.setFillParent(true);
         tabla.center();
 
-        Label titulo = new Label("Informacion de Perfil", piel);
+        Label titulo = new Label(Idioma.get(Idioma.Clave.VER_INFORMACION), piel);
         titulo.setColor(VERDE);
 
-        TextButton btnDatos      = crearBoton("Datos Personales",   NARANJA);
-        TextButton btnProgreso   = crearBoton("Progreso del Juego", VERDE);
-        TextButton btnEstadist   = crearBoton("Estadisticas",       VERDE);
-        TextButton btnHistorial  = crearBoton("Historial",          VERDE);
-        TextButton btnRanking    = crearBoton("Ranking",            VERDE);
-        TextButton btnAmigos     = crearBoton("Amigos / Rivales",   VERDE);
-        TextButton btnVolver     = crearBoton("Volver al Perfil",   ROJO);
+        TextButton btnDatos     = crearBoton(Idioma.get(Idioma.Clave.DATOS_PERSONALES),  NARANJA);
+        TextButton btnProgreso  = crearBoton(Idioma.get(Idioma.Clave.PROGRESO_JUEGO),    VERDE);
+        TextButton btnEstadist  = crearBoton(Idioma.get(Idioma.Clave.ESTADISTICAS),      VERDE);
+        TextButton btnHistorial = crearBoton(Idioma.get(Idioma.Clave.HISTORIAL),         VERDE);
+        TextButton btnRanking   = crearBoton(Idioma.get(Idioma.Clave.RANKING),           VERDE);
+        TextButton btnAmigos    = crearBoton(Idioma.get(Idioma.Clave.VER_AMIGOS_RIVALES),VERDE);
+        TextButton btnVolver    = crearBoton(Idioma.get(Idioma.Clave.VOLVER_AL_PERFIL),  ROJO);
 
         btnDatos.addListener(new ClickListener() {
-           public void clicked(InputEvent e, float x, float y) { construirVerDatos(); }
+        public void clicked(InputEvent e, float x, float y) { construirVerDatos(); }
         });
         btnProgreso.addListener(new ClickListener() {
-           public void clicked(InputEvent e, float x, float y) { construirVerProgreso(); }
+        public void clicked(InputEvent e, float x, float y) { construirVerProgreso(); }
         });
         btnEstadist.addListener(new ClickListener() {
-           public void clicked(InputEvent e, float x, float y) { construirVerEstadisticas(); }
+        public void clicked(InputEvent e, float x, float y) { construirVerEstadisticas(); }
         });
         btnHistorial.addListener(new ClickListener() {
-           public void clicked(InputEvent e, float x, float y) { construirVerHistorial(); }
+        public void clicked(InputEvent e, float x, float y) { construirVerHistorial(); }
         });
         btnRanking.addListener(new ClickListener() {
-           public void clicked(InputEvent e, float x, float y) { construirVerRanking(); }
+        public void clicked(InputEvent e, float x, float y) { construirVerRanking(); }
         });
         btnAmigos.addListener(new ClickListener() {
-           public void clicked(InputEvent e, float x, float y) { construirVerAmigos(); }
+        public void clicked(InputEvent e, float x, float y) { construirVerAmigos(); }
         });
         btnVolver.addListener(new ClickListener() {
-           public void clicked(InputEvent e, float x, float y) { construirMenuPerfil(); }
+        public void clicked(InputEvent e, float x, float y) { construirMenuPerfil(); }
         });
 
         tabla.add(titulo).padBottom(20).row();
@@ -197,27 +197,27 @@
         tabla.setFillParent(true);
         tabla.center();
 
-        Label titulo = new Label("Datos Personales", piel);
+        Label titulo = new Label(Idioma.get(Idioma.Clave.DATOS_PERSONALES), piel);
         titulo.setColor(VERDE);
 
         String fechaReg = (u != null)
-           ? u.getFechaRegistro().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "-";
+        ? u.getFechaRegistro().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "-";
         long ms = (u != null) ? u.getUltimaSesion() : 0;
         String ultimaSesion = (ms > 0) ? new java.util.Date(ms).toString() : "-";
         String avatarActual = (u != null && !u.getAvatarPath().isEmpty()) ? u.getAvatarPath() : "Sin avatar";
         String nombreCompleto = (u != null) ? u.getFullname() : "-";
 
-        TextButton btnVolver = crearBoton("Volver", ROJO);
+        TextButton btnVolver = crearBoton(Idioma.get(Idioma.Clave.VOLVER), ROJO);
         btnVolver.addListener(new ClickListener() {
-           public void clicked(InputEvent e, float x, float y) { construirVerInfo(); }
+        public void clicked(InputEvent e, float x, float y) { construirVerInfo(); }
         });
 
         tabla.add(titulo).padBottom(16).colspan(2).center().row();
-        agregarFila(tabla, "Nombre completo",   nombreCompleto);
-        agregarFila(tabla, "Usuario",           "@" + usuario);
-        agregarFila(tabla, "Avatar",            avatarActual);
-        agregarFila(tabla, "Fecha de registro", fechaReg);
-        agregarFila(tabla, "Ultima sesion",     ultimaSesion);
+        agregarFila(tabla, Idioma.get(Idioma.Clave.NOMBRE_COMPLETO_LABEL), nombreCompleto);
+        agregarFila(tabla, Idioma.get(Idioma.Clave.USUARIO),               "@" + usuario);
+        agregarFila(tabla, Idioma.get(Idioma.Clave.AVATAR),                avatarActual);
+        agregarFila(tabla, Idioma.get(Idioma.Clave.FECHA_REGISTRO),        fechaReg);
+        agregarFila(tabla, Idioma.get(Idioma.Clave.ULTIMA_SESION),         ultimaSesion);
         tabla.add(btnVolver).width(240).height(36).padTop(16).colspan(2).center().row();
 
         escenario.addActor(tabla);
@@ -230,22 +230,22 @@
         tabla.setFillParent(true);
         tabla.center();
 
-        Label titulo = new Label("Progreso del Juego", piel);
+        Label titulo = new Label(Idioma.get(Idioma.Clave.PROGRESO_JUEGO), piel);
         titulo.setColor(VERDE);
 
         int nivelesComp = (u != null) ? u.getNivelesCompletados() : 0;
         int puntuacion  = (u != null) ? u.getPuntuacionGeneral()  : 0;
         int estrellas   = (u != null) ? u.getEstrellasTotal()     : 0;
 
-        TextButton btnVolver = crearBoton("Volver", ROJO);
+        TextButton btnVolver = crearBoton(Idioma.get(Idioma.Clave.VOLVER), ROJO);
         btnVolver.addListener(new ClickListener() {
-           public void clicked(InputEvent e, float x, float y) { construirVerInfo(); }
+        public void clicked(InputEvent e, float x, float y) { construirVerInfo(); }
         });
 
         tabla.add(titulo).padBottom(16).colspan(2).center().row();
-        agregarFila(tabla, "Niveles completados", nivelesComp + " / 5");
-        agregarFila(tabla, "Puntuacion general",  String.valueOf(puntuacion));
-        agregarFila(tabla, "Estrellas totales",   String.valueOf(estrellas));
+        agregarFila(tabla, Idioma.get(Idioma.Clave.NIVELES_COMPLETADOS), nivelesComp + " / 5");
+        agregarFila(tabla, Idioma.get(Idioma.Clave.PUNTUACION_GENERAL),  String.valueOf(puntuacion));
+        agregarFila(tabla, Idioma.get(Idioma.Clave.ESTRELLAS_TOTALES),   String.valueOf(estrellas));
         tabla.add(btnVolver).width(240).height(36).padTop(16).colspan(2).center().row();
 
         escenario.addActor(tabla);
@@ -258,7 +258,7 @@
         tabla.setFillParent(true);
         tabla.center();
 
-        Label titulo = new Label("Estadisticas", piel);
+        Label titulo = new Label(Idioma.get(Idioma.Clave.ESTADISTICAS), piel);
         titulo.setColor(VERDE);
 
         int partidas  = (u != null) ? u.getPartidasJugadas()   : 0;
@@ -266,15 +266,15 @@
         long tiempoMs = (u != null) ? u.getTiempoTotalJugado()  : 0;
         String tiempo = String.format("%d min %d seg", (tiempoMs / 60000), (tiempoMs % 60000) / 1000);
 
-        TextButton btnVolver = crearBoton("Volver", ROJO);
+        TextButton btnVolver = crearBoton(Idioma.get(Idioma.Clave.VOLVER), ROJO);
         btnVolver.addListener(new ClickListener() {
-           public void clicked(InputEvent e, float x, float y) { construirVerInfo(); }
+        public void clicked(InputEvent e, float x, float y) { construirVerInfo(); }
         });
 
         tabla.add(titulo).padBottom(16).colspan(2).center().row();
-        agregarFila(tabla, "Partidas jugadas",    String.valueOf(partidas));
-        agregarFila(tabla, "Fallos totales",      String.valueOf(fallos));
-        agregarFila(tabla, "Tiempo total jugado", tiempo);
+        agregarFila(tabla, Idioma.get(Idioma.Clave.PARTIDAS_JUGADAS), String.valueOf(partidas));
+        agregarFila(tabla, Idioma.get(Idioma.Clave.FALLOS_TOTALES),   String.valueOf(fallos));
+        agregarFila(tabla, Idioma.get(Idioma.Clave.TIEMPO_JUGADO),    tiempo);
         tabla.add(btnVolver).width(240).height(36).padTop(16).colspan(2).center().row();
 
         escenario.addActor(tabla);
@@ -286,15 +286,15 @@
         tabla.setFillParent(true);
         tabla.center();
 
-        Label titulo = new Label("Historial de Partidas", piel);
+        Label titulo  = new Label(Idioma.get(Idioma.Clave.HISTORIAL_PARTIDAS), piel);
         titulo.setColor(VERDE);
 
-        Label lblInfo = new Label("Sin historial disponible aun.", piel);
+        Label lblInfo = new Label(Idioma.get(Idioma.Clave.SIN_HISTORIAL), piel);
         lblInfo.setColor(GRIS);
 
-        TextButton btnVolver = crearBoton("Volver", ROJO);
+        TextButton btnVolver = crearBoton(Idioma.get(Idioma.Clave.VOLVER), ROJO);
         btnVolver.addListener(new ClickListener() {
-           public void clicked(InputEvent e, float x, float y) { construirVerInfo(); }
+        public void clicked(InputEvent e, float x, float y) { construirVerInfo(); }
         });
 
         tabla.add(titulo).padBottom(16).row();
@@ -310,15 +310,15 @@
         tabla.setFillParent(true);
         tabla.center();
 
-        Label titulo = new Label("Ranking General", piel);
+        Label titulo  = new Label(Idioma.get(Idioma.Clave.RANKING_GENERAL), piel);
         titulo.setColor(VERDE);
 
-        Label lblInfo = new Label("Sin ranking disponible aun.", piel);
+        Label lblInfo = new Label(Idioma.get(Idioma.Clave.SIN_RANKING), piel);
         lblInfo.setColor(GRIS);
 
-        TextButton btnVolver = crearBoton("Volver", ROJO);
+        TextButton btnVolver = crearBoton(Idioma.get(Idioma.Clave.VOLVER), ROJO);
         btnVolver.addListener(new ClickListener() {
-           public void clicked(InputEvent e, float x, float y) { construirVerInfo(); }
+        public void clicked(InputEvent e, float x, float y) { construirVerInfo(); }
         });
 
         tabla.add(titulo).padBottom(16).row();
@@ -335,26 +335,26 @@
         tabla.setFillParent(true);
         tabla.center();
 
-        Label titulo = new Label("Amigos / Rivales", piel);
+        Label titulo = new Label(Idioma.get(Idioma.Clave.AMIGOS_RIVALES), piel);
         titulo.setColor(VERDE);
 
-        TextButton btnVolver = crearBoton("Volver", ROJO);
+        TextButton btnVolver = crearBoton(Idioma.get(Idioma.Clave.VOLVER), ROJO);
         btnVolver.addListener(new ClickListener() {
-           public void clicked(InputEvent e, float x, float y) { construirVerInfo(); }
+        public void clicked(InputEvent e, float x, float y) { construirVerInfo(); }
         });
 
         tabla.add(titulo).padBottom(16).row();
 
         if (u != null && u.getAmigos().length > 0) {
-           for (String amigo : u.getAmigos()) {
-               Label lblAmigo = new Label("• " + amigo, piel);
-               lblAmigo.setColor(CAFE);
-               tabla.add(lblAmigo).left().padBottom(4).row();
-           }
+        for (String amigo : u.getAmigos()) {
+           Label lblAmigo = new Label("• " + amigo, piel);
+           lblAmigo.setColor(CAFE);
+           tabla.add(lblAmigo).left().padBottom(4).row();
+        }
         } else {
-           Label lblSin = new Label("Sin amigos agregados aun.", piel);
-           lblSin.setColor(GRIS);
-           tabla.add(lblSin).padBottom(16).row();
+        Label lblSin = new Label(Idioma.get(Idioma.Clave.SIN_AMIGOS), piel);
+        lblSin.setColor(GRIS);
+        tabla.add(lblSin).padBottom(16).row();
         }
 
         tabla.add(btnVolver).width(240).height(36).padTop(16).row();
@@ -369,70 +369,68 @@
         tabla.setFillParent(true);
         tabla.center();
 
-        Label titulo = new Label("Cambiar Usuario", piel);
+        Label titulo  = new Label(Idioma.get(Idioma.Clave.CAMBIAR_USUARIO), piel);
         titulo.setColor(VERDE);
 
-        Label lblPass = crearLabel("Confirma tu contrasena");
-        TextField campoPass = crearCampo("Contrasena actual");
+        Label lblPass = crearLabel(Idioma.get(Idioma.Clave.CONFIRMA_CONTRASENA));
+        TextField campoPass = crearCampo(Idioma.get(Idioma.Clave.CONTRASENA_ACTUAL));
         campoPass.setPasswordMode(true);
-        campoPass.setPasswordCharacter('*');
-
-        CheckBox chkVer = new CheckBox(" Ver contrasena", piel);
+        campoPass.setPasswordCharacter('*');CheckBox chkVer = new CheckBox(Idioma.get(Idioma.Clave.VER_CONTRASENA), piel);
         chkVer.addListener(new ChangeListener() {
         public void changed(ChangeEvent event, Actor actor) {
-            campoPass.setPasswordMode(!chkVer.isChecked());
+        campoPass.setPasswordMode(!chkVer.isChecked());
         }
         });
 
-        Label lblNuevo = crearLabel("Nuevo nombre de usuario");
+        Label lblNuevo = crearLabel(Idioma.get(Idioma.Clave.NUEVO_USUARIO));
         lblNuevo.setVisible(false);
-        TextField campoNuevoUser = crearCampo("Nuevo usuario");
+        TextField campoNuevoUser = crearCampo(Idioma.get(Idioma.Clave.USUARIO));
         campoNuevoUser.setVisible(false);
 
         Label mensaje = new Label("", piel);
         mensaje.setColor(ROJO);
 
-        TextButton btnValidar = crearBoton("Validar", VERDE);
-        TextButton btnGuardar = crearBoton("Guardar", VERDE);
-        TextButton btnVolver  = crearBoton("Volver",  NARANJA);
+        TextButton btnValidar = crearBoton(Idioma.get(Idioma.Clave.VALIDAR), VERDE);
+        TextButton btnGuardar = crearBoton(Idioma.get(Idioma.Clave.GUARDAR), VERDE);
+        TextButton btnVolver  = crearBoton(Idioma.get(Idioma.Clave.VOLVER),  NARANJA);
         btnGuardar.setVisible(false);
 
         btnValidar.addListener(new ClickListener() {
         public void clicked(InputEvent e, float x, float y) {
-            USER u = gestor.buscarUser(usuario);
-            if (u == null || !u.getPassword().equals(campoPass.getText().trim())) {
-                mensaje.setColor(ROJO);
-                mensaje.setText("Contrasena incorrecta.");
-            } else {
-                mensaje.setColor(VERDE);
-                mensaje.setText("Contrasena validada.");
-                lblNuevo.setVisible(true);
-                campoNuevoUser.setVisible(true);
-                btnGuardar.setVisible(true);
-                btnValidar.setVisible(false);
-                campoPass.setDisabled(true);
-            }
+        USER u = gestor.buscarUser(usuario);
+        if (u == null || !u.getPassword().equals(campoPass.getText().trim())) {
+            mensaje.setColor(ROJO);
+            mensaje.setText(Idioma.get(Idioma.Clave.CONTRASENA_INCORRECTA));
+        } else {
+            mensaje.setColor(VERDE);
+            mensaje.setText(Idioma.get(Idioma.Clave.CONTRASENA_VALIDADA));
+            lblNuevo.setVisible(true);
+            campoNuevoUser.setVisible(true);
+            btnGuardar.setVisible(true);
+            btnValidar.setVisible(false);
+            campoPass.setDisabled(true);
+        }
         }
         });
 
         btnGuardar.addListener(new ClickListener() {
         public void clicked(InputEvent e, float x, float y) {
-            String nuevoUser = campoNuevoUser.getText().trim();
-            if (nuevoUser.isEmpty()) {
-                mensaje.setColor(ROJO);
-                mensaje.setText("Ingresa un nombre de usuario.");
-            } else if (gestor.userExiste(nuevoUser)) {
-                mensaje.setColor(ROJO);
-                mensaje.setText("Ese usuario ya existe.");
-            } else if (gestor.cambiarUsername(usuario, nuevoUser)) {
-                usuario = nuevoUser;
-                mensaje.setColor(VERDE);
-                mensaje.setText("Usuario cambiado exitosamente.");
-                btnGuardar.setVisible(false);
-            } else {
-                mensaje.setColor(ROJO);
-                mensaje.setText("Error al cambiar usuario.");
-            }
+        String nuevoUser = campoNuevoUser.getText().trim();
+        if (nuevoUser.isEmpty()) {
+            mensaje.setColor(ROJO);
+            mensaje.setText(Idioma.get(Idioma.Clave.INGRESA_USUARIO));
+        } else if (gestor.userExiste(nuevoUser)) {
+            mensaje.setColor(ROJO);
+            mensaje.setText(Idioma.get(Idioma.Clave.USUARIO_YA_EXISTE));
+        } else if (gestor.cambiarUsername(usuario, nuevoUser)) {
+            usuario = nuevoUser;
+            mensaje.setColor(VERDE);
+            mensaje.setText(Idioma.get(Idioma.Clave.USUARIO_CAMBIADO));
+            btnGuardar.setVisible(false);
+        } else {
+            mensaje.setColor(ROJO);
+            mensaje.setText(Idioma.get(Idioma.Clave.ERROR_CAMBIAR_USUARIO));
+        }
         }
         });
 
@@ -463,80 +461,85 @@
         tabla.setFillParent(true);
         tabla.center();
 
-        Label titulo = new Label("Cambiar Contrasena", piel);
+        Label titulo    = new Label(Idioma.get(Idioma.Clave.CAMBIAR_CONTRASENA), piel);
         titulo.setColor(VERDE);
 
-        Label lblActual = crearLabel("Contrasena actual");
-        TextField campoActual = crearCampo("Contrasena actual");
+        Label lblActual = crearLabel(Idioma.get(Idioma.Clave.CONTRASENA_ACTUAL));
+        TextField campoActual = crearCampo(Idioma.get(Idioma.Clave.CONTRASENA_ACTUAL));
         campoActual.setPasswordMode(true);
         campoActual.setPasswordCharacter('*');
 
-        CheckBox chkVer = new CheckBox(" Ver contrasena", piel);
+        CheckBox chkVer = new CheckBox(Idioma.get(Idioma.Clave.VER_CONTRASENA), piel);
         chkVer.addListener(new ChangeListener() {
         public void changed(ChangeEvent event, Actor actor) {
-            campoActual.setPasswordMode(!chkVer.isChecked());
+        campoActual.setPasswordMode(!chkVer.isChecked());
         }
         });
 
-        Label lblNueva = crearLabel("Nueva contrasena");
+        Label lblNueva = crearLabel(Idioma.get(Idioma.Clave.NUEVA_CONTRASENA));
         lblNueva.setVisible(false);
-        TextField campoNueva = crearCampo("Nueva contrasena");
+        TextField campoNueva = crearCampo(Idioma.get(Idioma.Clave.NUEVA_CONTRASENA));
         campoNueva.setPasswordMode(true);
         campoNueva.setPasswordCharacter('*');
         campoNueva.setVisible(false);
 
         Label checksLabel = new Label(
-        "X  Min 6 caracteres\nX  Una mayuscula\nX  Una minuscula\nX  Un numero", piel);
+            "X  " + Idioma.get(Idioma.Clave.CHECK_MIN6) + "\n" +
+                "X  " + Idioma.get(Idioma.Clave.CHECK_MAYUS) + "\n" +
+                "X  " + Idioma.get(Idioma.Clave.CHECK_MINUS) + "\n" +
+                "X  " + Idioma.get(Idioma.Clave.CHECK_NUM),
+            piel
+        );
         checksLabel.setColor(ROJO);
         checksLabel.setVisible(false);
 
         campoNueva.addListener(new ChangeListener() {
         public void changed(ChangeEvent event, Actor actor) {
-            if (campoNueva.isVisible()) actualizarChecks(checksLabel, campoNueva.getText());
+        if (campoNueva.isVisible()) actualizarChecks(checksLabel, campoNueva.getText());
         }
         });
 
         Label mensaje = new Label("", piel);
         mensaje.setColor(ROJO);
 
-        TextButton btnValidar = crearBoton("Validar", VERDE);
-        TextButton btnGuardar = crearBoton("Guardar", VERDE);
-        TextButton btnVolver  = crearBoton("Volver",  NARANJA);
+        TextButton btnValidar = crearBoton(Idioma.get(Idioma.Clave.VALIDAR), VERDE);
+        TextButton btnGuardar = crearBoton(Idioma.get(Idioma.Clave.GUARDAR), VERDE);
+        TextButton btnVolver  = crearBoton(Idioma.get(Idioma.Clave.VOLVER),  NARANJA);
         btnGuardar.setVisible(false);
 
         btnValidar.addListener(new ClickListener() {
         public void clicked(InputEvent e, float x, float y) {
-            USER u = gestor.buscarUser(usuario);
-            if (u == null || !u.getPassword().equals(campoActual.getText().trim())) {
-                mensaje.setColor(ROJO);
-                mensaje.setText("Contrasena incorrecta.");
-            } else {
-                mensaje.setColor(VERDE);
-                mensaje.setText("Validada. Ingresa la nueva contrasena.");
-                lblNueva.setVisible(true);
-                campoNueva.setVisible(true);
-                checksLabel.setVisible(true);
-                btnGuardar.setVisible(true);
-                btnValidar.setVisible(false);
-                campoActual.setDisabled(true);
-            }
+        USER u = gestor.buscarUser(usuario);
+        if (u == null || !u.getPassword().equals(campoActual.getText().trim())) {
+            mensaje.setColor(ROJO);
+            mensaje.setText(Idioma.get(Idioma.Clave.CONTRASENA_INCORRECTA));
+        } else {
+            mensaje.setColor(VERDE);
+            mensaje.setText(Idioma.get(Idioma.Clave.CONTRASENA_VALIDADA_NUEVA));
+            lblNueva.setVisible(true);
+            campoNueva.setVisible(true);
+            checksLabel.setVisible(true);
+            btnGuardar.setVisible(true);
+            btnValidar.setVisible(false);
+            campoActual.setDisabled(true);
+        }
         }
         });
 
         btnGuardar.addListener(new ClickListener() {
         public void clicked(InputEvent e, float x, float y) {
-            String nueva = campoNueva.getText().trim();
-            if (!validarPass(nueva)) {
-                mensaje.setColor(ROJO);
-                mensaje.setText("La contrasena no cumple los requisitos.");
-            } else if (gestor.cambiarPassword(usuario, nueva)) {
-                mensaje.setColor(VERDE);
-                mensaje.setText("Contrasena cambiada exitosamente.");
-                btnGuardar.setVisible(false);
-            } else {
-                mensaje.setColor(ROJO);
-                mensaje.setText("Error al cambiar contrasena.");
-            }
+        String nueva = campoNueva.getText().trim();
+        if (!validarPass(nueva)) {
+            mensaje.setColor(ROJO);
+            mensaje.setText(Idioma.get(Idioma.Clave.PASS_NO_CUMPLE));
+        } else if (gestor.cambiarPassword(usuario, nueva)) {
+            mensaje.setColor(VERDE);
+            mensaje.setText(Idioma.get(Idioma.Clave.CONTRASENA_CAMBIADA));
+            btnGuardar.setVisible(false);
+        } else {
+            mensaje.setColor(ROJO);
+            mensaje.setText(Idioma.get(Idioma.Clave.ERROR_CAMBIAR_PASS));
+        }
         }
         });
 
@@ -568,15 +571,15 @@
         tabla.setFillParent(true);
         tabla.center();
 
-        Label titulo = new Label("Cambiar Avatar", piel);
+        Label titulo  = new Label(Idioma.get(Idioma.Clave.CAMBIAR_AVATAR), piel);
         titulo.setColor(VERDE);
 
-        Label lblPass = crearLabel("Confirma tu contrasena");
-        TextField campoPass = crearCampo("Contrasena");
+        Label lblPass = crearLabel(Idioma.get(Idioma.Clave.CONFIRMA_CONTRASENA));
+        TextField campoPass = crearCampo(Idioma.get(Idioma.Clave.CONTRASENA));
         campoPass.setPasswordMode(true);
         campoPass.setPasswordCharacter('*');
 
-        CheckBox chkVer = new CheckBox(" Ver contrasena", piel);
+        CheckBox chkVer = new CheckBox(Idioma.get(Idioma.Clave.VER_CONTRASENA), piel);
         chkVer.addListener(new ChangeListener() {
         public void changed(ChangeEvent event, Actor actor) {
         campoPass.setPasswordMode(!chkVer.isChecked());
@@ -589,22 +592,22 @@
         if (avatarTemporalPerfil == null) avatarTemporalPerfil = DEFAULT_AVATAR;
         final String[] avatarSeleccionado = { avatarTemporalPerfil };
 
-        TextButton btnValidar = crearBoton("Validar", VERDE);
-        TextButton btnVolver  = crearBoton("Volver",  NARANJA);
+        TextButton btnValidar = crearBoton(Idioma.get(Idioma.Clave.VALIDAR), VERDE);
+        TextButton btnVolver  = crearBoton(Idioma.get(Idioma.Clave.VOLVER),  NARANJA);
 
         btnValidar.addListener(new ClickListener() {
         public void clicked(InputEvent e, float x, float y) {
         USER u = gestor.buscarUser(usuario);
         if (u == null || !u.getPassword().equals(campoPass.getText().trim())) {
-            mensaje.setColor(ROJO);
-            mensaje.setText("Contrasena incorrecta.");
+        mensaje.setColor(ROJO);
+        mensaje.setText(Idioma.get(Idioma.Clave.CONTRASENA_INCORRECTA));
         } else {
-            construirPanelAvatares(avatarSeleccionado, () -> {
-                avatarTemporalPerfil = avatarSeleccionado[0];
-                gestor.cambiarAvatar(usuario, avatarTemporalPerfil);
-                avatarTemporalPerfil = null;
-                construirMenuPerfil();
-            });
+        construirPanelAvatares(avatarSeleccionado, () -> {
+            avatarTemporalPerfil = avatarSeleccionado[0];
+            gestor.cambiarAvatar(usuario, avatarTemporalPerfil);
+            avatarTemporalPerfil = null;
+            construirMenuPerfil();
+        });
         }
         }
         });
@@ -640,7 +643,7 @@
         String nombreCat = cat[0];
         String carpeta   = cat[1];
 
-        Label titulo = new Label("Elige tu Avatar", piel);
+        Label titulo = new Label(Idioma.get(Idioma.Clave.ELIGE_AVATAR), piel);
         titulo.setColor(VERDE);
 
         Label lblCat = new Label(nombreCat, piel);
@@ -661,17 +664,17 @@
 
         img.addListener(new ClickListener() {
         public void clicked(InputEvent e, float x, float y) {
-            avatarSeleccionado[0] = ruta;
-            categoriaActual = 0;
-            alVolver.run();
+        avatarSeleccionado[0] = ruta;
+        categoriaActual = 0;
+        alVolver.run();
         }
         });
         filaAvatares.add(img).width(70).height(70).pad(8);
         }
 
-        TextButton btnAnterior = crearBoton("< Anterior", NARANJA);
-        TextButton btnSiguiente = crearBoton("Siguiente >", NARANJA);
-        TextButton btnCancelar = crearBoton("Cancelar", ROJO);
+        TextButton btnAnterior  = crearBoton(Idioma.get(Idioma.Clave.ANTERIOR),  NARANJA);
+        TextButton btnSiguiente = crearBoton(Idioma.get(Idioma.Clave.SIGUIENTE), NARANJA);
+        TextButton btnCancelar  = crearBoton(Idioma.get(Idioma.Clave.CANCELAR),  ROJO);
 
         btnAnterior.setVisible(categoriaActual > 0);
         btnSiguiente.setVisible(categoriaActual < CATEGORIAS.length - 1);
@@ -729,10 +732,10 @@
         boolean min = pass.matches(".*[a-z].*");
         boolean num = pass.matches(".*[0-9].*");
         checksLabel.setText(
-        (lon ? "OK " : "X  ") + "Min 6 caracteres\n" +
-        (may ? "OK " : "X  ") + "Una mayuscula\n"    +
-        (min ? "OK " : "X  ") + "Una minuscula\n"    +
-        (num ? "OK " : "X  ") + "Un numero"
+            (lon ? "OK " : "X  ") + Idioma.get(Idioma.Clave.CHECK_MIN6)  + "\n" +
+                (may ? "OK " : "X  ") + Idioma.get(Idioma.Clave.CHECK_MAYUS) + "\n" +
+                (min ? "OK " : "X  ") + Idioma.get(Idioma.Clave.CHECK_MINUS) + "\n" +
+                (num ? "OK " : "X  ") + Idioma.get(Idioma.Clave.CHECK_NUM)
         );
         checksLabel.setColor(lon && may && min && num ? VERDE : ROJO);
         }

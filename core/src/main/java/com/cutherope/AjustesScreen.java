@@ -1,6 +1,7 @@
 
         package com.cutherope;
 
+        import LOGIC.Idioma;
         import com.badlogic.gdx.Gdx;
         import com.badlogic.gdx.Screen;
         import com.badlogic.gdx.graphics.Color;
@@ -48,12 +49,12 @@
         tabla.setFillParent(true);
         tabla.center();
 
-        Label titulo = new Label("Ajustes", piel);
+        Label titulo = new Label(Idioma.get(Idioma.Clave.AJUSTES), piel);
         titulo.setColor(VERDE);
 
-        TextButton btnPerfil       = crearBoton("Perfil",       VERDE);
-        TextButton btnPreferencias = crearBoton("Preferencias", NARANJA);
-        TextButton btnVolver       = crearBoton("Volver",       ROJO);
+        TextButton btnPerfil       = crearBoton(Idioma.get(Idioma.Clave.PERFIL),       VERDE);
+        TextButton btnPreferencias = crearBoton(Idioma.get(Idioma.Clave.PREFERENCIAS), NARANJA);
+        TextButton btnVolver       = crearBoton(Idioma.get(Idioma.Clave.VOLVER),       ROJO);
 
         btnPerfil.addListener(new ClickListener() {
         public void clicked(InputEvent e, float x, float y) {

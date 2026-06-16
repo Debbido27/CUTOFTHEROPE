@@ -1,5 +1,6 @@
         package com.cutherope;
 
+        import LOGIC.Idioma;
         import com.badlogic.gdx.Gdx;
         import com.badlogic.gdx.Screen;
         import com.badlogic.gdx.graphics.Color;
@@ -34,8 +35,8 @@
         private static final int[] R_BLOQUEADO   = {  0,   0, 128, 128 };
         private static final int[] R_DESBLOQUEAD = {  0, 130, 128, 128 };
 
-        private static final int[] R_STAR_LLENA  = {   0,  0, 137, 129 }; 
-        private static final int[] R_STAR_VACIA  = { 163, 13, 121, 116 }; 
+        private static final int[] R_STAR_LLENA  = {   0,  0, 137, 129 };
+        private static final int[] R_STAR_VACIA  = { 163, 13, 121, 116 };
 
         private final Color FONDO   = new Color(0.96f, 0.92f, 0.82f, 1f);
         private final Color VERDE   = new Color(0.33f, 0.59f, 0.31f, 1f);
@@ -87,8 +88,7 @@
         Table celda = new Table();
         celda.center();
 
-        Label numLabel = new Label("Nivel " + (i + 1), piel);
-        numLabel.setColor(bloqueado ? Color.GRAY : CAFE);
+            Label numLabel = new Label(Idioma.get(Idioma.Clave.NIVEL) + " " + (i + 1), piel);        numLabel.setColor(bloqueado ? Color.GRAY : CAFE);
 
         Image icono = new Image(new TextureRegionDrawable(
             bloqueado ? regBloqueado : regDesbloquead));
@@ -104,14 +104,12 @@
         celda.add(icono).size(90, 90).padBottom(6).row();
         celda.add(filaEstrellas).row();
 
-       // En la clase SeleccionNivelScreen, corrige el método construir() 
-// donde se crea el ClickListener del icono:
-
-if (!bloqueado) {
-    icono.addListener(new ClickListener() {
+        
+        if (!bloqueado) {
+        icono.addListener(new ClickListener() {
         public void clicked(InputEvent e, float x, float y) {
             Gdx.app.postRunnable(() -> {
-                // Llamar al nivel específico según el número
+
                 switch(nivel + 1) {
                     case 1:
                         juego.setScreen(new NIVELES.Nivel1Screen(juego, usuario, gestor));
@@ -134,14 +132,13 @@ if (!bloqueado) {
                 }
             });
         }
-    });
-}
+        });
+        }
 
         filaNiveles.add(celda).top().padLeft(10).padRight(10);
         }
 
-        TextButton btnVolver = crearBoton("Volver", ROJO);
-        btnVolver.addListener(new ClickListener() {
+            TextButton btnVolver = crearBoton(Idioma.get(Idioma.Clave.VOLVER), ROJO);        btnVolver.addListener(new ClickListener() {
         public void clicked(InputEvent e, float x, float y) {
             Gdx.app.postRunnable(() ->
                 juego.setScreen(new MenuPrincipalScreen(juego, usuario, gestor)));
@@ -154,7 +151,7 @@ if (!bloqueado) {
         escenario.addActor(raiz);
         }
 
-        
+
 
         private TextureRegion region(Texture tex, int[] r) {
         return new TextureRegion(tex, r[0], r[1], r[2], r[3]);
@@ -224,7 +221,7 @@ if (!bloqueado) {
         return skin;
         }
 
-      
+
         @Override
         public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1f);

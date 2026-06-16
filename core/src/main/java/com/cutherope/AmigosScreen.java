@@ -1,6 +1,7 @@
         package com.cutherope;
 
         import LOGIC.FriendsManager;
+        import LOGIC.Idioma;
         import LOGIC.LoginManager;
         import LOGIC.USER;
         import com.badlogic.gdx.Gdx;
@@ -52,15 +53,17 @@
         construirMenu();
         }
 
-      
+
         private void construirMenu() {
         escenario.clear();
+            USER u = gestor.buscarUser(usuario);
+            if (u != null) Idioma.setIngles(u.isIngles());
 
         Table tabla = new Table();
         tabla.setFillParent(true);
         tabla.center();
 
-        Label titulo = new Label("Amigos", piel);
+            Label titulo = new Label(Idioma.get(Idioma.Clave.AMIGOS), piel);
         titulo.setColor(VERDE);
 
         Label sub = new Label("@" + usuario, piel);
@@ -69,14 +72,15 @@
         int totalAmigos      = friendsManager.contarAmigos(usuario);
         int totalSolicitudes = friendsManager.getSolicitudes(usuario).length;
 
-        Label lblContador = new Label("Amigos: " + totalAmigos +
-        (totalSolicitudes > 0 ? "   |   Solicitudes: " + totalSolicitudes : ""), piel);
+            Label lblContador = new Label(Idioma.get(Idioma.Clave.AMIGOS) + ": " + totalAmigos +
+                (totalSolicitudes > 0 ? "   |   " + Idioma.get(Idioma.Clave.SOLICITUDES_AMISTAD) + ": " + totalSolicitudes : ""), piel);
+
         lblContador.setColor(NARANJA);
 
-        TextButton btnVerAmigos    = crearBoton("Ver Amigos",       VERDE);
-        TextButton btnAgregar      = crearBoton("Agregar Amigo",    VERDE);
-        TextButton btnSolicitudes  = crearBoton("Ver Solicitudes",  totalSolicitudes > 0 ? NARANJA : GRIS);
-        TextButton btnVolver       = crearBoton("Volver",           ROJO);
+            TextButton btnVerAmigos   = crearBoton(Idioma.get(Idioma.Clave.VER_AMIGOS),      VERDE);
+            TextButton btnAgregar     = crearBoton(Idioma.get(Idioma.Clave.AGREGAR_AMIGO),   VERDE);
+            TextButton btnSolicitudes = crearBoton(Idioma.get(Idioma.Clave.VER_SOLICITUDES), totalSolicitudes > 0 ? NARANJA : GRIS);
+            TextButton btnVolver      = crearBoton(Idioma.get(Idioma.Clave.VOLVER),          ROJO);
 
         btnVerAmigos.addListener(new ClickListener() {
         public void clicked(InputEvent e, float x, float y) { construirVerAmigos(); }
@@ -105,14 +109,14 @@
         escenario.addActor(tabla);
         }
 
-        
+
         private void construirVerAmigos() {
         escenario.clear();
 
         Table contenido = new Table();
         contenido.top().pad(20);
 
-        Label titulo = new Label("Mis Amigos", piel);
+            Label titulo = new Label(Idioma.get(Idioma.Clave.MIS_AMIGOS), piel);
 
         titulo.setColor(VERDE);
         contenido.add(titulo).colspan(2).center().padBottom(20).row();
@@ -120,7 +124,7 @@
         String[] amigos = friendsManager.getAmigos(usuario);
 
         if (amigos.length == 0) {
-        Label lblVacio = new Label("No tienes amigos aun.", piel);
+            Label lblVacio = new Label(Idioma.get(Idioma.Clave.NO_TIENES_AMIGOS), piel);
         lblVacio.setColor(GRIS);
         contenido.add(lblVacio).colspan(2).center().padBottom(20).row();
         } else {
@@ -133,7 +137,7 @@
             Label lblUser = new Label("@" + u.getUsername(), piel);
             lblUser.setColor(NARANJA);
 
-            TextButton btnEliminar = crearBoton("Eliminar", ROJO);
+            TextButton btnEliminar = crearBoton(Idioma.get(Idioma.Clave.ELIMINAR),     ROJO);
             btnEliminar.addListener(new ClickListener() {
                 public void clicked(InputEvent e, float x, float y) {
                     friendsManager.eliminarAmigo(usuario, amigo);
@@ -147,7 +151,7 @@
             card.add(lblNombre).left().padRight(10);
             card.add(lblUser).left().expandX();
             card.add(btnEliminar).width(90).height(35);
-        TextButton btnDetalles = crearBoton("Ver Detalles", NARANJA);
+            TextButton btnDetalles = crearBoton(Idioma.get(Idioma.Clave.VER_DETALLES), NARANJA);
         btnDetalles.addListener(new ClickListener() {
         public void clicked(InputEvent e, float x, float y) {
         construirDetallesAmigo(amigo);
@@ -161,7 +165,7 @@
         }
         }
 
-        TextButton btnVolver = crearBoton("Volver", NARANJA);
+            TextButton btnVolver   = crearBoton(Idioma.get(Idioma.Clave.VOLVER),       NARANJA);
         btnVolver.addListener(new ClickListener() {
         public void clicked(InputEvent e, float x, float y) { construirMenu(); }
         });
@@ -176,7 +180,7 @@
         escenario.addActor(scroll);
         }
 
-      
+
         private void construirAgregarAmigo() {
         escenario.clear();
 
@@ -184,28 +188,28 @@
         tabla.setFillParent(true);
         tabla.center();
 
-        Label titulo = new Label("Agregar Amigo", piel);
+            Label titulo   = new Label(Idioma.get(Idioma.Clave.AGREGAR_AMIGO_TITULO), piel);
         titulo.setColor(VERDE);
 
-        Label lblInfo = new Label("Ingresa el usuario al que quieres enviar solicitud:", piel);
-        lblInfo.setColor(CAFE);
+            Label lblInfo = new Label(Idioma.get(Idioma.Clave.INGRESA_USUARIO_SOLICITUD), piel);
+            lblInfo.setColor(CAFE);
 
-        TextField campoBuscar = crearCampo("Nombre de usuario");
+            TextField campoBuscar = crearCampo(Idioma.get(Idioma.Clave.USUARIO));
 
         Label mensaje = new Label("", piel);
         mensaje.setColor(ROJO);
 
-        
+
         Table tablaResultado = new Table();
 
-        TextButton btnVerJugadores = crearBoton("Ver Jugadores", NARANJA);
+            TextButton btnVerJugadores = crearBoton(Idioma.get(Idioma.Clave.VER_JUGADORES), NARANJA);
         btnVerJugadores.addListener(new ClickListener() {
         public void clicked(InputEvent e, float x, float y) { construirVerJugadores(); }
         });
 
 
-        TextButton btnBuscar  = crearBoton("Buscar",  VERDE);
-        TextButton btnVolver  = crearBoton("Volver",  NARANJA);
+            TextButton btnBuscar = crearBoton(Idioma.get(Idioma.Clave.BUSCAR), VERDE);
+            TextButton btnVolver = crearBoton(Idioma.get(Idioma.Clave.VOLVER), NARANJA);
 
         btnBuscar.addListener(new ClickListener() {
         public void clicked(InputEvent e, float x, float y) {
@@ -214,19 +218,19 @@
 
             if (busqueda.isEmpty()) {
                 mensaje.setColor(ROJO);
-                mensaje.setText("Ingresa un nombre de usuario.");
+                mensaje.setText(Idioma.get(Idioma.Clave.INGRESA_USUARIO_SOLICITUD));
                 return;
             }
             if (busqueda.equals(usuario)) {
                 mensaje.setColor(ROJO);
-                mensaje.setText("No puedes agregarte a ti mismo.");
+                mensaje.setText(Idioma.get(Idioma.Clave.NO_AUTO_AGREGAR));
                 return;
             }
 
             USER encontrado = gestor.buscarUser(busqueda);
             if (encontrado == null) {
                 mensaje.setColor(ROJO);
-                mensaje.setText("Usuario no encontrado.");
+                mensaje.setText(Idioma.get(Idioma.Clave.USUARIO_NO_EXISTE));
                 return;
             }
 
@@ -238,29 +242,26 @@
             lblUser.setColor(NARANJA);
 
             if (friendsManager.sonAmigos(usuario, busqueda)) {
-                Label lblYaAmigo = new Label("Ya son amigos.", piel);
-                lblYaAmigo.setColor(VERDE);
+                Label lblYaAmigo = new Label(Idioma.get(Idioma.Clave.YA_AMIGOS), piel);                lblYaAmigo.setColor(VERDE);
                 tablaResultado.add(lblNombre).padRight(10);
                 tablaResultado.add(lblUser).expandX();
                 tablaResultado.add(lblYaAmigo).row();
             } else if (friendsManager.tieneSolicitudPendiente(usuario, busqueda)) {
-                Label lblPendiente = new Label("Solicitud enviada.", piel);
-                lblPendiente.setColor(GRIS);
+                Label lblPendiente = new Label(Idioma.get(Idioma.Clave.SOLICITUD_ENVIADA), piel);                lblPendiente.setColor(GRIS);
                 tablaResultado.add(lblNombre).padRight(10);
                 tablaResultado.add(lblUser).expandX();
                 tablaResultado.add(lblPendiente).row();
             } else {
-                TextButton btnEnviar = crearBoton("Enviar Solicitud", VERDE);
-                btnEnviar.addListener(new ClickListener() {
+                TextButton btnEnviar = crearBoton(Idioma.get(Idioma.Clave.ENVIAR_SOLICITUD), VERDE);                btnEnviar.addListener(new ClickListener() {
                     public void clicked(InputEvent e, float x, float y) {
                         boolean ok = friendsManager.enviarSolicitud(usuario, busqueda, gestor);
                         if (ok) {
                             mensaje.setColor(VERDE);
-                            mensaje.setText("Solicitud enviada a @" + busqueda);
+                            mensaje.setText(Idioma.get(Idioma.Clave.SOLICITUD_ENVIADA) + " @" + busqueda);
                             tablaResultado.clear();
                         } else {
                             mensaje.setColor(ROJO);
-                            mensaje.setText("No se pudo enviar la solicitud.");
+                            mensaje.setText(Idioma.get(Idioma.Clave.ERROR_SOLICITUD));
                         }
                     }
                 });
@@ -290,14 +291,14 @@
         escenario.addActor(tabla);
         }
 
-       
+
         private void construirVerSolicitudes() {
         escenario.clear();
 
         Table contenido = new Table();
         contenido.top().pad(20);
 
-        Label titulo = new Label("Solicitudes de Amistad", piel);
+            Label titulo   = new Label(Idioma.get(Idioma.Clave.SOLICITUDES_AMISTAD), piel);
         titulo.setFontScale(1.2f);
         titulo.setColor(VERDE);
         contenido.add(titulo).colspan(3).center().padBottom(20).row();
@@ -305,7 +306,7 @@
         String[] solicitudes = friendsManager.getSolicitudes(usuario);
 
         if (solicitudes.length == 0) {
-        Label lblVacio = new Label("No tienes solicitudes pendientes.", piel);
+            Label lblVacio = new Label(Idioma.get(Idioma.Clave.NO_SOLICITUDES), piel);
         lblVacio.setColor(GRIS);
         contenido.add(lblVacio).colspan(3).center().padBottom(20).row();
         } else {
@@ -318,8 +319,8 @@
             Label lblUser = new Label("@" + u.getUsername(), piel);
             lblUser.setColor(NARANJA);
 
-            TextButton btnAceptar  = crearBoton("Aceptar",  VERDE);
-            TextButton btnRechazar = crearBoton("Rechazar", ROJO);
+            TextButton btnAceptar  = crearBoton(Idioma.get(Idioma.Clave.ACEPTAR),  VERDE);
+            TextButton btnRechazar = crearBoton(Idioma.get(Idioma.Clave.RECHAZAR), ROJO);
 
             btnAceptar.addListener(new ClickListener() {
                 public void clicked(InputEvent e, float x, float y) {
@@ -346,7 +347,7 @@
         }
         }
 
-        TextButton btnVolver = crearBoton("Volver", NARANJA);
+            TextButton btnVolver   = crearBoton(Idioma.get(Idioma.Clave.VOLVER),   NARANJA);
         btnVolver.addListener(new ClickListener() {
         public void clicked(InputEvent e, float x, float y) { construirMenu(); }
         });
@@ -361,7 +362,7 @@
         escenario.addActor(scroll);
         }
 
-        
+
         private void construirVerJugadores() {
         limpiarTexturas();
         escenario.clear();
@@ -369,7 +370,7 @@
         Table contenido = new Table();
         contenido.top().pad(20);
 
-        Label titulo = new Label("Jugadores", piel);
+            Label titulo = new Label(Idioma.get(Idioma.Clave.JUGADORES), piel);
         titulo.setFontScale(1.2f);
         titulo.setColor(VERDE);
         contenido.add(titulo).colspan(3).center().padBottom(20).row();
@@ -380,7 +381,7 @@
         if (u == null) continue;
         if (u.getUsername().equals(usuario)) continue;
 
-       
+
         String rutaAvatar = (u.getAvatarPath() != null && !u.getAvatarPath().isEmpty())
         ? u.getAvatarPath() : "AVATARS/X1.png";
 
@@ -407,15 +408,15 @@
         card.add(info).expandX().left();
 
         if (friendsManager.sonAmigos(usuario, u.getUsername())) {
-        Label lblYa = new Label("Amigos", piel);
-        lblYa.setColor(VERDE);
+            Label lblYa = new Label(Idioma.get(Idioma.Clave.AMIGOS), piel);
+            lblYa.setColor(VERDE);
         card.add(lblYa).width(100).center();
         } else if (friendsManager.tieneSolicitudPendiente(usuario, u.getUsername())) {
-        Label lblPend = new Label("Solicitud enviada", piel);
-        lblPend.setColor(GRIS);
+            Label lblPend = new Label(Idioma.get(Idioma.Clave.SOLICITUD_ENVIADA), piel);
+            lblPend.setColor(GRIS);
         card.add(lblPend).width(100).center();
         } else {
-        TextButton btnAgregar = crearBoton("Agregar", VERDE);
+            TextButton btnAgregar = crearBoton(Idioma.get(Idioma.Clave.AGREGAR), VERDE);
         final String usernameDestino = u.getUsername();
         btnAgregar.addListener(new ClickListener() {
             public void clicked(InputEvent e, float x, float y) {
@@ -429,7 +430,7 @@
         contenido.add(card).width(380).padBottom(6).colspan(3).row();
         }
 
-        TextButton btnVolver = crearBoton("Volver", NARANJA);
+            TextButton btnVolver  = crearBoton(Idioma.get(Idioma.Clave.VOLVER),  NARANJA);
         btnVolver.addListener(new ClickListener() {
         public void clicked(InputEvent e, float x, float y) { construirAgregarAmigo(); }
         });
@@ -445,7 +446,7 @@
         escenario.addActor(scroll);
         }
 
-        
+
         private void construirDetallesAmigo(String usernameAmigo) {
         limpiarTexturas();
         escenario.clear();
@@ -455,13 +456,13 @@
         Table contenido = new Table();
         contenido.top().pad(20);
 
-        Label titulo = new Label("Perfil de @" + usernameAmigo, piel);
-        titulo.setFontScale(1.2f);
+            Label titulo = new Label(Idioma.get(Idioma.Clave.PERFIL_DE) + usernameAmigo, piel);
+            titulo.setFontScale(1.2f);
         titulo.setColor(VERDE);
         contenido.add(titulo).colspan(2).center().padBottom(20).row();
 
         if (u != null) {
-       
+
         String rutaAvatar = (u.getAvatarPath() != null && !u.getAvatarPath().isEmpty())
         ? u.getAvatarPath() : "AVATARS/X1.png";
         if (Gdx.files.internal(rutaAvatar).exists()) {
@@ -476,20 +477,22 @@
         String tiempo = String.format("%d min %d seg",
         (tiempoMs / 60000), (tiempoMs % 60000) / 1000);
 
-        agregarFila(contenido, "Nombre",             u.getFullname());
-        agregarFila(contenido, "Usuario",            "@" + u.getUsername());
-        agregarFila(contenido, "Niveles completados",u.getNivelesCompletados() + " / 5");
-        agregarFila(contenido, "Estrellas totales",  String.valueOf(u.getEstrellasTotal()));
-        agregarFila(contenido, "Puntuacion general", String.valueOf(u.getPuntuacionGeneral()));
-        agregarFila(contenido, "Partidas jugadas",   String.valueOf(u.getPartidasJugadas()));
-        agregarFila(contenido, "Tiempo jugado",      tiempo);
+            agregarFila(contenido, Idioma.get(Idioma.Clave.NOMBRE_COMPLETO_LABEL), u.getFullname());
+            agregarFila(contenido, Idioma.get(Idioma.Clave.USUARIO),               "@" + u.getUsername());
+            agregarFila(contenido, Idioma.get(Idioma.Clave.NIVELES_COMPLETADOS),   u.getNivelesCompletados() + " / 5");
+            agregarFila(contenido, Idioma.get(Idioma.Clave.ESTRELLAS_TOTALES),     String.valueOf(u.getEstrellasTotal()));
+            agregarFila(contenido, Idioma.get(Idioma.Clave.PUNTUACION_GENERAL),    String.valueOf(u.getPuntuacionGeneral()));
+            agregarFila(contenido, Idioma.get(Idioma.Clave.PARTIDAS_JUGADAS),      String.valueOf(u.getPartidasJugadas()));
+            agregarFila(contenido, Idioma.get(Idioma.Clave.TIEMPO_JUGADO),         tiempo);
+            TextButton btnEliminar = crearBoton(Idioma.get(Idioma.Clave.ELIMINAR_AMIGO), ROJO);
+            TextButton btnVolver   = crearBoton(Idioma.get(Idioma.Clave.VOLVER),         NARANJA);
         } else {
-        Label lblError = new Label("No se pudo cargar el perfil.", piel);
-        lblError.setColor(ROJO);
+            Label lblError = new Label(Idioma.get(Idioma.Clave.ERROR_CARGAR_PERFIL), piel);
+            lblError.setColor(ROJO);
         contenido.add(lblError).colspan(2).center().padBottom(10).row();
         }
 
-        TextButton btnEliminar = crearBoton("Eliminar Amigo", ROJO);
+            TextButton btnEliminar = crearBoton(Idioma.get(Idioma.Clave.ELIMINAR_AMIGO), ROJO);
         btnEliminar.addListener(new ClickListener() {
         public void clicked(InputEvent e, float x, float y) {
         friendsManager.eliminarAmigo(usuario, usernameAmigo);
@@ -497,8 +500,8 @@
         }
         });
 
-        TextButton btnVolver = crearBoton("Volver", NARANJA);
-        btnVolver.addListener(new ClickListener() {
+            TextButton btnVolver = crearBoton(Idioma.get(Idioma.Clave.VOLVER), NARANJA);
+            btnVolver.addListener(new ClickListener() {
         public void clicked(InputEvent e, float x, float y) { construirVerAmigos(); }
         });
 
@@ -513,7 +516,7 @@
 
         escenario.addActor(scroll);
         }
-        
+
         private TextField crearCampo(String placeholder) {
         TextField campo = new TextField("", piel);
         campo.setMessageText(placeholder);
@@ -528,7 +531,7 @@
         return btn;
         }
 
-      
+
         private Skin crearPiel() {
         Skin skin = new Skin();
         Pixmap px = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
@@ -583,7 +586,7 @@
         t.add(lblClave).left().padRight(20).padBottom(6);
         t.add(lblValor).left().padBottom(6).row();
         }
-        
+
         @Override
         public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1f);
