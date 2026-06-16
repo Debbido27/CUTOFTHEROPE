@@ -60,9 +60,12 @@
             Gdx.app.postRunnable(() -> juego.setScreen(new PerfilScreen(juego, usuario, gestor)));
         }
         });
-        btnPreferencias.addListener(new ClickListener() {
-        public void clicked(InputEvent e, float x, float y) { /*TODO: pantalla de preferencias*/ }
-        });
+            btnPreferencias.addListener(new ClickListener() {
+                public void clicked(InputEvent e, float x, float y) {
+                    Gdx.app.postRunnable(() ->
+                        juego.setScreen(new PreferenciasScreen(juego, usuario, gestor)));
+                }
+            });
         btnVolver.addListener(new ClickListener() {
         public void clicked(InputEvent e, float x, float y) {
             Gdx.app.postRunnable(() -> juego.setScreen(new MenuPrincipalScreen(juego, usuario, gestor)));
