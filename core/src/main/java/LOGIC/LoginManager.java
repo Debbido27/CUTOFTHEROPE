@@ -46,6 +46,8 @@
         int estrellas    = f.readInt();
         int puntuacion   = f.readInt();
         float volumen    = f.readFloat();
+        boolean ingles       = f.readBoolean();
+        boolean musicaActiva = f.readBoolean();
 
 
         int totalAmigos  = f.readInt();
@@ -65,6 +67,8 @@
         u.setEstrellasTotal(estrellas);
         u.setPuntuacionGeneral(puntuacion);
         u.setVolumen(volumen);
+        u.setIngles(ingles);
+        u.setMusicaActiva(musicaActiva);
         u.setAmigos(amigos);
         return u;
 
@@ -96,7 +100,8 @@
         f.writeInt(u.getEstrellasTotal());
         f.writeInt(u.getPuntuacionGeneral());
         f.writeFloat(u.getVolumen());
-
+        f.writeBoolean(u.isIngles());
+        f.writeBoolean(u.isMusicaActiva());
         String[] amigos = u.getAmigos();
         f.writeInt(amigos.length);
         for (String a : amigos) f.writeUTF(a);
@@ -121,7 +126,7 @@
         USER u = leerRegistro(f);
         if (u.getUsername().equals(username)) return true;
         }
-        } catch (IOException e) { 
+        } catch (IOException e) {
         e.printStackTrace();
         }
         return false;
@@ -142,7 +147,7 @@
         try (RandomAccessFile f = new RandomAccessFile(USERS_FILE, "rw")) {
         f.seek(f.length());
         USER nuevo = new USER(username, password, fullname);
-        nuevo.setAvatarPath(avatar);  
+        nuevo.setAvatarPath(avatar);
         escribirRegistro(f, nuevo);
         currentUser = nuevo;
         return true;
@@ -183,17 +188,17 @@
 
         private boolean reescribir(String usernameObjetivo, RegistroModificador mod) {
         File tempFile = new File(USERS_TEMP);
-        try (RandomAccessFile original = new RandomAccessFile(USERS_FILE, "rw"); 
+        try (RandomAccessFile original = new RandomAccessFile(USERS_FILE, "rw");
         RandomAccessFile temp    = new RandomAccessFile(tempFile, "rw")) {
         while (original.getFilePointer() < original.length()) {
         USER u = leerRegistro(original);
         if (u.getUsername().equals(usernameObjetivo)) mod.modificar(u);
         escribirRegistro(temp, u);
         }
-        } catch (IOException e) { 
-        System.out.println("Error reescribiendo: " + e.getMessage()); 
+        } catch (IOException e) {
+        System.out.println("Error reescribiendo: " + e.getMessage());
         e.printStackTrace();
-        return false; 
+        return false;
         }
         new File(USERS_FILE).delete();
         return tempFile.renameTo(new File(USERS_FILE));
@@ -307,7 +312,7 @@
                 encontrado = true;
             }
         }
-        } 
+        }
         catch (IOException e) {}
         new File(USERS_FILE).delete();
         tempFile.renameTo(new File(USERS_FILE));
@@ -336,7 +341,7 @@
         new File(USERS_FILE).delete();
         tempFile.renameTo(new File(USERS_FILE));
         } else {
-        tempFile.delete(); 
+        tempFile.delete();
         }
         }
 
@@ -351,6 +356,19 @@
         public USER getCurrentUser() { return currentUser; }
         public void setCurrentUser(USER u) { this.currentUser = u; }
 
+            public boolean cambiarIdioma(String username, boolean ingles) {
+                boolean ok = reescribir(username, u -> u.setIngles(ingles));
+                if (ok && currentUser != null && currentUser.getUsername().equals(username))
+                    currentUser.setIngles(ingles);
+                return ok;
+            }
+
+            public boolean cambiarMusica(String username, boolean activa) {
+                boolean ok = reescribir(username, u -> u.setMusicaActiva(activa));
+                if (ok && currentUser != null && currentUser.getUsername().equals(username))
+                    currentUser.setMusicaActiva(activa);
+                return ok;
+            }
 
 
         }
