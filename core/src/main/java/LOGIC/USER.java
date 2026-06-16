@@ -13,7 +13,7 @@
         private String avatarPath;
 
 
-        
+
         private int nivelActual;
         private boolean[] nivelesDesbloqueados;
         private int[] puntajesPorNivel;
@@ -24,7 +24,8 @@
         private int puntuacionGeneral;
 
         private float volumen;
-
+            private boolean ingles;
+            private boolean musicaActiva;
         private String[] amigos;
 
         public USER(String username, String password, String fullname) {
@@ -207,6 +208,10 @@
         return (double) tiempoTotalJugado / getNivelesCompletados();
         }
 
+            public boolean isIngles()            { return ingles; }
+            public void    setIngles(boolean v)  { this.ingles = v; }
 
+            public boolean isMusicaActiva()           { return musicaActiva; }
+            public void    setMusicaActiva(boolean v) { this.musicaActiva = v; }
 
         }
