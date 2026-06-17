@@ -12,7 +12,7 @@ public class Reto {
     public Estado        estado;
     public int           puntajeRetador;
     public int           puntajeRetado;
-    public String        ganador; 
+    public String        ganador;
 
     public Reto(String retador, String retado, int nivel) {
         this.retador         = retador;
