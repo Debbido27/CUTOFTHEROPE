@@ -10,7 +10,7 @@ public class Notificacion {
     }
 
     public Tipo          tipo;
-    public String        origen;   
+    public String        origen;
     public String        destino;
     public int           nivel;
     public LocalDateTime fecha;
