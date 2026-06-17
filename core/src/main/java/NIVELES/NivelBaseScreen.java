@@ -134,6 +134,7 @@
         TextButton btnVolver = crearBoton("< Volver", ROJO);
         btnVolver.addListener(new ClickListener() {
         public void clicked(InputEvent e, float x, float y) {
+            SesionJuego.get().finalizarNivel(false);
             Gdx.app.postRunnable(() ->
                 juego.setScreen(new SeleccionNivelScreen(juego, usuario, gestor)));
         }
@@ -304,11 +305,17 @@
         else if (b instanceof NomNom  && a instanceof Pelota) ((NomNom)  b).interactuar();
 
             if (a instanceof Estrella && b instanceof Pelota) {
-                SesionJuego.get().registrarEstrella();
-                ((Estrella) a).interactuar();
+                Estrella est = (Estrella) a;
+                if (!est.yaFueContada()) {          // ← AÑADIR
+                    SesionJuego.get().registrarEstrella();
+                }
+                est.interactuar();
             } else if (b instanceof Estrella && a instanceof Pelota) {
-                SesionJuego.get().registrarEstrella();
-                ((Estrella) b).interactuar();
+                Estrella est = (Estrella) b;
+                if (!est.yaFueContada()) {          // ← AÑADIR
+                    SesionJuego.get().registrarEstrella();
+                }
+                est.interactuar();
             }
         if (a instanceof Obstaculo && b instanceof Pelota) ((Obstaculo) a).interactuar();
         else if (b instanceof Obstaculo && a instanceof Pelota) ((Obstaculo) b).interactuar();

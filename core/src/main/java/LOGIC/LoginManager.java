@@ -41,6 +41,8 @@
         int[] puntajes = new int[5];
         for (int i = 0; i < 5; i++) puntajes[i] = f.readInt();
 
+        int[] estrellasPorNivel = new int[5];
+        for (int i = 0; i < 5; i++) estrellasPorNivel[i] = f.readInt();
         long tiempoTotal = f.readLong();
         int partidas     = f.readInt();
         int fallos       = f.readInt();
@@ -71,6 +73,7 @@
         u.setIngles(ingles);
         u.setMusicaActiva(musicaActiva);
         u.setAmigos(amigos);
+        u.setEstrellasPorNivel(estrellasPorNivel);
         return u;
 
         } catch (EOFException e) {
@@ -94,7 +97,8 @@
 
         int[] puntajes = u.getPuntajesPorNivel();
         for (int p : puntajes) f.writeInt(p);
-
+        int[] estrellasPorNivel = u.getEstrellasPorNivel();
+        for (int ep : estrellasPorNivel) f.writeInt(ep);
         f.writeLong(u.getTiempoTotalJugado());
         f.writeInt(u.getPartidasJugadas());
         f.writeInt(u.getFallosTotales());
@@ -217,6 +221,7 @@
         existing.setVolumen(u.getVolumen());
         existing.setAmigos(u.getAmigos());
         existing.setAvatarPath(u.getAvatarPath());
+        existing.setEstrellasPorNivel(u.getEstrellasPorNivel());
         });
         }
 
@@ -245,11 +250,16 @@
                           int estrellas, int fallos, long tiempoMs) {
         reescribir(username, u -> {
         u.setPartidasJugadas(u.getPartidasJugadas() + 1);
-        u.setEstrellasTotal(u.getEstrellasTotal() + estrellas);
+            int estrellasViejas = u.getEstrellasPorNivel()[nivel];
+            if (estrellas > estrellasViejas) {
+                u.setEstrellasTotal(u.getEstrellasTotal() + (estrellas - estrellasViejas));
+                u.setEstrellasNivel(nivel, estrellas);
+            }
         u.setTiempoTotalJugado(u.getTiempoTotalJugado() + tiempoMs);
         u.setFallosTotales(u.getFallosTotales() + fallos);
         if (puntaje > u.getPuntajesPorNivel()[nivel])
             u.setPuntajeNivel(nivel, puntaje);
+
         if (nivel + 1 < 5) u.desbloquearNivel(nivel + 1);
         if (nivel + 1 > u.getNivelActual()) u.setNivelActual(nivel + 1);
         int total = 0;

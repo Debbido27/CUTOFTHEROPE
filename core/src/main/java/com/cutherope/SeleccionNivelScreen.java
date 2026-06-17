@@ -68,7 +68,7 @@
         ? user.getNivelesDesbloqueados()
         : new boolean[]{true, false, false, false, false};
         int[] puntajes = (user != null) ? user.getPuntajesPorNivel() : new int[5];
-
+        int[] estrellasPorNivel = (user != null) ? user.getEstrellasPorNivel() : new int[5];
         TextureRegion regBloqueado   = region(sheetNiveles,   R_BLOQUEADO);
         TextureRegion regDesbloquead = region(sheetNiveles,   R_DESBLOQUEAD);
         TextureRegion regStarLlena   = region(sheetResultado, R_STAR_LLENA);
@@ -83,8 +83,7 @@
         for (int i = 0; i < 5; i++) {
         final int nivel = i;
         boolean bloqueado = !desbloqueados[i];
-        int estrellas = calcularEstrellas(puntajes[i]);
-
+        int estrellas = estrellasPorNivel[i];
         Table celda = new Table();
         celda.center();
 
@@ -104,7 +103,7 @@
         celda.add(icono).size(90, 90).padBottom(6).row();
         celda.add(filaEstrellas).row();
 
-        
+
         if (!bloqueado) {
         icono.addListener(new ClickListener() {
         public void clicked(InputEvent e, float x, float y) {

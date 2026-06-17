@@ -56,7 +56,6 @@ public class RankingScreen implements Screen {
         Table contenido = new Table();
         contenido.top().pad(20);
 
-        // ── TÍTULO ──────────────────────────────────────────────
         Label titulo = new Label(Idioma.get(Idioma.Clave.RANKING_GENERAL), piel);
         titulo.setColor(VERDE);
         contenido.add(titulo).padBottom(6).row();
@@ -65,7 +64,6 @@ public class RankingScreen implements Screen {
         sub.setColor(GRIS);
         contenido.add(sub).padBottom(20).row();
 
-        // ── ENCABEZADO TABLA ─────────────────────────────────────
         Table encabezado = new Table();
         String[] headers = {"#", "Jugador", "Pts", "★", "Nv."};
         int[]    anchos  = {40, 200, 80, 60, 60};
@@ -76,14 +74,12 @@ public class RankingScreen implements Screen {
         }
         contenido.add(encabezado).padBottom(6).row();
 
-        // Línea separadora
         Pixmap px = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         px.setColor(NARANJA); px.fill();
         Image linea = new Image(new Texture(px));
         px.dispose();
         contenido.add(linea).width(440).height(2).padBottom(8).row();
 
-        // ── DATOS ────────────────────────────────────────────────
         USER[] ranking = gestor.getRanking();
 
         if (ranking == null || ranking.length == 0) {
@@ -98,7 +94,6 @@ public class RankingScreen implements Screen {
                 boolean esMio = u.getUsername().equals(usuario);
                 int pos = i + 1;
 
-                // Color y medalla según posición
                 Color colorPos;
                 String medalla;
                 if      (pos == 1) { colorPos = DORADO;  medalla = "🥇"; }
@@ -108,7 +103,6 @@ public class RankingScreen implements Screen {
 
                 Table fila = new Table();
 
-                // Fondo resaltado si es el usuario actual
                 if (esMio) {
                     Pixmap pxFondo = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
                     pxFondo.setColor(new Color(0.33f, 0.59f, 0.31f, 0.15f));
@@ -137,7 +131,6 @@ public class RankingScreen implements Screen {
 
                 contenido.add(fila).padBottom(6).row();
 
-                // Separador ligero cada 3
                 if (pos % 3 == 0 && pos < ranking.length) {
                     Pixmap pxSep = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
                     pxSep.setColor(new Color(0.8f, 0.8f, 0.8f, 0.4f)); pxSep.fill();
@@ -147,7 +140,6 @@ public class RankingScreen implements Screen {
                 }
             }
 
-            // ── Posición del jugador actual si está fuera del top visible
             Label lblMiPos = new Label("", piel);
             for (int i = 0; i < ranking.length; i++) {
                 if (ranking[i] != null && ranking[i].getUsername().equals(usuario)) {
@@ -159,7 +151,6 @@ public class RankingScreen implements Screen {
             contenido.add(lblMiPos).padTop(12).padBottom(4).row();
         }
 
-        // ── BOTÓN VOLVER ─────────────────────────────────────────
         TextButton btnVolver = crearBoton(Idioma.get(Idioma.Clave.VOLVER), ROJO);
         btnVolver.addListener(new ClickListener() {
             public void clicked(InputEvent e, float x, float y) {

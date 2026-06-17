@@ -22,6 +22,7 @@
         private int fallosTotales;
         private int estrellasTotal;
         private int puntuacionGeneral;
+            private int[] estrellasPorNivel = new int[5];
 
         private float volumen;
             private boolean ingles;
@@ -49,10 +50,9 @@
 
         }
 
-            private int[] estrellasPorNivel = new int[5];
 
 
-            public String getUsername() {
+        public String getUsername() {
         return username;
         }
 
@@ -189,6 +189,14 @@
         if(nivel >= 0 && nivel < puntajesPorNivel.length)
         puntajesPorNivel[nivel] = puntaje;
         }
+
+            public int[] getEstrellasPorNivel() { return estrellasPorNivel; }
+            public void  setEstrellasPorNivel(int[] e) { this.estrellasPorNivel = e; }
+
+            public void setEstrellasNivel(int nivel, int estrellas) {
+                if (nivel >= 0 && nivel < estrellasPorNivel.length)
+                    estrellasPorNivel[nivel] = estrellas;
+            }
 
 
         @Override
