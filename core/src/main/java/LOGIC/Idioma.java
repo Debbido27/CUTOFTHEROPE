@@ -31,7 +31,9 @@ public class Idioma {
         CONTRASENA_VALIDADA, CONTRASENA_VALIDADA_NUEVA,
         INGRESA_USUARIO, USUARIO_CAMBIADO, ERROR_CAMBIAR_USUARIO,
         CONTRASENA_CAMBIADA, ERROR_CAMBIAR_PASS,INGRESA_USUARIO_SOLICITUD,NO_AUTO_AGREGAR,ENVIAR_SOLICITUD,ERROR_SOLICITUD
-        ,PERFIL_DE,ERROR_CARGAR_PERFIL
+        ,PERFIL_DE,ERROR_CARGAR_PERFIL, PRECISION, ESTRELLAS_POR_NIVEL, DE, RESULTADO, PUNTUACION, TIEMPO, SEGUNDOS, GANO, PERDIO, NIVELES,
+        ERROR_CARGAR_DATOS
+
 
     }
 
@@ -149,6 +151,17 @@ public class Idioma {
             case ERROR_SOLICITUD: return ingles ? "Could not send request." : "No se pudo enviar la solicitud.";
             case PERFIL_DE: return ingles ? "Profile of @" : "Perfil de @";
             case ERROR_CARGAR_PERFIL: return ingles ? "Could not load profile." : "No se pudo cargar el perfil.";
+            case PRECISION:             return ingles ? "Accuracy"            : "Precision";
+            case ESTRELLAS_POR_NIVEL:   return ingles ? "Stars per level"     : "Estrellas por nivel";
+            case DE:                    return ingles ? "of"                  : "de";
+            case RESULTADO:             return ingles ? "Result"              : "Resultado";
+            case PUNTUACION:            return ingles ? "Score"               : "Puntuacion";
+            case TIEMPO:                return ingles ? "Time"                : "Tiempo";
+            case SEGUNDOS:              return ingles ? "sec"                 : "seg";
+            case GANO:                  return ingles ? "Won"                 : "Gano";
+            case PERDIO:                return ingles ? "Lost"                : "Perdio";
+            case NIVELES:               return ingles ? "levels"              : "niveles";
+            case ERROR_CARGAR_DATOS: return ingles ? "Could not load data." : "No se pudieron cargar los datos.";
         }
     }
 }

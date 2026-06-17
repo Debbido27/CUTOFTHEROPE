@@ -60,7 +60,7 @@ public class Estadisticas implements Screen {
 
         // ── TITULO ──────────────────────────────────────────────
         Table cajaTitulo = crearCaja(VERDE, 560, -1);
-        Label titulo = new Label("Estadisticas", piel, "titulo");
+        Label titulo = new Label(Idioma.get(Idioma.Clave.ESTADISTICAS), piel, "titulo");
         titulo.setColor(Color.WHITE);
         Label subTitulo = new Label("@" + usuario, piel);
         subTitulo.setColor(CREMA);
@@ -69,7 +69,7 @@ public class Estadisticas implements Screen {
         contenido.add(cajaTitulo).width(560).padBottom(12).row();
 
         if (u == null) {
-            Label err = new Label("No se pudieron cargar los datos.", piel);
+            Label err = new Label(Idioma.get(Idioma.Clave.ERROR_CARGAR_DATOS), piel);
             err.setColor(ROJO);
             contenido.add(err).row();
         } else {
@@ -79,28 +79,28 @@ public class Estadisticas implements Screen {
 
             // Caja Progreso
             Table cajaProgreso = crearCaja(NARANJA, 268, -1);
-            Label tituloProgreso = new Label("PROGRESO", piel, "subtitulo");
+            Label tituloProgreso = new Label(Idioma.get(Idioma.Clave.PROGRESO_JUEGO), piel, "subtitulo");
             tituloProgreso.setColor(Color.WHITE);
             cajaProgreso.add(tituloProgreso).padBottom(10).row();
 
             int nivelesComp = u.getNivelesCompletados();
             float pct = (nivelesComp / 5f) * 100f;
 
-            agregarFilaCaja(cajaProgreso, "Niveles",    nivelesComp + " de 5");
-            agregarFilaCaja(cajaProgreso, "Progreso",   String.format("%.0f%%", pct));
-            agregarFilaCaja(cajaProgreso, "Puntuacion", String.valueOf(u.getPuntuacionGeneral()));
-            agregarFilaCaja(cajaProgreso, "Estrellas",  String.valueOf(u.getEstrellasTotal()));
+            agregarFilaCaja(cajaProgreso, Idioma.get(Idioma.Clave.NIVELES_COMPLETADOS), nivelesComp + " de 5");
+            agregarFilaCaja(cajaProgreso, Idioma.get(Idioma.Clave.PROGRESO_JUEGO), String.format("%.0f%%", pct));
+            agregarFilaCaja(cajaProgreso, Idioma.get(Idioma.Clave.PUNTUACION_GENERAL), String.valueOf(u.getPuntuacionGeneral()));
+            agregarFilaCaja(cajaProgreso, Idioma.get(Idioma.Clave.ESTRELLAS_TOTALES), String.valueOf(u.getEstrellasTotal()));
 
             // Barra de progreso
             cajaProgreso.add(new Label("", piel)).padTop(8).row();
             cajaProgreso.add(crearBarra(nivelesComp, 5)).width(220).height(14).padBottom(4).row();
-            Label pctLabel = new Label(nivelesComp + " / 5 niveles", piel);
+            Label pctLabel = new Label(nivelesComp + " / 5 " + Idioma.get(Idioma.Clave.NIVELES), piel);
             pctLabel.setColor(CREMA);
             cajaProgreso.add(pctLabel).row();
 
             // Caja Estadisticas
             Table cajaStats = crearCaja(new Color(0.25f, 0.45f, 0.60f, 1f), 268, -1);
-            Label tituloStats = new Label("ESTADISTICAS", piel, "subtitulo");
+            Label tituloStats = new Label(Idioma.get(Idioma.Clave.ESTADISTICAS), piel, "subtitulo");
             tituloStats.setColor(Color.WHITE);
             cajaStats.add(tituloStats).padBottom(10).row();
 
@@ -112,15 +112,15 @@ public class Estadisticas implements Screen {
                 ? horas + "h " + minutos + "m"
                 : minutos + "m " + segundos + "s";
 
-            agregarFilaCaja(cajaStats, "Partidas",  String.valueOf(u.getPartidasJugadas()));
-            agregarFilaCaja(cajaStats, "Fallos",    String.valueOf(u.getFallosTotales()));
-            agregarFilaCaja(cajaStats, "Tiempo",    tiempo);
+            agregarFilaCaja(cajaStats, Idioma.get(Idioma.Clave.PARTIDAS_JUGADAS), String.valueOf(u.getPartidasJugadas()));
+            agregarFilaCaja(cajaStats, Idioma.get(Idioma.Clave.FALLOS_TOTALES), String.valueOf(u.getFallosTotales()));
+            agregarFilaCaja(cajaStats, Idioma.get(Idioma.Clave.TIEMPO_JUGADO), tiempo);
 
             if (u.getPartidasJugadas() > 0) {
                 int precision = (int)(100f * Math.max(0,
                     u.getPartidasJugadas() - u.getFallosTotales())
                     / u.getPartidasJugadas());
-                agregarFilaCaja(cajaStats, "Precision", precision + "%");
+                agregarFilaCaja(cajaStats, Idioma.get(Idioma.Clave.PRECISION), precision + "%");
             }
 
             fila1.add(cajaProgreso).width(268).fillY().padRight(16);
@@ -129,7 +129,7 @@ public class Estadisticas implements Screen {
 
             // ── CAJA: ESTRELLAS POR NIVEL ────────────────────────
             Table cajaEstrellas = crearCaja(DORADO, 560, -1);
-            Label titEstrellas = new Label("ESTRELLAS POR NIVEL", piel, "subtitulo");
+            Label titEstrellas = new Label(Idioma.get(Idioma.Clave.ESTRELLAS_POR_NIVEL), piel, "subtitulo");
             titEstrellas.setColor(Color.WHITE);
             cajaEstrellas.add(titEstrellas).padBottom(10).row();
 
@@ -137,12 +137,12 @@ public class Estadisticas implements Screen {
             Table filaEstr = new Table();
             for (int i = 0; i < 5; i++) {
                 Table celda = crearCaja(new Color(0.20f, 0.15f, 0.05f, 0.35f), 90, -1);
-                Label lblNv = new Label("Nivel " + (i + 1), piel);
+                Label lblNv = new Label(Idioma.get(Idioma.Clave.NIVEL) + " " + (i + 1), piel);
                 lblNv.setColor(Color.WHITE);
 
                 // Estrellas como texto "llenas/vacias" sin simbolos raros
                 int cant = epn[i];
-                Label lblCant = new Label(cant + " de 3", piel);
+                Label lblCant = new Label(cant + " " + Idioma.get(Idioma.Clave.DE) + " 3", piel);
                 lblCant.setColor(cant == 3 ? CREMA : new Color(1f,1f,1f,0.6f));
 
                 // Barra pequeña de estrellas
@@ -166,20 +166,25 @@ public class Estadisticas implements Screen {
 
             // ── CAJA: HISTORIAL ──────────────────────────────────
             Table cajaHist = crearCaja(new Color(0.55f, 0.40f, 0.18f, 1f), 560, -1);
-            Label titHist = new Label("ULTIMAS PARTIDAS", piel, "subtitulo");
+            Label titHist = new Label(Idioma.get(Idioma.Clave.HISTORIAL_PARTIDAS), piel, "subtitulo");
             titHist.setColor(Color.WHITE);
             cajaHist.add(titHist).padBottom(10).row();
 
             PartidaHistorial[] historial = gestor.getHistorialMemoria();
             if (historial.length == 0) {
-                Label lblSin = new Label("Sin partidas registradas en esta sesion.", piel);
+                Label lblSin = new Label(Idioma.get(Idioma.Clave.SIN_HISTORIAL), piel);
                 lblSin.setColor(CREMA);
                 cajaHist.add(lblSin).padBottom(6).row();
             } else {
                 // Encabezado
                 Table enc = new Table();
-                String[] heads  = {"Nivel", "Resultado", "Estrellas", "Puntos", "Tiempo"};
-                int[]    aenchs = { 70,      110,         90,          80,       80 };
+                String[] heads  = {
+                    Idioma.get(Idioma.Clave.NIVEL),
+                    Idioma.get(Idioma.Clave.RESULTADO),
+                    Idioma.get(Idioma.Clave.ESTRELLAS),
+                    Idioma.get(Idioma.Clave.PUNTUACION),
+                    Idioma.get(Idioma.Clave.TIEMPO)
+                };                int[]    aenchs = { 70,      110,         90,          80,       80 };
                 for (int i = 0; i < heads.length; i++) {
                     Label l = new Label(heads[i], piel);
                     l.setColor(DORADO);
@@ -199,10 +204,10 @@ public class Estadisticas implements Screen {
                     Table fila = new Table();
 
                     Label lNv  = new Label("Nivel " + p.nivel, piel);
-                    Label lRes = new Label(p.gano ? "Gano" : "Perdio", piel);
-                    Label lEst = new Label(p.estrellas + " de 3", piel);
+                    Label lRes = new Label(p.gano ? Idioma.get(Idioma.Clave.GANO) : Idioma.get(Idioma.Clave.PERDIO), piel);
+                    Label lEst = new Label(p.estrellas + " " + Idioma.get(Idioma.Clave.DE) + " 3", piel);
                     Label lPts = new Label(String.valueOf(p.puntuacion), piel);
-                    Label lTmp = new Label((p.tiempoMs / 1000) + " seg", piel);
+                    Label lTmp = new Label((p.tiempoMs / 1000) + " " + Idioma.get(Idioma.Clave.SEGUNDOS), piel);
 
                     lNv.setColor(CREMA);
                     lRes.setColor(p.gano ? VERDE : ROJO);
@@ -223,7 +228,7 @@ public class Estadisticas implements Screen {
         }
 
         // ── BOTON VOLVER ─────────────────────────────────────────
-        TextButton btnVolver = crearBoton("Volver", ROJO);
+        TextButton btnVolver = crearBoton(Idioma.get(Idioma.Clave.VOLVER), ROJO);
         btnVolver.addListener(new ClickListener() {
             public void clicked(InputEvent e, float x, float y) {
                 Gdx.app.postRunnable(() ->
