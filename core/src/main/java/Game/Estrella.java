@@ -11,6 +11,7 @@ public class Estrella extends ElementoNivel implements Interactuable {
     private boolean activa;
     private Body body;
     private float radio;
+    private boolean yaContada = false;
 
     public Estrella(World mundo, float x, float y, float radio) {
         super(x, y, radio * 2, radio * 2, TipoElemento.ESTRELLA, crearTexturaPlaceholder(radio));
@@ -43,6 +44,8 @@ public class Estrella extends ElementoNivel implements Interactuable {
         pixmap.dispose();
         return tex;
     }
+    public boolean yaFueContada() { return yaContada; }
+
 
     @Override
     public void actualizar(float delta) {
@@ -56,6 +59,7 @@ public class Estrella extends ElementoNivel implements Interactuable {
 
     @Override
     public void interactuar() {
+        yaContada=true;
         activa = false;
     }
 

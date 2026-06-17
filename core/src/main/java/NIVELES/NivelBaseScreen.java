@@ -1,6 +1,7 @@
         package NIVELES;
 
         import Game.*;
+        import LOGIC.SesionJuego;
         import com.badlogic.gdx.Gdx;
         import com.badlogic.gdx.Screen;
         import com.badlogic.gdx.graphics.*;
@@ -74,14 +75,14 @@
         camaraFisica = new OrthographicCamera();
 
         crearNivel();
-
+        SesionJuego.get().iniciarNivel(nivel);
         escenario = new Stage(new FitViewport(640, 480));
         piel = crearPiel();
         Gdx.input.setInputProcessor(escenario);
         construirUI();
         }
 
-       
+
         protected abstract String rutaFondo();
         protected abstract void   crearNivel();
 
@@ -133,6 +134,7 @@
         TextButton btnVolver = crearBoton("< Volver", ROJO);
         btnVolver.addListener(new ClickListener() {
         public void clicked(InputEvent e, float x, float y) {
+            SesionJuego.get().finalizarNivel(false);
             Gdx.app.postRunnable(() ->
                 juego.setScreen(new SeleccionNivelScreen(juego, usuario, gestor)));
         }
@@ -159,13 +161,14 @@
             }
 
             if (pelotaCayoFuera()) {
+                SesionJuego.get().registrarFallo();
                 estadoNivel     = EstadoNivel.PERDIENDO;
                 timerTransicion = 1.0f;
             }
 
             procesarCorte();
 
-          
+
             procesarToqueBurbujas();
 
             break;
@@ -202,7 +205,7 @@
 
         for (Estrella  e : estrellas)  e.dibujar(batch);
         for (Obstaculo o : obstaculos) o.dibujar(batch);
-        for (Burbuja   b : burbujas)   b.dibujar(batch);  
+        for (Burbuja   b : burbujas)   b.dibujar(batch);
 
         if (estadoNivel == EstadoNivel.GANANDO)
         dibujarBannerTexto("¡NomNom comió!", VERDE);
@@ -254,6 +257,7 @@
 
         private void irAlSiguienteNivel() {
         final int sig = nivel + 1;
+        SesionJuego.get().finalizarNivel(true);
         Gdx.app.postRunnable(() -> juego.setScreen(crearPantallaNivel(sig)));
         }
 
@@ -300,14 +304,24 @@
         if (a instanceof NomNom  && b instanceof Pelota) ((NomNom)  a).interactuar();
         else if (b instanceof NomNom  && a instanceof Pelota) ((NomNom)  b).interactuar();
 
-        if (a instanceof Estrella && b instanceof Pelota) ((Estrella) a).interactuar();
-        else if (b instanceof Estrella && a instanceof Pelota) ((Estrella) b).interactuar();
-
+            if (a instanceof Estrella && b instanceof Pelota) {
+                Estrella est = (Estrella) a;
+                if (!est.yaFueContada()) {          // ← AÑADIR
+                    SesionJuego.get().registrarEstrella();
+                }
+                est.interactuar();
+            } else if (b instanceof Estrella && a instanceof Pelota) {
+                Estrella est = (Estrella) b;
+                if (!est.yaFueContada()) {          // ← AÑADIR
+                    SesionJuego.get().registrarEstrella();
+                }
+                est.interactuar();
+            }
         if (a instanceof Obstaculo && b instanceof Pelota) ((Obstaculo) a).interactuar();
         else if (b instanceof Obstaculo && a instanceof Pelota) ((Obstaculo) b).interactuar();
         }
 
-     
+
         @Override
         public void endContact(Contact contact) {
         Object a = contact.getFixtureA().getBody().getUserData();
@@ -320,7 +334,7 @@
         @Override public void preSolve(Contact c, Manifold m) {}
         @Override public void postSolve(Contact c, ContactImpulse i) {}
 
-       
+
         protected TextButton crearBoton(String texto, Color color) {
         TextButton btn = new TextButton(texto, piel);
         btn.getStyle().up   = piel.newDrawable("blanco", color);
