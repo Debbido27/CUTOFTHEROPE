@@ -371,5 +371,10 @@
                 return ok;
             }
 
+            public PartidaHistorial[] getHistorialMemoria() {
+                return SesionJuego.get().getHistorial()
+                    .toArray(new PartidaHistorial[0]);
+            }
+
 
         }

@@ -280,53 +280,103 @@
         escenario.addActor(tabla);
         }
 
-        private void construirVerHistorial() {
-        escenario.clear();
-        Table tabla = new Table();
-        tabla.setFillParent(true);
-        tabla.center();
+            private void construirVerHistorial() {
+                escenario.clear();
+                Table tabla = new Table();
+                tabla.setFillParent(true);
+                tabla.top().padTop(20);
 
-        Label titulo  = new Label(Idioma.get(Idioma.Clave.HISTORIAL_PARTIDAS), piel);
-        titulo.setColor(VERDE);
+                Label titulo = new Label(Idioma.get(Idioma.Clave.HISTORIAL_PARTIDAS), piel);
+                titulo.setColor(VERDE);
+                tabla.add(titulo).padBottom(12).row();
 
-        Label lblInfo = new Label(Idioma.get(Idioma.Clave.SIN_HISTORIAL), piel);
-        lblInfo.setColor(GRIS);
+                LOGIC.PartidaHistorial[] partidas = gestor.getHistorialMemoria();
 
-        TextButton btnVolver = crearBoton(Idioma.get(Idioma.Clave.VOLVER), ROJO);
-        btnVolver.addListener(new ClickListener() {
-        public void clicked(InputEvent e, float x, float y) { construirVerInfo(); }
-        });
+                if (partidas.length == 0) {
+                    Label lblSin = new Label(Idioma.get(Idioma.Clave.SIN_HISTORIAL), piel);
+                    lblSin.setColor(GRIS);
+                    tabla.add(lblSin).padBottom(16).row();
+                } else {
+                    Table contenido = new Table();
+                    for (LOGIC.PartidaHistorial p : partidas) {
+                        String linea = "Nv." + p.nivel
+                            + "  " + (p.gano ? "v/" : "X")
+                            + "  *" + p.estrellas
+                            + "  " + p.puntuacion + "pts"
+                            + "  " + (p.tiempoMs / 1000) + "s"
+                            + "  " + p.fecha;
+                        Label lbl = new Label(linea, piel);
+                        lbl.setColor(CAFE);
+                        contenido.add(lbl).left().padBottom(4).row();
+                    }
+                    ScrollPane scroll = new ScrollPane(contenido, piel);
+                    tabla.add(scroll).width(580).height(280).row();
+                }
 
-        tabla.add(titulo).padBottom(16).row();
-        tabla.add(lblInfo).padBottom(16).row();
-        tabla.add(btnVolver).width(240).height(36).row();
+                TextButton btnVolver = crearBoton(Idioma.get(Idioma.Clave.VOLVER), ROJO);
+                btnVolver.addListener(new ClickListener() {
+                    public void clicked(InputEvent e, float x, float y) { construirVerInfo(); }
+                });
+                tabla.add(btnVolver).width(240).height(36).padTop(12).row();
+                escenario.addActor(tabla);
+            }
 
-        escenario.addActor(tabla);
-        }
+            private void construirVerRanking() {
+                escenario.clear();
+                Table tabla = new Table();
+                tabla.setFillParent(true);
+                tabla.top().padTop(20);
 
-        private void construirVerRanking() {
-        escenario.clear();
-        Table tabla = new Table();
-        tabla.setFillParent(true);
-        tabla.center();
+                Label titulo = new Label(Idioma.get(Idioma.Clave.RANKING_GENERAL), piel);
+                titulo.setColor(VERDE);
+                tabla.add(titulo).padBottom(12).row();
 
-        Label titulo  = new Label(Idioma.get(Idioma.Clave.RANKING_GENERAL), piel);
-        titulo.setColor(VERDE);
+                USER[] ranking = gestor.getRanking();
 
-        Label lblInfo = new Label(Idioma.get(Idioma.Clave.SIN_RANKING), piel);
-        lblInfo.setColor(GRIS);
+                if (ranking == null || ranking.length == 0) {
+                    Label lblSin = new Label(Idioma.get(Idioma.Clave.SIN_RANKING), piel);
+                    lblSin.setColor(GRIS);
+                    tabla.add(lblSin).padBottom(16).row();
+                } else {
+                    Table contenido = new Table();
+                    // Encabezado
+                    Label h1 = new Label("#  Usuario", piel);   h1.setColor(NARANJA);
+                    Label h2 = new Label("Pts",        piel);   h2.setColor(NARANJA);
+                    Label h3 = new Label("★",          piel);   h3.setColor(NARANJA);
+                    Label h4 = new Label("Nv.",        piel);   h4.setColor(NARANJA);
+                    contenido.add(h1).width(200).left();
+                    contenido.add(h2).width(80).center();
+                    contenido.add(h3).width(50).center();
+                    contenido.add(h4).width(50).center().row();
 
-        TextButton btnVolver = crearBoton(Idioma.get(Idioma.Clave.VOLVER), ROJO);
-        btnVolver.addListener(new ClickListener() {
-        public void clicked(InputEvent e, float x, float y) { construirVerInfo(); }
-        });
+                    int pos = 1;
+                    for (USER u : ranking) {
+                        Label l1 = new Label(pos + ". " + u.getUsername(), piel); l1.setColor(CAFE);
+                        Label l2 = new Label(String.valueOf(u.getPuntuacionGeneral()), piel); l2.setColor(CAFE);
+                        Label l3 = new Label(String.valueOf(u.getEstrellasTotal()), piel);    l3.setColor(CAFE);
+                        Label l4 = new Label(String.valueOf(u.getNivelesCompletados()), piel);l4.setColor(CAFE);
+                        // Destacar usuario actual
+                        if (u.getUsername().equals(usuario)) {
+                            l1.setColor(VERDE); l2.setColor(VERDE);
+                            l3.setColor(VERDE); l4.setColor(VERDE);
+                        }
+                        contenido.add(l1).width(200).left().padBottom(4);
+                        contenido.add(l2).width(80).center().padBottom(4);
+                        contenido.add(l3).width(50).center().padBottom(4);
+                        contenido.add(l4).width(50).center().padBottom(4).row();
+                        pos++;
+                    }
+                    ScrollPane scroll = new ScrollPane(contenido, piel);
+                    tabla.add(scroll).width(400).height(280).row();
+                }
 
-        tabla.add(titulo).padBottom(16).row();
-        tabla.add(lblInfo).padBottom(16).row();
-        tabla.add(btnVolver).width(240).height(36).row();
-
-        escenario.addActor(tabla);
-        }
+                TextButton btnVolver = crearBoton(Idioma.get(Idioma.Clave.VOLVER), ROJO);
+                btnVolver.addListener(new ClickListener() {
+                    public void clicked(InputEvent e, float x, float y) { construirVerInfo(); }
+                });
+                tabla.add(btnVolver).width(240).height(36).padTop(12).row();
+                escenario.addActor(tabla);
+            }
 
         private void construirVerAmigos() {
         escenario.clear();

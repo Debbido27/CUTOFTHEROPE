@@ -135,6 +135,7 @@
                 mensajeLabel.setText(Idioma.get(Idioma.Clave.USUARIO_NO_EXISTE));
             } else if (manager.login(user, pass)) {
                 final String u = user;
+                LOGIC.SesionJuego.get().iniciar(u, manager);
                 Gdx.app.postRunnable(() -> {
                     game.setScreen(new MenuPrincipalScreen(game, u, manager));
                 });
@@ -239,6 +240,8 @@
             mostrarError(Idioma.get(Idioma.Clave.PASS_NO_CUMPLE));
         } else if (manager.crearUser(user, pass, nombre, avatarSeleccionado[0])) {
             final String u = user;
+            LOGIC.SesionJuego.get().iniciar(u, manager);
+
             Gdx.app.postRunnable(() ->
                 game.setScreen(new MenuPrincipalScreen(game, u, manager)));
         } else {

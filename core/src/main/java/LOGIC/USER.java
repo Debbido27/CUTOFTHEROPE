@@ -45,6 +45,8 @@
         this.puntuacionGeneral = 0;
         this.volumen = 1.0f;
         this.amigos = new String[0];
+
+
         }
 
         public String getUsername() {
