@@ -1,9 +1,6 @@
         package com.cutherope;
 
-        import LOGIC.FriendsManager;
-        import LOGIC.Idioma;
-        import LOGIC.LoginManager;
-        import LOGIC.USER;
+        import LOGIC.*;
         import com.badlogic.gdx.Gdx;
         import com.badlogic.gdx.Screen;
         import com.badlogic.gdx.graphics.Color;
@@ -19,6 +16,10 @@
         import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
         import com.badlogic.gdx.utils.viewport.FitViewport;
         import java.util.ArrayList;
+        import LOGIC.RetosManager;
+        import LOGIC.Reto;
+        import LOGIC.Notificacion;
+        import java.util.List;
 
         public class AmigosScreen implements Screen {
 
@@ -31,7 +32,7 @@
         private ArrayList<Texture> texturasDinamicas = new ArrayList<>();
         private Texture     bgTexture;
         private SpriteBatch batch;
-
+        private RetosManager retosManager = new RetosManager();
         private final Color FONDO   = new Color(0.96f, 0.92f, 0.82f, 1f);
         private final Color VERDE   = new Color(0.33f, 0.59f, 0.31f, 1f);
         private final Color CAFE    = new Color(0.23f, 0.16f, 0.08f, 1f);
@@ -69,44 +70,68 @@
         Label sub = new Label("@" + usuario, piel);
         sub.setColor(CAFE);
 
-        int totalAmigos      = friendsManager.contarAmigos(usuario);
-        int totalSolicitudes = friendsManager.getSolicitudes(usuario).length;
 
-            Label lblContador = new Label(Idioma.get(Idioma.Clave.AMIGOS) + ": " + totalAmigos +
-                (totalSolicitudes > 0 ? "   |   " + Idioma.get(Idioma.Clave.SOLICITUDES_AMISTAD) + ": " + totalSolicitudes : ""), piel);
+            int totalRetos = retosManager.getRetosRecibidos(usuario).size();
+            int totalNotif = retosManager.contarNoLeidas(usuario);
 
-        lblContador.setColor(NARANJA);
+            Label lblContador = new Label(
+                Idioma.get(Idioma.Clave.AMIGOS) + ": " + totalAmigos
+                    + (totalSolicitudes > 0 ? "  | Sol: " + totalSolicitudes : "")
+                    + (totalNotif > 0       ? "  | Notif: " + totalNotif      : ""), piel);
+            lblContador.setColor(NARANJA);
 
-            TextButton btnVerAmigos   = crearBoton(Idioma.get(Idioma.Clave.VER_AMIGOS),      VERDE);
-            TextButton btnAgregar     = crearBoton(Idioma.get(Idioma.Clave.AGREGAR_AMIGO),   VERDE);
-            TextButton btnSolicitudes = crearBoton(Idioma.get(Idioma.Clave.VER_SOLICITUDES), totalSolicitudes > 0 ? NARANJA : GRIS);
-            TextButton btnVolver      = crearBoton(Idioma.get(Idioma.Clave.VOLVER),          ROJO);
+            TextButton btnVerAmigos    = crearBoton(Idioma.get(Idioma.Clave.VER_AMIGOS),      VERDE);
+            TextButton btnAgregar      = crearBoton(Idioma.get(Idioma.Clave.AGREGAR_AMIGO),   VERDE);
+            TextButton btnRetar        = crearBoton("Retar Amigo",                             CAFE.cpy());
+            TextButton btnSolicitudes  = crearBoton(Idioma.get(Idioma.Clave.VER_SOLICITUDES), totalSolicitudes > 0 ? NARANJA : GRIS);
+            TextButton btnNotificaciones = crearBoton("Notificaciones" + (totalNotif > 0 ? " (" + totalNotif + ")" : ""),
+                totalNotif > 0 ? NARANJA : GRIS);
+            TextButton btnHistorialRetos = crearBoton("Historial Retos", VERDE);
+            TextButton btnRankingAmigos  = crearBoton("Ranking Amigos",  VERDE);
+            TextButton btnVolver         = crearBoton(Idioma.get(Idioma.Clave.VOLVER), ROJO);
 
-        btnVerAmigos.addListener(new ClickListener() {
-        public void clicked(InputEvent e, float x, float y) { construirVerAmigos(); }
-        });
-        btnAgregar.addListener(new ClickListener() {
-        public void clicked(InputEvent e, float x, float y) { construirAgregarAmigo(); }
-        });
-        btnSolicitudes.addListener(new ClickListener() {
-        public void clicked(InputEvent e, float x, float y) { construirVerSolicitudes(); }
-        });
-        btnVolver.addListener(new ClickListener() {
-        public void clicked(InputEvent e, float x, float y) {
-            Gdx.app.postRunnable(() ->
-                juego.setScreen(new MenuPrincipalScreen(juego, usuario, gestor)));
-        }
-        });
+            btnVerAmigos.addListener(new ClickListener() {
+                public void clicked(InputEvent e, float x, float y) { construirVerAmigos(); }
+            });
+            btnAgregar.addListener(new ClickListener() {
+                public void clicked(InputEvent e, float x, float y) { construirAgregarAmigo(); }
+            });
+            btnRetar.addListener(new ClickListener() {
+                public void clicked(InputEvent e, float x, float y) { construirRetarAmigo(); }
+            });
+            btnSolicitudes.addListener(new ClickListener() {
+                public void clicked(InputEvent e, float x, float y) { construirVerSolicitudes(); }
+            });
+            btnNotificaciones.addListener(new ClickListener() {
+                public void clicked(InputEvent e, float x, float y) { construirNotificaciones(); }
+            });
+            btnHistorialRetos.addListener(new ClickListener() {
+                public void clicked(InputEvent e, float x, float y) { construirHistorialRetos(); }
+            });
+            btnRankingAmigos.addListener(new ClickListener() {
+                public void clicked(InputEvent e, float x, float y) { construirRankingAmigos(); }
+            });
+            btnVolver.addListener(new ClickListener() {
+                public void clicked(InputEvent e, float x, float y) {
+                    Gdx.app.postRunnable(() ->
+                        juego.setScreen(new MenuPrincipalScreen(juego, usuario, gestor)));
+                }
+            });
 
-        tabla.add(titulo).padBottom(4).row();
-        tabla.add(sub).padBottom(4).row();
-        tabla.add(lblContador).padBottom(40).row();
-        tabla.add(btnVerAmigos).width(280).height(50).padBottom(12).row();
-        tabla.add(btnAgregar).width(280).height(50).padBottom(12).row();
-        tabla.add(btnSolicitudes).width(280).height(50).padBottom(12).row();
-        tabla.add(btnVolver).width(280).height(50).row();
+            tabla.add(titulo).padBottom(4).row();
+            tabla.add(sub).padBottom(4).row();
+            tabla.add(lblContador).padBottom(16).row();
+            tabla.add(btnVerAmigos).width(280).height(44).padBottom(8).row();
+            tabla.add(btnAgregar).width(280).height(44).padBottom(8).row();
+            tabla.add(btnRetar).width(280).height(44).padBottom(8).row();
+            tabla.add(btnSolicitudes).width(280).height(44).padBottom(8).row();
+            tabla.add(btnNotificaciones).width(280).height(44).padBottom(8).row();
+            tabla.add(btnHistorialRetos).width(280).height(44).padBottom(8).row();
+            tabla.add(btnRankingAmigos).width(280).height(44).padBottom(8).row();
+            tabla.add(btnVolver).width(280).height(44).row();
 
-        escenario.addActor(tabla);
+            escenario.addActor(tabla);
+
         }
 
 
@@ -600,6 +625,290 @@
         escenario.act(delta);
         escenario.draw();
         }
+            // ── RETAR AMIGO ──────────────────────────────────────────────────
+            private void construirRetarAmigo() {
+                escenario.clear();
+                Table tabla = new Table();
+                tabla.setFillParent(true);
+                tabla.center();
+
+                Label titulo  = new Label("Retar a un Amigo", piel);
+                titulo.setColor(VERDE);
+                Label lblInfo = new Label("Usuario del amigo a retar:", piel);
+                lblInfo.setColor(CAFE);
+
+                TextField campoBuscar = crearCampo("@usuario");
+                Label mensaje = new Label("", piel);
+                Table tablaResultado = new Table();
+
+                TextButton btnBuscar = crearBoton("Buscar", VERDE);
+                TextButton btnVolver = crearBoton(Idioma.get(Idioma.Clave.VOLVER), NARANJA);
+
+                btnBuscar.addListener(new ClickListener() {
+                    public void clicked(InputEvent e, float x, float y) {
+                        String busqueda = campoBuscar.getText().trim();
+                        tablaResultado.clear();
+                        if (busqueda.isEmpty() || busqueda.equals(usuario)) {
+                            mensaje.setColor(ROJO); mensaje.setText("Usuario inválido."); return;
+                        }
+                        if (!friendsManager.sonAmigos(usuario, busqueda)) {
+                            mensaje.setColor(ROJO); mensaje.setText("Solo puedes retar a tus amigos."); return;
+                        }
+                        USER encontrado = gestor.buscarUser(busqueda);
+                        if (encontrado == null) {
+                            mensaje.setColor(ROJO); mensaje.setText("Usuario no encontrado."); return;
+                        }
+                        mensaje.setText("");
+                        Label lblNombre = new Label(encontrado.getFullname() + " (@" + busqueda + ")", piel);
+                        lblNombre.setColor(CAFE);
+                        TextButton btnElegirNivel = crearBoton("Elegir Nivel", VERDE);
+                        btnElegirNivel.addListener(new ClickListener() {
+                            public void clicked(InputEvent e2, float x2, float y2) {
+                                construirSelectorNivelReto(busqueda);
+                            }
+                        });
+                        tablaResultado.add(lblNombre).padRight(16);
+                        tablaResultado.add(btnElegirNivel).width(140).height(38).row();
+                    }
+                });
+                btnVolver.addListener(new ClickListener() {
+                    public void clicked(InputEvent e, float x, float y) { construirMenu(); }
+                });
+
+                tabla.add(titulo).padBottom(20).row();
+                tabla.add(lblInfo).left().width(360).padBottom(6).row();
+                tabla.add(campoBuscar).width(360).height(40).padBottom(8).row();
+                tabla.add(btnBuscar).width(360).height(40).padBottom(8).row();
+                tabla.add(tablaResultado).padBottom(8).row();
+                tabla.add(mensaje).padBottom(10).row();
+                tabla.add(btnVolver).width(280).height(44).row();
+                escenario.addActor(tabla);
+            }
+
+            // ── SELECTOR DE NIVEL PARA RETO ──────────────────────────────────
+            private void construirSelectorNivelReto(String retado) {
+                escenario.clear();
+                Table tabla = new Table();
+                tabla.setFillParent(true);
+                tabla.center();
+
+                Label titulo = new Label("Elige el Nivel del Reto", piel);
+                titulo.setColor(VERDE);
+                Label sub = new Label("Retando a @" + retado, piel);
+                sub.setColor(NARANJA);
+                Label mensaje = new Label("", piel);
+
+                tabla.add(titulo).padBottom(8).row();
+                tabla.add(sub).padBottom(20).row();
+
+                for (int i = 1; i <= 5; i++) {
+                    final int n = i;
+                    TextButton btnNivel = crearBoton("Nivel " + i, VERDE);
+                    btnNivel.addListener(new ClickListener() {
+                        public void clicked(InputEvent e, float x, float y) {
+                            boolean ok = retosManager.enviarReto(usuario, retado, n);
+                            mensaje.setColor(ok ? VERDE : ROJO);
+                            mensaje.setText(ok ? "¡Reto enviado al Nivel " + n + "!"
+                                : "Ya existe un reto pendiente.");
+                        }
+                    });
+                    tabla.add(btnNivel).width(260).height(40).padBottom(8).row();
+                }
+
+                tabla.add(mensaje).padBottom(10).row();
+                TextButton btnVolver = crearBoton(Idioma.get(Idioma.Clave.VOLVER), NARANJA);
+                btnVolver.addListener(new ClickListener() {
+                    public void clicked(InputEvent e, float x, float y) { construirRetarAmigo(); }
+                });
+                tabla.add(btnVolver).width(260).height(44).row();
+                escenario.addActor(tabla);
+            }
+
+            // ── NOTIFICACIONES ───────────────────────────────────────────────
+            private void construirNotificaciones() {
+                retosManager.marcarTodasLeidas(usuario);
+                escenario.clear();
+
+                Table contenido = new Table();
+                contenido.top().pad(20);
+
+                Label titulo = new Label("Notificaciones", piel);
+                titulo.setColor(VERDE);
+                contenido.add(titulo).padBottom(16).row();
+
+                // Retos pendientes recibidos (con botones aceptar/rechazar)
+                List<Reto> retosPend = retosManager.getRetosRecibidos(usuario);
+                if (!retosPend.isEmpty()) {
+                    Label lblSec = new Label("— Retos Pendientes —", piel);
+                    lblSec.setColor(NARANJA);
+                    contenido.add(lblSec).padBottom(8).row();
+                    for (Reto r : retosPend) {
+                        Label lbl = new Label("@" + r.retador + " te retó al Nivel " + r.nivel, piel);
+                        lbl.setColor(CAFE);
+                        TextButton btnAc = crearBoton("Aceptar", VERDE);
+                        TextButton btnRe = crearBoton("Rechazar", ROJO);
+                        btnAc.addListener(new ClickListener() {
+                            public void clicked(InputEvent e, float x, float y) {
+                                retosManager.aceptarReto(r.retador, usuario, r.nivel);
+                                construirNotificaciones();
+                            }
+                        });
+                        btnRe.addListener(new ClickListener() {
+                            public void clicked(InputEvent e, float x, float y) {
+                                retosManager.rechazarReto(r.retador, usuario, r.nivel);
+                                construirNotificaciones();
+                            }
+                        });
+                        Table fila = new Table();
+                        fila.add(lbl).expandX().left().padRight(8);
+                        fila.add(btnAc).width(90).height(34).padRight(6);
+                        fila.add(btnRe).width(90).height(34);
+                        contenido.add(fila).width(500).padBottom(6).row();
+                    }
+                }
+
+                // Notificaciones generales
+                List<Notificacion> notifs = retosManager.getNotificaciones(usuario);
+                if (!notifs.isEmpty()) {
+                    Label lblSec2 = new Label("— Eventos —", piel);
+                    lblSec2.setColor(NARANJA);
+                    contenido.add(lblSec2).padBottom(8).padTop(12).row();
+                    // Mostrar las últimas 10, más recientes primero
+                    int desde = Math.max(0, notifs.size() - 10);
+                    for (int i = notifs.size() - 1; i >= desde; i--) {
+                        Notificacion n = notifs.get(i);
+                        Label lbl = new Label(textoNotificacion(n), piel);
+                        lbl.setColor(n.leida ? GRIS : CAFE);
+                        contenido.add(lbl).left().padBottom(4).row();
+                    }
+                }
+
+                if (retosPend.isEmpty() && notifs.isEmpty()) {
+                    Label lblVacio = new Label("Sin notificaciones.", piel);
+                    lblVacio.setColor(GRIS);
+                    contenido.add(lblVacio).padBottom(16).row();
+                }
+
+                TextButton btnVolver = crearBoton(Idioma.get(Idioma.Clave.VOLVER), NARANJA);
+                btnVolver.addListener(new ClickListener() {
+                    public void clicked(InputEvent e, float x, float y) { construirMenu(); }
+                });
+                contenido.add(btnVolver).width(280).height(44).padTop(20).row();
+
+                ScrollPane scroll = new ScrollPane(contenido, new ScrollPane.ScrollPaneStyle());
+                scroll.setFillParent(true);
+                scroll.setScrollingDisabled(true, false);
+                escenario.addActor(scroll);
+            }
+
+            private String textoNotificacion(Notificacion n) {
+                switch (n.tipo) {
+                    case SOLICITUD_RECIBIDA:  return "@" + n.origen + " te envió solicitud de amistad.";
+                    case SOLICITUD_ACEPTADA:  return "@" + n.origen + " aceptó tu solicitud.";
+                    case RETO_RECIBIDO:       return "@" + n.origen + " te retó al Nivel " + n.nivel + ".";
+                    case RETO_ACEPTADO:       return "@" + n.origen + " aceptó tu reto (Nv." + n.nivel + ").";
+                    case RETO_RECHAZADO:      return "@" + n.origen + " rechazó tu reto (Nv." + n.nivel + ").";
+                    case RETO_GANADO:         return "¡Ganaste el reto contra @" + n.origen + " (Nv." + n.nivel + ")!";
+                    case RETO_PERDIDO:        return "Perdiste el reto contra @" + n.origen + " (Nv." + n.nivel + ").";
+                    default:                  return "Notificación de @" + n.origen;
+                }
+            }
+
+            // ── HISTORIAL DE RETOS ───────────────────────────────────────────
+            private void construirHistorialRetos() {
+                escenario.clear();
+                Table contenido = new Table();
+                contenido.top().pad(20);
+
+                Label titulo = new Label("Historial de Retos", piel);
+                titulo.setColor(VERDE);
+                contenido.add(titulo).padBottom(16).row();
+
+                List<Reto> historial = retosManager.getHistorialRetos(usuario);
+
+                if (historial.isEmpty()) {
+                    Label lblVacio = new Label("Sin retos registrados.", piel);
+                    lblVacio.setColor(GRIS);
+                    contenido.add(lblVacio).padBottom(16).row();
+                } else {
+                    // Encabezado
+                    Table enc = new Table();
+                    for (String h : new String[]{"Retador","Retado","Nv.","Ganador","Estado"}) {
+                        Label l = new Label(h, piel); l.setColor(NARANJA);
+                        enc.add(l).width(h.equals("Estado") ? 110 : 90).center();
+                    }
+                    contenido.add(enc).padBottom(6).row();
+
+                    for (Reto r : historial) {
+                        Table fila = new Table();
+                        String ganador = r.ganador != null ? "@" + r.ganador : "-";
+                        String estado  = r.estado.name();
+                        for (String v : new String[]{
+                            "@"+r.retador, "@"+r.retado,
+                            String.valueOf(r.nivel), ganador, estado}) {
+                            Label l = new Label(v, piel); l.setColor(CAFE);
+                            fila.add(l).width(v.equals(estado) ? 110 : 90).center();
+                        }
+                        contenido.add(fila).padBottom(4).row();
+                    }
+                }
+
+                TextButton btnVolver = crearBoton(Idioma.get(Idioma.Clave.VOLVER), NARANJA);
+                btnVolver.addListener(new ClickListener() {
+                    public void clicked(InputEvent e, float x, float y) { construirMenu(); }
+                });
+                contenido.add(btnVolver).width(280).height(44).padTop(20).row();
+
+                ScrollPane scroll = new ScrollPane(contenido, new ScrollPane.ScrollPaneStyle());
+                scroll.setFillParent(true);
+                scroll.setScrollingDisabled(true, false);
+                escenario.addActor(scroll);
+            }
+
+            // ── RANKING DE AMIGOS ────────────────────────────────────────────
+            private void construirRankingAmigos() {
+                escenario.clear();
+                Table tabla = new Table();
+                tabla.setFillParent(true);
+                tabla.center();
+
+                Label titulo = new Label("Ranking de Amigos", piel);
+                titulo.setColor(VERDE);
+                tabla.add(titulo).padBottom(20).row();
+
+                String[] amigos = friendsManager.getAmigos(usuario);
+                String[][] ranking = retosManager.getRankingAmigos(usuario, amigos);
+
+                if (ranking.length == 0) {
+                    Label lblVacio = new Label("Sin datos de retos aún.", piel);
+                    lblVacio.setColor(GRIS);
+                    tabla.add(lblVacio).padBottom(16).row();
+                } else {
+                    for (int i = 0; i < ranking.length; i++) {
+                        String[] entry = ranking[i];
+                        boolean esMio  = entry[0].equals(usuario);
+
+                        Label lblPos = new Label("TOP " + (i+1), piel);
+                        lblPos.setColor(NARANJA);
+                        Label lblUser = new Label("@" + entry[0], piel);
+                        lblUser.setColor(esMio ? VERDE : CAFE);
+                        Label lblStats = new Label(
+                            "  Ganados: " + entry[1] + "  |  Perdidos: " + entry[2], piel);
+                        lblStats.setColor(GRIS);
+
+                        tabla.add(lblPos).left().padBottom(2).row();
+                        tabla.add(lblUser).left().padLeft(16).padBottom(2).row();
+                        tabla.add(lblStats).left().padLeft(16).padBottom(12).row();
+                    }
+                }
+
+                TextButton btnVolver = crearBoton(Idioma.get(Idioma.Clave.VOLVER), NARANJA);
+                btnVolver.addListener(new ClickListener() {
+                    public void clicked(InputEvent e, float x, float y) { construirMenu(); }
+                });
+                tabla.add(btnVolver).width(280).height(44).padTop(10).row();
+                escenario.addActor(tabla);
+            }
 
         @Override public void resize(int w, int h) { escenario.getViewport().update(w, h, true); }
         @Override public void show()    { Gdx.input.setInputProcessor(escenario); }

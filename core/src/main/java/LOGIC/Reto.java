@@ -2,8 +2,7 @@ package LOGIC;
 
 import java.time.LocalDateTime;
 
-public class Reto {
-    public enum Estado { PENDIENTE, ACEPTADO, RECHAZADO, COMPLETADO }
+public class Reto implements java.io.Serializable {    public enum Estado { PENDIENTE, ACEPTADO, RECHAZADO, COMPLETADO }
 
     public String        retador;
     public String        retado;

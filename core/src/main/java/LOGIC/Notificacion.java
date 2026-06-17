@@ -2,8 +2,7 @@ package LOGIC;
 
 import java.time.LocalDateTime;
 
-public class Notificacion {
-    public enum Tipo {
+public class Notificacion implements java.io.Serializable {    public enum Tipo {
         SOLICITUD_RECIBIDA, SOLICITUD_ACEPTADA,
         RETO_RECIBIDO, RETO_ACEPTADO, RETO_RECHAZADO,
         RETO_GANADO, RETO_PERDIDO
