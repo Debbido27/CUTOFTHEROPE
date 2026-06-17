@@ -33,9 +33,10 @@ public class RankingScreen implements Screen {
     private final Color NARANJA = new Color(0.78f, 0.63f, 0.31f, 1f);
     private final Color ROJO    = new Color(0.70f, 0.27f, 0.20f, 1f);
     private final Color GRIS    = new Color(0.60f, 0.60f, 0.60f, 1f);
-    private final Color DORADO  = new Color(1.00f, 0.80f, 0.00f, 1f);
-    private final Color PLATA   = new Color(0.75f, 0.75f, 0.75f, 1f);
-    private final Color BRONCE  = new Color(0.80f, 0.50f, 0.20f, 1f);
+    private final Color DORADO  = new Color(0.95f, 0.78f, 0.20f, 1f);
+    private final Color PLATA   = new Color(0.75f, 0.76f, 0.78f, 1f);
+    private final Color BRONCE  = new Color(0.72f, 0.47f, 0.26f, 1f);
+    private final Color BLANCO  = new Color(1f, 1f, 1f, 1f);
 
     public RankingScreen(CutTheRope juego, String usuario, LoginManager gestor) {
         this.juego   = juego;
@@ -60,25 +61,9 @@ public class RankingScreen implements Screen {
         titulo.setColor(VERDE);
         contenido.add(titulo).padBottom(6).row();
 
-        Label sub = new Label("Clasificación global de jugadores", piel);
+        Label sub = new Label("Clasificacion global de jugadores", piel);
         sub.setColor(GRIS);
         contenido.add(sub).padBottom(20).row();
-
-        Table encabezado = new Table();
-        String[] headers = {"#", "Jugador", "Pts", "★", "Nv."};
-        int[]    anchos  = {40, 200, 80, 60, 60};
-        for (int i = 0; i < headers.length; i++) {
-            Label l = new Label(headers[i], piel);
-            l.setColor(NARANJA);
-            encabezado.add(l).width(anchos[i]).center();
-        }
-        contenido.add(encabezado).padBottom(6).row();
-
-        Pixmap px = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        px.setColor(NARANJA); px.fill();
-        Image linea = new Image(new Texture(px));
-        px.dispose();
-        contenido.add(linea).width(440).height(2).padBottom(8).row();
 
         USER[] ranking = gestor.getRanking();
 
@@ -87,19 +72,40 @@ public class RankingScreen implements Screen {
             lblVacio.setColor(GRIS);
             contenido.add(lblVacio).padBottom(16).row();
         } else {
-            for (int i = 0; i < ranking.length; i++) {
+            // ---- Tarjetas Top 3 (oro / plata / bronce) ----
+            int topCount = Math.min(3, ranking.length);
+            for (int i = 0; i < topCount; i++) {
+                USER u = ranking[i];
+                if (u == null) continue;
+                contenido.add(crearTarjetaTop(u, i + 1)).width(460).padBottom(10).row();
+            }
+
+            // ---- Separador antes del resto del ranking ----
+            if (ranking.length > 3) {
+                Pixmap px = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+                px.setColor(NARANJA); px.fill();
+                Image linea = new Image(new Texture(px));
+                px.dispose();
+                contenido.add(linea).width(460).height(2).padTop(6).padBottom(10).row();
+
+                Table encabezado = new Table();
+                String[] headers = {"#", "Jugador", "Pts", "Estrellas", "Nv."};
+                int[]    anchos  = {40, 170, 70, 110, 60};
+                for (int i = 0; i < headers.length; i++) {
+                    Label l = new Label(headers[i], piel);
+                    l.setColor(NARANJA);
+                    encabezado.add(l).width(anchos[i]).center();
+                }
+                contenido.add(encabezado).padBottom(8).row();
+            }
+
+            // ---- Resto del ranking (4to en adelante) ----
+            for (int i = 3; i < ranking.length; i++) {
                 USER u = ranking[i];
                 if (u == null) continue;
 
                 boolean esMio = u.getUsername().equals(usuario);
                 int pos = i + 1;
-
-                Color colorPos;
-                String medalla;
-                if      (pos == 1) { colorPos = DORADO;  medalla = "🥇"; }
-                else if (pos == 2) { colorPos = PLATA;   medalla = "🥈"; }
-                else if (pos == 3) { colorPos = BRONCE;  medalla = "🥉"; }
-                else               { colorPos = GRIS;    medalla = String.valueOf(pos); }
 
                 Table fila = new Table();
 
@@ -111,39 +117,39 @@ public class RankingScreen implements Screen {
                     pxFondo.dispose();
                 }
 
-                Label lblPos    = new Label(medalla, piel);
-                Label lblNombre = new Label(u.getUsername() + (esMio ? " ◄" : ""), piel);
+                Label lblPos    = new Label(String.valueOf(pos), piel);
+                Label lblNombre = new Label(u.getUsername() + (esMio ? "  (Tu)" : ""), piel);
                 Label lblPts    = new Label(String.valueOf(u.getPuntuacionGeneral()), piel);
-                Label lblStars  = new Label("★ " + u.getEstrellasTotal(), piel);
+                Label lblStars  = new Label(u.getEstrellasTotal() + " estrellas", piel);
                 Label lblNvs    = new Label(u.getNivelesCompletados() + "/5", piel);
 
-                lblPos.setColor(colorPos);
+                lblPos.setColor(GRIS);
                 lblNombre.setColor(esMio ? VERDE : CAFE);
                 lblPts.setColor(esMio ? VERDE : CAFE);
-                lblStars.setColor(DORADO);
+                lblStars.setColor(esMio ? VERDE : CAFE);
                 lblNvs.setColor(esMio ? VERDE : GRIS);
 
                 fila.add(lblPos).width(40).center();
-                fila.add(lblNombre).width(200).left();
-                fila.add(lblPts).width(80).center();
-                fila.add(lblStars).width(60).center();
+                fila.add(lblNombre).width(170).left();
+                fila.add(lblPts).width(70).center();
+                fila.add(lblStars).width(110).center();
                 fila.add(lblNvs).width(60).center();
 
                 contenido.add(fila).padBottom(6).row();
 
-                if (pos % 3 == 0 && pos < ranking.length) {
+                if (pos % 5 == 0 && pos < ranking.length) {
                     Pixmap pxSep = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
                     pxSep.setColor(new Color(0.8f, 0.8f, 0.8f, 0.4f)); pxSep.fill();
                     Image sep = new Image(new Texture(pxSep));
                     pxSep.dispose();
-                    contenido.add(sep).width(440).height(1).padBottom(6).row();
+                    contenido.add(sep).width(450).height(1).padBottom(6).row();
                 }
             }
 
             Label lblMiPos = new Label("", piel);
             for (int i = 0; i < ranking.length; i++) {
                 if (ranking[i] != null && ranking[i].getUsername().equals(usuario)) {
-                    lblMiPos.setText("Tu posición: #" + (i + 1) + " de " + ranking.length);
+                    lblMiPos.setText("Tu posicion: #" + (i + 1) + " de " + ranking.length);
                     break;
                 }
             }
@@ -166,6 +172,76 @@ public class RankingScreen implements Screen {
         escenario.addActor(scroll);
     }
 
+    /**
+     * Crea una tarjeta ancha para los puestos 1, 2 y 3 con fondo de color
+     * (oro, plata o bronce) y la etiqueta correspondiente en texto.
+     */
+    private Table crearTarjetaTop(USER u, int pos) {
+        Color colorFondo;
+        String etiqueta;
+        Color colorTexto;
+
+        switch (pos) {
+            case 1:
+                colorFondo = DORADO;
+                etiqueta   = "Oro";
+                colorTexto = CAFE;
+                break;
+            case 2:
+                colorFondo = PLATA;
+                etiqueta   = "Plata";
+                colorTexto = CAFE;
+                break;
+            default:
+                colorFondo = BRONCE;
+                etiqueta   = "Bronce";
+                colorTexto = BLANCO;
+                break;
+        }
+
+        boolean esMio = u.getUsername().equals(usuario);
+
+        Table tarjeta = new Table();
+        Pixmap px = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        px.setColor(colorFondo); px.fill();
+        tarjeta.setBackground(new Image(new Texture(px)).getDrawable());
+        px.dispose();
+        tarjeta.pad(10, 14, 10, 14);
+
+        Label lblEtiqueta = new Label(etiqueta, piel);
+        lblEtiqueta.setColor(colorTexto);
+
+        Label lblPos = new Label("#" + pos, piel);
+        lblPos.setColor(colorTexto);
+
+        Label lblNombre = new Label(u.getUsername() + (esMio ? "  (Tu)" : ""), piel);
+        lblNombre.setColor(colorTexto);
+
+        Label lblPts = new Label(u.getPuntuacionGeneral() + " pts", piel);
+        lblPts.setColor(colorTexto);
+
+        Label lblStars = new Label(u.getEstrellasTotal() + " estrellas", piel);
+        lblStars.setColor(colorTexto);
+
+        Label lblNvs = new Label(u.getNivelesCompletados() + "/5 niveles", piel);
+        lblNvs.setColor(colorTexto);
+
+        Table izquierda = new Table();
+        izquierda.add(lblEtiqueta).left().row();
+        izquierda.add(lblNombre).left();
+
+        Table derecha = new Table();
+        derecha.add(lblPts).right().padBottom(2).row();
+        derecha.add(lblStars).right().padBottom(2).row();
+        derecha.add(lblNvs).right();
+
+        tarjeta.add(lblPos).width(50).left();
+        tarjeta.add(izquierda).expandX().left();
+        tarjeta.add(derecha).right();
+
+        return tarjeta;
+    }
+
     private TextButton crearBoton(String texto, Color color) {
         TextButton btn = new TextButton(texto, piel);
         btn.getStyle().up   = piel.newDrawable("blanco", color);
@@ -184,7 +260,10 @@ public class RankingScreen implements Screen {
         FreeTypeFontGenerator.FreeTypeFontParameter p = new FreeTypeFontGenerator.FreeTypeFontParameter();
         float escala = Math.min(Gdx.graphics.getWidth() / 640f, Gdx.graphics.getHeight() / 480f);
         p.size = Math.round(15 * escala);
-        p.characters = FreeTypeFontGenerator.DEFAULT_CHARS + "áéíóúÁÉÍÓÚñÑüÜ¡¿★◄";
+        // Solo caracteres que la fuente realmente soporta: letras latinas + acentos.
+        // Se eliminan simbolos como estrella/corazon/flecha que no estan en la fuente
+        // y se ven como cuadros vacios.
+        p.characters = FreeTypeFontGenerator.DEFAULT_CHARS + "áéíóúÁÉÍÓÚñÑüÜ¡¿";
         BitmapFont fuente = gen.generateFont(p);
         fuente.getData().setScale(1f / escala);
 
