@@ -49,7 +49,10 @@
 
         }
 
-        public String getUsername() {
+            private int[] estrellasPorNivel = new int[5];
+
+
+            public String getUsername() {
         return username;
         }
 

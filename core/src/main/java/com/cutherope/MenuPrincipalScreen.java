@@ -76,12 +76,20 @@
         juego.setScreen(new SeleccionNivelScreen(juego, usuario, gestor)));
         }
         });
-        btnEstadisticas.addListener(new ClickListener() {
-        public void clicked(InputEvent e, float x, float y) { /* TODO */ }
-        });
-        btnRanking.addListener(new ClickListener() {
-        public void clicked(InputEvent e, float x, float y) { /* TODO */ }
-        });
+            btnEstadisticas.addListener(new ClickListener() {
+                public void clicked(InputEvent e, float x, float y) {
+                    Gdx.app.postRunnable(() ->
+                        juego.setScreen(new Estadisticas(juego, usuario, gestor)));
+                }
+            });
+
+
+            btnRanking.addListener(new ClickListener() {
+                public void clicked(InputEvent e, float x, float y) {
+                    Gdx.app.postRunnable(() ->
+                        juego.setScreen(new RankingScreen(juego, usuario, gestor)));
+                }
+            });
         btnAmigos.addListener(new ClickListener() {
         public void clicked(InputEvent e, float x, float y) {
         Gdx.app.postRunnable(() ->
