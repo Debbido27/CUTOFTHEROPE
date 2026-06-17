@@ -61,7 +61,7 @@ public class RankingScreen implements Screen {
         titulo.setColor(VERDE);
         contenido.add(titulo).padBottom(6).row();
 
-        Label sub = new Label("Clasificacion global de jugadores", piel);
+        Label sub = new Label(Idioma.get(Idioma.Clave.CLASIFICACION_GLOBAL), piel);
         sub.setColor(GRIS);
         contenido.add(sub).padBottom(20).row();
 
@@ -89,8 +89,13 @@ public class RankingScreen implements Screen {
                 contenido.add(linea).width(460).height(2).padTop(6).padBottom(10).row();
 
                 Table encabezado = new Table();
-                String[] headers = {"#", "Jugador", "Pts", "Estrellas", "Nv."};
-                int[]    anchos  = {40, 170, 70, 110, 60};
+                String[] headers = {
+                    "#",
+                    Idioma.get(Idioma.Clave.JUGADOR),
+                    Idioma.get(Idioma.Clave.PTS),
+                    Idioma.get(Idioma.Clave.ESTRELLAS),
+                    Idioma.get(Idioma.Clave.NV)
+                };                int[]    anchos  = {40, 170, 70, 110, 60};
                 for (int i = 0; i < headers.length; i++) {
                     Label l = new Label(headers[i], piel);
                     l.setColor(NARANJA);
@@ -118,10 +123,9 @@ public class RankingScreen implements Screen {
                 }
 
                 Label lblPos    = new Label(String.valueOf(pos), piel);
-                Label lblNombre = new Label(u.getUsername() + (esMio ? "  (Tu)" : ""), piel);
-                Label lblPts    = new Label(String.valueOf(u.getPuntuacionGeneral()), piel);
-                Label lblStars  = new Label(u.getEstrellasTotal() + " estrellas", piel);
-                Label lblNvs    = new Label(u.getNivelesCompletados() + "/5", piel);
+                Label lblNombre = new Label(u.getUsername() + (esMio ? "  (" + Idioma.get(Idioma.Clave.TU) + ")" : ""), piel);                Label lblPts    = new Label(String.valueOf(u.getPuntuacionGeneral()), piel);
+                Label lblStars  = new Label(u.getEstrellasTotal() + " " + Idioma.get(Idioma.Clave.ESTRELLAS), piel);
+                Label lblNvs    = new Label(u.getNivelesCompletados() + "/5 " + Idioma.get(Idioma.Clave.NIVELES), piel);
 
                 lblPos.setColor(GRIS);
                 lblNombre.setColor(esMio ? VERDE : CAFE);
@@ -149,7 +153,7 @@ public class RankingScreen implements Screen {
             Label lblMiPos = new Label("", piel);
             for (int i = 0; i < ranking.length; i++) {
                 if (ranking[i] != null && ranking[i].getUsername().equals(usuario)) {
-                    lblMiPos.setText("Tu posicion: #" + (i + 1) + " de " + ranking.length);
+                    lblMiPos.setText(Idioma.get(Idioma.Clave.TU_POSICION) + ": #" + (i + 1) + " " + Idioma.get(Idioma.Clave.DE) + " " + ranking.length);
                     break;
                 }
             }
@@ -184,17 +188,17 @@ public class RankingScreen implements Screen {
         switch (pos) {
             case 1:
                 colorFondo = DORADO;
-                etiqueta   = "Oro";
+                etiqueta = Idioma.get(Idioma.Clave.ORO);
                 colorTexto = CAFE;
                 break;
             case 2:
                 colorFondo = PLATA;
-                etiqueta   = "Plata";
+                etiqueta = Idioma.get(Idioma.Clave.PLATA);
                 colorTexto = CAFE;
                 break;
             default:
                 colorFondo = BRONCE;
-                etiqueta   = "Bronce";
+                etiqueta = Idioma.get(Idioma.Clave.BRONCE);
                 colorTexto = BLANCO;
                 break;
         }
@@ -214,16 +218,16 @@ public class RankingScreen implements Screen {
         Label lblPos = new Label("#" + pos, piel);
         lblPos.setColor(colorTexto);
 
-        Label lblNombre = new Label(u.getUsername() + (esMio ? "  (Tu)" : ""), piel);
+        Label lblNombre = new Label(u.getUsername() + (esMio ? "  (" + Idioma.get(Idioma.Clave.TU) + ")" : ""), piel);
         lblNombre.setColor(colorTexto);
 
-        Label lblPts = new Label(u.getPuntuacionGeneral() + " pts", piel);
+        Label lblPts = new Label(u.getPuntuacionGeneral() + " " + Idioma.get(Idioma.Clave.PTS), piel);
         lblPts.setColor(colorTexto);
 
-        Label lblStars = new Label(u.getEstrellasTotal() + " estrellas", piel);
+        Label lblStars = new Label(u.getEstrellasTotal() + " " + Idioma.get(Idioma.Clave.ESTRELLAS), piel);
         lblStars.setColor(colorTexto);
 
-        Label lblNvs = new Label(u.getNivelesCompletados() + "/5 niveles", piel);
+        Label lblNvs = new Label(u.getNivelesCompletados() + "/5 " + Idioma.get(Idioma.Clave.NIVELES), piel);
         lblNvs.setColor(colorTexto);
 
         Table izquierda = new Table();

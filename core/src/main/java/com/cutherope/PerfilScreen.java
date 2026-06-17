@@ -148,44 +148,24 @@
         Label titulo = new Label(Idioma.get(Idioma.Clave.VER_INFORMACION), piel);
         titulo.setColor(VERDE);
 
-        TextButton btnDatos     = crearBoton(Idioma.get(Idioma.Clave.DATOS_PERSONALES),  NARANJA);
-        TextButton btnProgreso  = crearBoton(Idioma.get(Idioma.Clave.PROGRESO_JUEGO),    VERDE);
-        TextButton btnEstadist  = crearBoton(Idioma.get(Idioma.Clave.ESTADISTICAS),      VERDE);
-        TextButton btnHistorial = crearBoton(Idioma.get(Idioma.Clave.HISTORIAL),         VERDE);
-        TextButton btnRanking   = crearBoton(Idioma.get(Idioma.Clave.RANKING),           VERDE);
-        TextButton btnAmigos    = crearBoton(Idioma.get(Idioma.Clave.VER_AMIGOS_RIVALES),VERDE);
-        TextButton btnVolver    = crearBoton(Idioma.get(Idioma.Clave.VOLVER_AL_PERFIL),  ROJO);
+            TextButton btnDatos     = crearBoton(Idioma.get(Idioma.Clave.DATOS_PERSONALES),  NARANJA);
+            TextButton btnAmigos    = crearBoton(Idioma.get(Idioma.Clave.VER_AMIGOS_RIVALES),VERDE);
+            TextButton btnVolver    = crearBoton(Idioma.get(Idioma.Clave.VOLVER_AL_PERFIL),  ROJO);
 
-        btnDatos.addListener(new ClickListener() {
-        public void clicked(InputEvent e, float x, float y) { construirVerDatos(); }
-        });
-        btnProgreso.addListener(new ClickListener() {
-        public void clicked(InputEvent e, float x, float y) { construirVerProgreso(); }
-        });
-        btnEstadist.addListener(new ClickListener() {
-        public void clicked(InputEvent e, float x, float y) { construirVerEstadisticas(); }
-        });
-        btnHistorial.addListener(new ClickListener() {
-        public void clicked(InputEvent e, float x, float y) { construirVerHistorial(); }
-        });
-        btnRanking.addListener(new ClickListener() {
-        public void clicked(InputEvent e, float x, float y) { construirVerRanking(); }
-        });
-        btnAmigos.addListener(new ClickListener() {
-        public void clicked(InputEvent e, float x, float y) { construirVerAmigos(); }
-        });
-        btnVolver.addListener(new ClickListener() {
-        public void clicked(InputEvent e, float x, float y) { construirMenuPerfil(); }
-        });
+            btnDatos.addListener(new ClickListener() {
+                public void clicked(InputEvent e, float x, float y) { construirVerDatos(); }
+            });
+            btnAmigos.addListener(new ClickListener() {
+                public void clicked(InputEvent e, float x, float y) { construirVerAmigos(); }
+            });
+            btnVolver.addListener(new ClickListener() {
+                public void clicked(InputEvent e, float x, float y) { construirMenuPerfil(); }
+            });
 
-        tabla.add(titulo).padBottom(20).row();
-        tabla.add(btnDatos).width(260).height(38).padBottom(8).row();
-        tabla.add(btnProgreso).width(260).height(38).padBottom(8).row();
-        tabla.add(btnEstadist).width(260).height(38).padBottom(8).row();
-        tabla.add(btnHistorial).width(260).height(38).padBottom(8).row();
-        tabla.add(btnRanking).width(260).height(38).padBottom(8).row();
-        tabla.add(btnAmigos).width(260).height(38).padBottom(20).row();
-        tabla.add(btnVolver).width(260).height(38).row();
+            tabla.add(titulo).padBottom(20).row();
+            tabla.add(btnDatos).width(260).height(38).padBottom(8).row();
+            tabla.add(btnAmigos).width(260).height(38).padBottom(20).row();
+            tabla.add(btnVolver).width(260).height(38).row();
 
         escenario.addActor(tabla);
         }
@@ -223,160 +203,6 @@
         escenario.addActor(tabla);
         }
 
-        private void construirVerProgreso() {
-        escenario.clear();
-        USER u = gestor.buscarUser(usuario);
-        Table tabla = new Table();
-        tabla.setFillParent(true);
-        tabla.center();
-
-        Label titulo = new Label(Idioma.get(Idioma.Clave.PROGRESO_JUEGO), piel);
-        titulo.setColor(VERDE);
-
-        int nivelesComp = (u != null) ? u.getNivelesCompletados() : 0;
-        int puntuacion  = (u != null) ? u.getPuntuacionGeneral()  : 0;
-        int estrellas   = (u != null) ? u.getEstrellasTotal()     : 0;
-
-        TextButton btnVolver = crearBoton(Idioma.get(Idioma.Clave.VOLVER), ROJO);
-        btnVolver.addListener(new ClickListener() {
-        public void clicked(InputEvent e, float x, float y) { construirVerInfo(); }
-        });
-
-        tabla.add(titulo).padBottom(16).colspan(2).center().row();
-        agregarFila(tabla, Idioma.get(Idioma.Clave.NIVELES_COMPLETADOS), nivelesComp + " / 5");
-        agregarFila(tabla, Idioma.get(Idioma.Clave.PUNTUACION_GENERAL),  String.valueOf(puntuacion));
-        agregarFila(tabla, Idioma.get(Idioma.Clave.ESTRELLAS_TOTALES),   String.valueOf(estrellas));
-        tabla.add(btnVolver).width(240).height(36).padTop(16).colspan(2).center().row();
-
-        escenario.addActor(tabla);
-        }
-
-        private void construirVerEstadisticas() {
-        escenario.clear();
-        USER u = gestor.buscarUser(usuario);
-        Table tabla = new Table();
-        tabla.setFillParent(true);
-        tabla.center();
-
-        Label titulo = new Label(Idioma.get(Idioma.Clave.ESTADISTICAS), piel);
-        titulo.setColor(VERDE);
-
-        int partidas  = (u != null) ? u.getPartidasJugadas()   : 0;
-        int fallos    = (u != null) ? u.getFallosTotales()      : 0;
-        long tiempoMs = (u != null) ? u.getTiempoTotalJugado()  : 0;
-        String tiempo = String.format("%d min %d seg", (tiempoMs / 60000), (tiempoMs % 60000) / 1000);
-
-        TextButton btnVolver = crearBoton(Idioma.get(Idioma.Clave.VOLVER), ROJO);
-        btnVolver.addListener(new ClickListener() {
-        public void clicked(InputEvent e, float x, float y) { construirVerInfo(); }
-        });
-
-        tabla.add(titulo).padBottom(16).colspan(2).center().row();
-        agregarFila(tabla, Idioma.get(Idioma.Clave.PARTIDAS_JUGADAS), String.valueOf(partidas));
-        agregarFila(tabla, Idioma.get(Idioma.Clave.FALLOS_TOTALES),   String.valueOf(fallos));
-        agregarFila(tabla, Idioma.get(Idioma.Clave.TIEMPO_JUGADO),    tiempo);
-        tabla.add(btnVolver).width(240).height(36).padTop(16).colspan(2).center().row();
-
-        escenario.addActor(tabla);
-        }
-
-            private void construirVerHistorial() {
-                escenario.clear();
-                Table tabla = new Table();
-                tabla.setFillParent(true);
-                tabla.top().padTop(20);
-
-                Label titulo = new Label(Idioma.get(Idioma.Clave.HISTORIAL_PARTIDAS), piel);
-                titulo.setColor(VERDE);
-                tabla.add(titulo).padBottom(12).row();
-
-                LOGIC.PartidaHistorial[] partidas = gestor.getHistorialMemoria();
-
-                if (partidas.length == 0) {
-                    Label lblSin = new Label(Idioma.get(Idioma.Clave.SIN_HISTORIAL), piel);
-                    lblSin.setColor(GRIS);
-                    tabla.add(lblSin).padBottom(16).row();
-                } else {
-                    Table contenido = new Table();
-                    for (LOGIC.PartidaHistorial p : partidas) {
-                        String linea = "Nv." + p.nivel
-                            + "  " + (p.gano ? "v/" : "X")
-                            + "  *" + p.estrellas
-                            + "  " + p.puntuacion + "pts"
-                            + "  " + (p.tiempoMs / 1000) + "s"
-                            + "  " + p.fecha;
-                        Label lbl = new Label(linea, piel);
-                        lbl.setColor(CAFE);
-                        contenido.add(lbl).left().padBottom(4).row();
-                    }
-                    ScrollPane scroll = new ScrollPane(contenido, piel);
-                    tabla.add(scroll).width(580).height(280).row();
-                }
-
-                TextButton btnVolver = crearBoton(Idioma.get(Idioma.Clave.VOLVER), ROJO);
-                btnVolver.addListener(new ClickListener() {
-                    public void clicked(InputEvent e, float x, float y) { construirVerInfo(); }
-                });
-                tabla.add(btnVolver).width(240).height(36).padTop(12).row();
-                escenario.addActor(tabla);
-            }
-
-            private void construirVerRanking() {
-                escenario.clear();
-                Table tabla = new Table();
-                tabla.setFillParent(true);
-                tabla.top().padTop(20);
-
-                Label titulo = new Label(Idioma.get(Idioma.Clave.RANKING_GENERAL), piel);
-                titulo.setColor(VERDE);
-                tabla.add(titulo).padBottom(12).row();
-
-                USER[] ranking = gestor.getRanking();
-
-                if (ranking == null || ranking.length == 0) {
-                    Label lblSin = new Label(Idioma.get(Idioma.Clave.SIN_RANKING), piel);
-                    lblSin.setColor(GRIS);
-                    tabla.add(lblSin).padBottom(16).row();
-                } else {
-                    Table contenido = new Table();
-                    // Encabezado
-                    Label h1 = new Label("#  Usuario", piel);   h1.setColor(NARANJA);
-                    Label h2 = new Label("Pts",        piel);   h2.setColor(NARANJA);
-                    Label h3 = new Label("★",          piel);   h3.setColor(NARANJA);
-                    Label h4 = new Label("Nv.",        piel);   h4.setColor(NARANJA);
-                    contenido.add(h1).width(200).left();
-                    contenido.add(h2).width(80).center();
-                    contenido.add(h3).width(50).center();
-                    contenido.add(h4).width(50).center().row();
-
-                    int pos = 1;
-                    for (USER u : ranking) {
-                        Label l1 = new Label(pos + ". " + u.getUsername(), piel); l1.setColor(CAFE);
-                        Label l2 = new Label(String.valueOf(u.getPuntuacionGeneral()), piel); l2.setColor(CAFE);
-                        Label l3 = new Label(String.valueOf(u.getEstrellasTotal()), piel);    l3.setColor(CAFE);
-                        Label l4 = new Label(String.valueOf(u.getNivelesCompletados()), piel);l4.setColor(CAFE);
-                        // Destacar usuario actual
-                        if (u.getUsername().equals(usuario)) {
-                            l1.setColor(VERDE); l2.setColor(VERDE);
-                            l3.setColor(VERDE); l4.setColor(VERDE);
-                        }
-                        contenido.add(l1).width(200).left().padBottom(4);
-                        contenido.add(l2).width(80).center().padBottom(4);
-                        contenido.add(l3).width(50).center().padBottom(4);
-                        contenido.add(l4).width(50).center().padBottom(4).row();
-                        pos++;
-                    }
-                    ScrollPane scroll = new ScrollPane(contenido, piel);
-                    tabla.add(scroll).width(400).height(280).row();
-                }
-
-                TextButton btnVolver = crearBoton(Idioma.get(Idioma.Clave.VOLVER), ROJO);
-                btnVolver.addListener(new ClickListener() {
-                    public void clicked(InputEvent e, float x, float y) { construirVerInfo(); }
-                });
-                tabla.add(btnVolver).width(240).height(36).padTop(12).row();
-                escenario.addActor(tabla);
-            }
 
         private void construirVerAmigos() {
         escenario.clear();

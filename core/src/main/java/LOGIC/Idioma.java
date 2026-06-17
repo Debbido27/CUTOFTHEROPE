@@ -32,7 +32,8 @@ public class Idioma {
         INGRESA_USUARIO, USUARIO_CAMBIADO, ERROR_CAMBIAR_USUARIO,
         CONTRASENA_CAMBIADA, ERROR_CAMBIAR_PASS,INGRESA_USUARIO_SOLICITUD,NO_AUTO_AGREGAR,ENVIAR_SOLICITUD,ERROR_SOLICITUD
         ,PERFIL_DE,ERROR_CARGAR_PERFIL, PRECISION, ESTRELLAS_POR_NIVEL, DE, RESULTADO, PUNTUACION, TIEMPO, SEGUNDOS, GANO, PERDIO, NIVELES,
-        ERROR_CARGAR_DATOS
+        ERROR_CARGAR_DATOS,CLASIFICACION_GLOBAL,JUGADOR,PTS,
+        NV, TU, TU_POSICION, ORO, PLATA, BRONCE,ESTRELLAS,
 
 
     }
@@ -162,6 +163,16 @@ public class Idioma {
             case PERDIO:                return ingles ? "Lost"                : "Perdio";
             case NIVELES:               return ingles ? "levels"              : "niveles";
             case ERROR_CARGAR_DATOS: return ingles ? "Could not load data." : "No se pudieron cargar los datos.";
+            case CLASIFICACION_GLOBAL:  return ingles ? "Global Ranking"          : "Clasificacion global";
+            case JUGADOR:               return ingles ? "Player"                  : "Jugador";
+            case PTS:                   return ingles ? "Pts"                     : "Pts";
+            case NV:                    return ingles ? "Lv."                     : "Nv.";
+            case TU:                    return ingles ? "You"                     : "Tu";
+            case TU_POSICION:           return ingles ? "Your position"           : "Tu posicion";
+            case ORO:                   return ingles ? "Gold"                    : "Oro";
+            case PLATA:                 return ingles ? "Silver"                  : "Plata";
+            case BRONCE:                return ingles ? "Bronze"                  : "Bronce";
+            case ESTRELLAS: return ingles ? "Stars" : "Estrellas";
         }
     }
 }
