@@ -806,6 +806,7 @@
         f.writeInt(n.nivel);
         f.writeUTF(n.fecha.toString());
         f.writeBoolean(n.leida);
+        f.writeUTF(n.getId());//Guardar el ID persistente
         }
 
         private Notificacion leerNotificacion(RandomAccessFile f) throws IOException {
@@ -815,6 +816,7 @@
         int nivel = f.readInt();
         String fechaStr = f.readUTF();
         boolean leida = f.readBoolean();
+        String id = f.readUTF();//Leer el ID guardado
 
         Notificacion n = new Notificacion(
         Notificacion.Tipo.valueOf(tipoStr),
@@ -822,6 +824,7 @@
         );
         n.fecha = java.time.LocalDateTime.parse(fechaStr);
         n.leida = leida;
+        n.setId(id);//Asignar el ID recuperado
         return n;
         }
 

@@ -739,6 +739,7 @@
 }
 
             private void construirNotificaciones() {
+                limpiarTexturas();//Liberar memoria de texturas de avatares
                 retosManager.marcarTodasLeidas(usuario);
                 escenario.clear();
 
@@ -1157,4 +1158,4 @@
         @Override public void dispose() { escenario.dispose(); piel.dispose(); bgTexture.dispose(); batch.dispose(); limpiarTexturas(); }
 
         private void limpiarTexturas() { for (Texture t : texturasDinamicas) t.dispose(); texturasDinamicas.clear(); }
-        }
+}
