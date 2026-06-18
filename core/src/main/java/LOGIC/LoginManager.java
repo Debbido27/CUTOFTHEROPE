@@ -238,6 +238,9 @@
         u.setPuntuacionGeneral(total);
 
         dataManager.guardarUsuarioCompleto(u);
+        if (currentUser != null && currentUser.getUsername().equals(username)) {
+            currentUser = u;
+        }
     }
 
         public synchronized void guardarPartidaHistorial(String username, PartidaHistorial partida) {
