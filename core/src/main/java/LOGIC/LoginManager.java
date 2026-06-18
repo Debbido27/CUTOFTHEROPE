@@ -14,7 +14,22 @@
         File base = new File(BASE_FOLDER);
         if (!base.exists()) base.mkdirs();
         this.dataManager = new UserDataManager();
+        asegurarAdministrador(); //Asegurar que la cuenta admin exista siempre
         this.currentUser = cargarUltimoUsuarioActivo();
+        }
+
+        private void asegurarAdministrador() {
+            String adminUser = "administrador";
+            if (!userExiste(adminUser)) {
+                crearUser(adminUser, "Admin1", "Administrador del Sistema", "AVATARS/X4.png");
+            }
+            USER admin = buscarUser(adminUser);
+            if (admin != null) {
+                //Asegurar que tenga los 5 niveles desbloqueados
+                for (int i = 0; i < 5; i++) admin.desbloquearNivel(i);
+                admin.setNivelActual(5);
+                guardarCambios(admin);
+            }
         }
 
 
