@@ -825,11 +825,11 @@
 
             private String textoNotificacion(Notificacion n) {
                 switch (n.tipo) {
-                    case RETO_RECIBIDO:  return "@" + n.origen + " " + Idioma.get(Idioma.Clave.TE_RETO) + n.nivel + ".";
-                    case RETO_ACEPTADO:  return "@" + n.origen + " " + Idioma.get(Idioma.Clave.RETO_ACEPTADO_MSG) + " (" + Idioma.get(Idioma.Clave.NIVEL_ABREV) + n.nivel + ").";
-                    case RETO_RECHAZADO: return "@" + n.origen + " " + Idioma.get(Idioma.Clave.RETO_RECHAZADO_MSG) + " (" + Idioma.get(Idioma.Clave.NIVEL_ABREV) + n.nivel + ").";
-                    case RETO_GANADO:    return Idioma.get(Idioma.Clave.RETO_GANADO_MSG) + " @" + n.origen + " (" + Idioma.get(Idioma.Clave.NIVEL_ABREV) + n.nivel + ")!";
-                    case RETO_PERDIDO:   return Idioma.get(Idioma.Clave.RETO_PERDIDO_MSG) + " @" + n.origen + " (" + Idioma.get(Idioma.Clave.NIVEL_ABREV) + n.nivel + ").";
+                    case RETO_RECIBIDO:  return "@" + n.origen + " " + Idioma.get(Idioma.Clave.TE_RETO) + n.nivel;
+                    case RETO_ACEPTADO:  return "@" + n.origen + " " + Idioma.get(Idioma.Clave.RETO_ACEPTADO_MSG) + " (" + Idioma.get(Idioma.Clave.NIVEL_ABREV) + " " + n.nivel + ")";
+                    case RETO_RECHAZADO: return "@" + n.origen + " " + Idioma.get(Idioma.Clave.RETO_RECHAZADO_MSG) + " (" + Idioma.get(Idioma.Clave.NIVEL_ABREV) + " " + n.nivel + ")";
+                    case RETO_GANADO:    return Idioma.get(Idioma.Clave.RETO_GANADO_MSG) + " @" + n.origen + " (" + Idioma.get(Idioma.Clave.NIVEL_ABREV) + " " + n.nivel + ")!";
+                    case RETO_PERDIDO:   return Idioma.get(Idioma.Clave.RETO_PERDIDO_MSG) + " @" + n.origen + " (" + Idioma.get(Idioma.Clave.NIVEL_ABREV) + " " + n.nivel + ")";
                     case SOLICITUD_RECIBIDA: return "@" + n.origen + " " + Idioma.get(Idioma.Clave.SOLICITUD_ENVIADA);
                     case SOLICITUD_ACEPTADA: return "@" + n.origen + " " + Idioma.get(Idioma.Clave.ACEPTO_SOLICITUD);
                     default: return Idioma.get(Idioma.Clave.NOTIFICACIONES) + " @" + n.origen;
