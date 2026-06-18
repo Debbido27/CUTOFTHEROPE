@@ -30,19 +30,22 @@ public class Idioma {
         CHECK_MIN6, CHECK_MAYUS, CHECK_MINUS, CHECK_NUM,
         CONTRASENA_VALIDADA, CONTRASENA_VALIDADA_NUEVA,
         INGRESA_USUARIO, USUARIO_CAMBIADO, ERROR_CAMBIAR_USUARIO,
-        CONTRASENA_CAMBIADA, ERROR_CAMBIAR_PASS,INGRESA_USUARIO_SOLICITUD,NO_AUTO_AGREGAR,ENVIAR_SOLICITUD,ERROR_SOLICITUD
-        ,PERFIL_DE,ERROR_CARGAR_PERFIL, PRECISION, ESTRELLAS_POR_NIVEL, DE, RESULTADO, PUNTUACION, TIEMPO, SEGUNDOS, GANO, PERDIO, NIVELES,
-        ERROR_CARGAR_DATOS,CLASIFICACION_GLOBAL,JUGADOR,PTS,
-        NV, TU, TU_POSICION, ORO, PLATA, BRONCE,ESTRELLAS,RETOS, RETAR, RETAR_AMIGO, RETOS_PENDIENTES, RETOS_ACTIVOS, HISTORIAL_RETOS,
+        CONTRASENA_CAMBIADA, ERROR_CAMBIAR_PASS, INGRESA_USUARIO_SOLICITUD, NO_AUTO_AGREGAR,
+        ENVIAR_SOLICITUD, ERROR_SOLICITUD,
+        PERFIL_DE, ERROR_CARGAR_PERFIL, PRECISION, ESTRELLAS_POR_NIVEL, DE, 
+        RESULTADO, PUNTUACION, TIEMPO, SEGUNDOS, GANO, PERDIO, NIVELES,
+        ERROR_CARGAR_DATOS, CLASIFICACION_GLOBAL, JUGADOR, PTS,
+        NV, TU, TU_POSICION, ORO, PLATA, BRONCE, ESTRELLAS, RETOS, RETAR, 
+        RETAR_AMIGO, RETOS_PENDIENTES, RETOS_ACTIVOS, HISTORIAL_RETOS,
         RETOS_ENVIADOS, RETOS_RECIBIDOS, SIN_RETOS_PENDIENTES, SIN_RETOS_ACTIVOS,
         SIN_RETOS_HISTORIAL, EMPEZAR, ESPERANDO_RESPUESTA, ESPERANDO_JUGADOR,
         TE_RETO, RETASTE_A, NIVEL_ABREV, RANKING_AMIGOS, SIN_DATOS_RETOS,
         GANADOS, PERDIDOS, ELEGIR_NIVEL, USUARIO_INVALIDO, SOLO_AMIGOS_RETO,
         USUARIO_NO_ENCONTRADO, RETO_ENVIADO_NIVEL, RETO_PENDIENTE_EXISTENTE,
-        NOTIFICACIONES, SIN_NOTIFICACIONES, ACEPTO_SOLICITUD,RETANDO_A, TOP, RETADOR, RETADO, GANADOR, ESTADO,RETO_ACEPTADO_MSG, RETO_RECHAZADO_MSG, RETO_GANADO_MSG, RETO_PERDIDO_MSG
-
-
-
+        NOTIFICACIONES, SIN_NOTIFICACIONES, ACEPTO_SOLICITUD, RETANDO_A, TOP, 
+        RETADOR, RETADO, GANADOR, ESTADO, RETO_ACEPTADO_MSG, RETO_RECHAZADO_MSG, 
+        RETO_GANADO_MSG, RETO_PERDIDO_MSG,
+        GANASTE, PERDISTE, COMPLETADO, RECHAZADO, PENDIENTE
     }
 
     private static boolean ingles = false;
@@ -83,7 +86,6 @@ public class Idioma {
             case BLOQUEADO:       return ingles ? "Locked"           : "Bloqueado";
             case BIENVENIDO:      return ingles ? "Welcome"          : "Bienvenido";
             case ALIMENTA:        return ingles ? "Feed Om Nom!"     : "Alimenta a Om Nom!";
-            default:              return c.name();
             case MI_PERFIL:           return ingles ? "My Profile"          : "Mi perfil";
             case VER_INFORMACION:     return ingles ? "View Information"    : "Ver Informacion";
             case CAMBIAR_USUARIO:     return ingles ? "Change Username"     : "Cambiar Usuario";
@@ -220,6 +222,12 @@ public class Idioma {
             case RETO_RECHAZADO_MSG: return ingles ? "rejected your challenge" : "rechazó tu reto";
             case RETO_GANADO_MSG:    return ingles ? "You won the challenge against" : "¡Ganaste el reto contra";
             case RETO_PERDIDO_MSG:   return ingles ? "You lost the challenge against" : "Perdiste el reto contra";
+            case GANASTE:   return ingles ? "You won!" : "¡Ganaste!";
+            case PERDISTE:  return ingles ? "You lost" : "Perdiste";
+            case COMPLETADO:return ingles ? "Completed" : "Completado";
+            case RECHAZADO: return ingles ? "Rejected" : "Rechazado";
+            case PENDIENTE: return ingles ? "Pending"  : "Pendiente";
+            default:              return c.name();
         }
     }
 }

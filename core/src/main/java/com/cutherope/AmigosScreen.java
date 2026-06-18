@@ -555,7 +555,6 @@
         px.setColor(Color.WHITE); px.fill();
         skin.add("white", new Texture(px)); px.dispose();
 
-        // texturas del boton como ninepatch para evitar estiramiento
         btnTexture = new Texture(Gdx.files.internal("images/button.png"));
         skin.add("btn-up", new com.badlogic.gdx.graphics.g2d.NinePatch(btnTexture, 35, 35, 20, 20));
         btnOverTexture = new Texture(Gdx.files.internal("images/button_over.png"));
@@ -1034,57 +1033,109 @@
             }
 
             private void construirHistorialRetos() {
-                escenario.clear();
-                Table contenido = new Table();
-                contenido.top().pad(20);
+    escenario.clear();
+    Table contenido = new Table();
+    contenido.top().pad(20);
 
-                Label titulo = new Label(Idioma.get(Idioma.Clave.HISTORIAL_RETOS), piel);
-                titulo.setColor(VERDE);
-                contenido.add(titulo).padBottom(16).row();
+    Label titulo = new Label(Idioma.get(Idioma.Clave.HISTORIAL_RETOS), piel);
+    titulo.setColor(VERDE);
+    contenido.add(titulo).padBottom(16).row();
 
-                List<Reto> historial = retosManager.getHistorialRetos(usuario);
+    List<Reto> historial = retosManager.getHistorialRetos(usuario);
 
-                if (historial.isEmpty()) {
-                    Label lblVacio = new Label(Idioma.get(Idioma.Clave.SIN_RETOS_HISTORIAL), piel);
-                    lblVacio.setColor(GRIS);
-                    contenido.add(lblVacio).padBottom(16).row();
-                } else {
-                    Table enc = new Table();
-                    for (String h : new String[]{
-                        Idioma.get(Idioma.Clave.RETADOR),
-                        Idioma.get(Idioma.Clave.RETADO),
-                        Idioma.get(Idioma.Clave.NIVEL_ABREV),
-                        Idioma.get(Idioma.Clave.GANADOR),
-                        Idioma.get(Idioma.Clave.ESTADO)
-                    })
-                    contenido.add(enc).padBottom(6).row();
-                    for (Reto r : historial) {
-                        Table fila = new Table();
-                        fila.background(piel.newDrawable("white", new Color(0.23f, 0.16f, 0.08f, 0.75f)));
-                        fila.pad(6);
-                        String ganador = r.ganador != null ? "@" + r.ganador : "-";
-                        String estado  = r.estado.name();
-                        String[] vals  = {"@"+r.retador, "@"+r.retado, String.valueOf(r.nivel), ganador, estado};
-                        for (String v : vals) {
-                            Label l = new Label(v, piel);
-                            l.setColor(Color.WHITE);
-                            fila.add(l).width(v.equals(estado) ? 110 : 90).center();
+    if (historial.isEmpty()) {
+        Label lblVacio = new Label(Idioma.get(Idioma.Clave.SIN_RETOS_HISTORIAL), piel);
+        lblVacio.setColor(GRIS);
+        contenido.add(lblVacio).padBottom(16).row();
+    } else {
+        Table encabezados = new Table();
+        String[] headers = {
+            Idioma.get(Idioma.Clave.RETADOR),
+            Idioma.get(Idioma.Clave.RETADO),
+            Idioma.get(Idioma.Clave.NIVEL_ABREV),
+            Idioma.get(Idioma.Clave.GANADOR),
+            Idioma.get(Idioma.Clave.RESULTADO)
+        };
+        for (String h : headers) {
+            Label lblHeader = new Label(h, piel);
+            lblHeader.setColor(Color.WHITE);
+            lblHeader.setFontScale(0.9f);
+            encabezados.add(lblHeader).width(h.equals(headers[4]) ? 100 : 90).center();
+        }
+        contenido.add(encabezados).padBottom(8).row();
+
+
+        for (Reto r : historial) {
+            Table fila = new Table();
+            fila.background(piel.newDrawable("white", new Color(0.23f, 0.16f, 0.08f, 0.75f)));
+            fila.pad(6);
+
+            String ganador = r.ganador != null ? "@" + r.ganador : "-";
+            
+
+            String resultado;
+            Color colorResultado;
+            
+            if (r.estado == Reto.Estado.COMPLETADO) {
+                if (r.ganador != null) {
+                    if (r.ganador.equals(usuario)) {
+                        resultado = Idioma.get(Idioma.Clave.GANASTE);
+                        colorResultado = new Color(0.33f, 0.59f, 0.31f, 1f); // Verde
+                    } else if (r.ganador.equals(r.retador) || r.ganador.equals(r.retado)) {
+                        if (r.retador.equals(usuario) || r.retado.equals(usuario)) {
+                            resultado = Idioma.get(Idioma.Clave.PERDISTE);
+                            colorResultado = new Color(0.70f, 0.27f, 0.20f, 1f); // Rojo
+                        } else {
+                            resultado = Idioma.get(Idioma.Clave.GANO) + " @" + r.ganador;
+                            colorResultado = new Color(0.78f, 0.63f, 0.31f, 1f); // Naranja
                         }
-                        contenido.add(fila).padBottom(4).row();
+                    } else {
+                        resultado = Idioma.get(Idioma.Clave.GANO) + " @" + r.ganador;
+                        colorResultado = new Color(0.78f, 0.63f, 0.31f, 1f);
                     }
+                } else {
+                    resultado = Idioma.get(Idioma.Clave.COMPLETADO);
+                    colorResultado = Color.GRAY;
                 }
-
-                TextButton btnVolver = crearBoton(Idioma.get(Idioma.Clave.VOLVER), NARANJA);
-                btnVolver.addListener(new ClickListener() {
-                    public void clicked(InputEvent e, float x, float y) { construirMenu(); }
-                });
-                contenido.add(btnVolver).width(280).height(44).padTop(20).row();
-
-                ScrollPane scroll = new ScrollPane(contenido, new ScrollPane.ScrollPaneStyle());
-                scroll.setFillParent(true);
-                scroll.setScrollingDisabled(true, false);
-                escenario.addActor(scroll);
+            } else if (r.estado == Reto.Estado.RECHAZADO) {
+                resultado = Idioma.get(Idioma.Clave.RECHAZADO);
+                colorResultado = new Color(0.70f, 0.27f, 0.20f, 1f);
+            } else if (r.estado == Reto.Estado.PENDIENTE) {
+                resultado = Idioma.get(Idioma.Clave.PENDIENTE);
+                colorResultado = new Color(0.78f, 0.63f, 0.31f, 1f);
+           } else {
+                resultado = Idioma.get(Idioma.Clave.PENDIENTE);
+                colorResultado = new Color(0.78f, 0.63f, 0.31f, 1f);
             }
+
+            String[] vals = {"@"+r.retador, "@"+r.retado, String.valueOf(r.nivel), ganador, resultado};
+            
+            for (int i = 0; i < vals.length; i++) {
+                Label l = new Label(vals[i], piel);
+                if (i == vals.length - 1) { 
+                    l.setColor(colorResultado);
+                } else {
+                    l.setColor(Color.WHITE);
+                }
+                l.setFontScale(0.85f);
+                float ancho = (i == vals.length - 1) ? 100 : 90;
+                fila.add(l).width(ancho).center().padLeft(2).padRight(2);
+            }
+            contenido.add(fila).padBottom(4).row();
+        }
+    }
+
+    TextButton btnVolver = crearBoton(Idioma.get(Idioma.Clave.VOLVER), NARANJA);
+    btnVolver.addListener(new ClickListener() {
+        public void clicked(InputEvent e, float x, float y) { construirMenuRetos(); } 
+    });
+    contenido.add(btnVolver).width(280).height(44).padTop(20).row();
+
+    ScrollPane scroll = new ScrollPane(contenido, new ScrollPane.ScrollPaneStyle());
+    scroll.setFillParent(true);
+    scroll.setScrollingDisabled(true, false);
+    escenario.addActor(scroll);
+}
 
             private void construirRankingAmigos() {
                 escenario.clear();
