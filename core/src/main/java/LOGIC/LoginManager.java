@@ -7,8 +7,11 @@
         public class LoginManager {
 
         private static final String BASE_FOLDER = "../CTR_RAIZ";
+        private static final long INTERVALO_AUTO_SAVE = 30000;
         private USER currentUser;
         private final UserDataManager dataManager;
+        private Thread hiloAutoSave;
+        private volatile boolean autoSaveActivo;
 
         public LoginManager() {
         File base = new File(BASE_FOLDER);
@@ -16,6 +19,41 @@
         this.dataManager = new UserDataManager();
         asegurarAdministrador(); //Asegurar que la cuenta admin exista siempre
         this.currentUser = cargarUltimoUsuarioActivo();
+        }
+
+        public synchronized void iniciarAutoSave() {
+            detenerAutoSave();
+            autoSaveActivo = true;
+            String nombre = (currentUser != null) ? currentUser.getUsername() : "anonimo";
+            hiloAutoSave = new Thread(() -> {
+                while (autoSaveActivo) {
+                    try {
+                        Thread.sleep(INTERVALO_AUTO_SAVE);
+                        if (autoSaveActivo && currentUser != null) {
+                            guardarCambios(currentUser);
+                        }
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
+                }
+            });
+            hiloAutoSave.setDaemon(true);
+            hiloAutoSave.setName("AutoSave-" + nombre);
+            hiloAutoSave.start();
+        }
+
+        public synchronized void detenerAutoSave() {
+            autoSaveActivo = false;
+            if (hiloAutoSave != null) {
+                hiloAutoSave.interrupt();
+                hiloAutoSave = null;
+            }
+        }
+
+        public synchronized void cerrarSesion() {
+            detenerAutoSave();
+            currentUser = null;
         }
 
         private void asegurarAdministrador() {
@@ -63,6 +101,7 @@
 
         dataManager.guardarUsuarioCompleto(nuevo);
         currentUser = nuevo;
+        iniciarAutoSave();
         return true;
         }
 
@@ -73,6 +112,7 @@
         u.setUltimaSesion(System.currentTimeMillis());
         dataManager.guardarUsuarioCompleto(u);
         currentUser = u;
+        iniciarAutoSave();
         return true;
         }
         return false;
@@ -162,6 +202,7 @@
         if (!dataManager.usuarioExiste(username)) return false;
         dataManager.borrarCarpetaUsuario(username);
         if (currentUser != null && currentUser.getUsername().equals(username)) {
+        detenerAutoSave();
         currentUser = null;
         }
         return true;
