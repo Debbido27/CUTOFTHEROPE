@@ -57,7 +57,6 @@ public class SesionJuego {
         gestor.registrarPartida(username, nivelActual - 1,
             puntuacion, gano ? estrellasNivel : 0,
             fallosAcumulados, tiempoMs);
-
         historial.add(new PartidaHistorial(
             nivelActual, gano, estrellasNivel,
             puntuacion, tiempoMs, LocalDate.now()));
@@ -75,6 +74,9 @@ public class SesionJuego {
     }
 
     public int getEstrellasNivel()               { return estrellasNivel; }
+    public long getTiempoTranscurridoMs() {
+        return System.currentTimeMillis() - tiempoInicioNivel;
+    }
     public List<PartidaHistorial> getHistorial() { return historial;      }
     public String getUsername()                  { return username;       }
 }

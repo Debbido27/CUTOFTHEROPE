@@ -33,7 +33,14 @@ public class Idioma {
         CONTRASENA_CAMBIADA, ERROR_CAMBIAR_PASS,INGRESA_USUARIO_SOLICITUD,NO_AUTO_AGREGAR,ENVIAR_SOLICITUD,ERROR_SOLICITUD
         ,PERFIL_DE,ERROR_CARGAR_PERFIL, PRECISION, ESTRELLAS_POR_NIVEL, DE, RESULTADO, PUNTUACION, TIEMPO, SEGUNDOS, GANO, PERDIO, NIVELES,
         ERROR_CARGAR_DATOS,CLASIFICACION_GLOBAL,JUGADOR,PTS,
-        NV, TU, TU_POSICION, ORO, PLATA, BRONCE,ESTRELLAS,
+        NV, TU, TU_POSICION, ORO, PLATA, BRONCE,ESTRELLAS,RETOS, RETAR, RETAR_AMIGO, RETOS_PENDIENTES, RETOS_ACTIVOS, HISTORIAL_RETOS,
+        RETOS_ENVIADOS, RETOS_RECIBIDOS, SIN_RETOS_PENDIENTES, SIN_RETOS_ACTIVOS,
+        SIN_RETOS_HISTORIAL, EMPEZAR, ESPERANDO_RESPUESTA, ESPERANDO_JUGADOR,
+        TE_RETO, RETASTE_A, NIVEL_ABREV, RANKING_AMIGOS, SIN_DATOS_RETOS,
+        GANADOS, PERDIDOS, ELEGIR_NIVEL, USUARIO_INVALIDO, SOLO_AMIGOS_RETO,
+        USUARIO_NO_ENCONTRADO, RETO_ENVIADO_NIVEL, RETO_PENDIENTE_EXISTENTE,
+        NOTIFICACIONES, SIN_NOTIFICACIONES, ACEPTO_SOLICITUD,RETANDO_A, TOP, RETADOR, RETADO, GANADOR, ESTADO,RETO_ACEPTADO_MSG, RETO_RECHAZADO_MSG, RETO_GANADO_MSG, RETO_PERDIDO_MSG
+
 
 
     }
@@ -173,6 +180,46 @@ public class Idioma {
             case PLATA:                 return ingles ? "Silver"                  : "Plata";
             case BRONCE:                return ingles ? "Bronze"                  : "Bronce";
             case ESTRELLAS: return ingles ? "Stars" : "Estrellas";
+            case RETOS:                  return ingles ? "Challenges"            : "Retos";
+            case RETAR:                  return ingles ? "Challenge"              : "Retar";
+            case RETAR_AMIGO:            return ingles ? "Challenge a Friend"     : "Retar a un Amigo";
+            case RETOS_PENDIENTES:       return ingles ? "Pending"                : "Pendientes";
+            case RETOS_ACTIVOS:          return ingles ? "Active"                 : "Activos";
+            case HISTORIAL_RETOS:        return ingles ? "History"                : "Historial";
+            case RETOS_ENVIADOS:         return ingles ? "Sent"                   : "Enviados";
+            case RETOS_RECIBIDOS:        return ingles ? "Received"               : "Recibidos";
+            case SIN_RETOS_PENDIENTES:   return ingles ? "No pending challenges."  : "No tienes retos pendientes.";
+            case SIN_RETOS_ACTIVOS:      return ingles ? "No active challenges."  : "No tienes retos activos.";
+            case SIN_RETOS_HISTORIAL:    return ingles ? "No challenge history."  : "Sin retos registrados.";
+            case EMPEZAR:                return ingles ? "Start"                  : "Empezar";
+            case ESPERANDO_RESPUESTA:    return ingles ? "Waiting for response"   : "Esperando respuesta";
+            case ESPERANDO_JUGADOR:      return ingles ? "Waiting for opponent"   : "Esperando jugador";
+            case TE_RETO:                return ingles ? " challenged you to Lv. ": " te reto al Nivel ";
+            case RETASTE_A:              return ingles ? "You challenged @"       : "Retaste a @";
+            case NIVEL_ABREV:            return ingles ? "Lv."                    : "Nivel";
+            case RANKING_AMIGOS:         return ingles ? "Friends Ranking"        : "Ranking de Amigos";
+            case SIN_DATOS_RETOS:        return ingles ? "No challenge data yet." : "Sin datos de retos aun.";
+            case GANADOS:                return ingles ? "Won"                    : "Ganados";
+            case PERDIDOS:                return ingles ? "Lost"                   : "Perdidos";
+            case ELEGIR_NIVEL:           return ingles ? "Choose Level"           : "Elegir Nivel";
+            case USUARIO_INVALIDO:       return ingles ? "Invalid user."          : "Usuario invalido.";
+            case SOLO_AMIGOS_RETO:       return ingles ? "You can only challenge friends." : "Solo puedes retar a tus amigos.";
+            case USUARIO_NO_ENCONTRADO:  return ingles ? "User not found."        : "Usuario no encontrado.";
+            case RETO_ENVIADO_NIVEL:     return ingles ? "Challenge sent for Lv. ": "Reto enviado al Nivel ";
+            case RETO_PENDIENTE_EXISTENTE: return ingles ? "A pending challenge already exists." : "Ya existe un reto pendiente.";
+            case NOTIFICACIONES:         return ingles ? "Notifications"          : "Notificaciones";
+            case SIN_NOTIFICACIONES:     return ingles ? "No notifications."     : "Sin notificaciones.";
+            case ACEPTO_SOLICITUD:       return ingles ? " accepted your request.": " acepto tu solicitud.";
+            case RETANDO_A: return ingles ? "Challenging @"  : "Retando a @";
+            case TOP:       return ingles ? "TOP "            : "TOP ";
+            case RETADOR:   return ingles ? "Challenger"      : "Retador";
+            case RETADO:    return ingles ? "Challenged"      : "Retado";
+            case GANADOR:   return ingles ? "Winner"          : "Ganador";
+            case ESTADO:    return ingles ? "Status"          : "Estado";
+            case RETO_ACEPTADO_MSG:  return ingles ? "accepted your challenge" : "aceptó tu reto";
+            case RETO_RECHAZADO_MSG: return ingles ? "rejected your challenge" : "rechazó tu reto";
+            case RETO_GANADO_MSG:    return ingles ? "You won the challenge against" : "¡Ganaste el reto contra";
+            case RETO_PERDIDO_MSG:   return ingles ? "You lost the challenge against" : "Perdiste el reto contra";
         }
     }
 }

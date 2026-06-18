@@ -10,8 +10,13 @@
 
         public Nivel3Screen(CutTheRope juego, String usuario, LoginManager gestor) {
         super(juego, usuario, gestor, 3);
-        }
+            construirUI();
 
+        }
+            public Nivel3Screen(CutTheRope juego, String usuario, LoginManager gestor,
+                                String retoRetador, String retoRetado) {
+                super(juego, usuario, gestor, 3, retoRetador, retoRetado);
+            }
         @Override
         protected String rutaFondo() {
         return "images/lvl23.png";

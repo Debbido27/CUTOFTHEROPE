@@ -1,9 +1,10 @@
 
         package LOGIC;
 
+        import java.io.Serializable;
         import java.time.LocalDate;
 
-        public class USER {
+        public class USER implements Serializable {
 
         private String username;
         private String password;
