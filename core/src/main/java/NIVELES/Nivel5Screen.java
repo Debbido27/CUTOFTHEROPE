@@ -32,7 +32,6 @@ public class Nivel5Screen extends NivelBaseScreen {
         //Cuerda abajo-centro
         anclarCuerda(9f,    10f, 6, 0.5f);
 
-        //omNom abajo-centro
         colocarNomNom(9f, 4.5f, 0.6f);
 
         //Estrella suelta arriba-centro
@@ -52,7 +51,7 @@ public class Nivel5Screen extends NivelBaseScreen {
         obstaculos.add(new Obstaculo(mundo, 9.0f, 15.0f, 3.0f, 0.1f, TipoObstaculo.LARGO));
 
         limiteInferior = 0.5f;
-        camaraFisica.setToOrtho(false, 18f, 22f);
+        camaraFisica.setToOrtho(false, 14f, 18f);
         camaraFisica.position.set(9f, 11f, 0);
         camaraFisica.update();
     }
