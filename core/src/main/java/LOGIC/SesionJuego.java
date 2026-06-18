@@ -55,7 +55,7 @@ public class SesionJuego {
         int  puntuacion = calcularPuntuacion(gano, estrellasNivel, tiempoMs);
 
         gestor.registrarPartida(username, nivelActual - 1,
-            puntuacion, estrellasNivel,
+            puntuacion, gano ? estrellasNivel : 0,
             fallosAcumulados, tiempoMs);
 
         historial.add(new PartidaHistorial(

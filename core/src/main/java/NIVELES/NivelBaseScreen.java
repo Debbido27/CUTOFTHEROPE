@@ -153,6 +153,12 @@
             mundo.step(delta, 12, 8);
         if (burbujaActiva != null) burbujaActiva.entrar(pelota);
             if (nomnom != null) {
+                if (pelota != null) {
+                    com.badlogic.gdx.math.Vector2 pp = pelota.getBody().getPosition();
+                    com.badlogic.gdx.math.Vector2 np = nomnom.getBody().getPosition();
+                    float d2 = pp.dst2(np);
+                    nomnom.setPelotaCerca(d2 < 6.25f); // 2.5 world-unit proximity
+                }
                 nomnom.actualizar(delta);
                 if (nomnom.comioLaPelota()) {
                     estadoNivel     = EstadoNivel.GANANDO;
@@ -164,6 +170,7 @@
                 SesionJuego.get().registrarFallo();
                 estadoNivel     = EstadoNivel.PERDIENDO;
                 timerTransicion = 1.0f;
+                if (nomnom != null) nomnom.ponerTriste();
             }
 
             procesarCorte();
@@ -181,6 +188,7 @@
             break;
 
         case PERDIENDO:
+            if (nomnom != null) nomnom.actualizar(delta);
             timerTransicion -= delta;
             if (timerTransicion <= 0) reiniciarNivel();
             break;
@@ -193,6 +201,9 @@
         Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.end();
 
+
+        for (Estrella e : estrellas) e.actualizar(delta);
+        for (Burbuja  b : burbujas)  b.actualizar(delta);
 
         batch.setProjectionMatrix(camaraFisica.combined);
         batch.begin();
@@ -390,6 +401,7 @@
         if (nomnom != null) nomnom.dispose();
         Cuerda.disposeTextura();
         for (Cuerda    c : cuerdas)    c.dispose();
+        for (Estrella  e : estrellas)  e.dispose();
         for (Obstaculo o : obstaculos) o.dispose();
         for (Burbuja   b : burbujas)   b.dispose();
         escenario.dispose();

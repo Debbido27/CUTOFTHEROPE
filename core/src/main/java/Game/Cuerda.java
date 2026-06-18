@@ -1,6 +1,7 @@
 
     package Game;
 
+    import com.badlogic.gdx.Gdx;
     import com.badlogic.gdx.graphics.Color;
     import com.badlogic.gdx.graphics.Pixmap;
     import com.badlogic.gdx.graphics.Texture;
@@ -174,25 +175,14 @@
     }
 
     private static Texture crearTexturaAncla() {
-    int d = 70; // antes 24, ahora más grande
-    Pixmap px = new Pixmap(d, d, Pixmap.Format.RGBA8888);
-
-    // Círculo gris claro exterior
-    px.setColor(new Color(0.75f, 0.75f, 0.75f, 1f)); 
-    px.fillCircle(d / 2, d / 2, d / 4); 
-
-    px.setColor(new Color(0.35f, 0.35f, 0.35f, 1f)); 
-    px.fillCircle(d / 2, d / 2, d / 6); 
-
-    Texture t = new Texture(px);
-    px.dispose();
-    return t;
+    return new Texture(Gdx.files.internal("images/support.png"));
     }
 
     public static void dibujarAncla(SpriteBatch batch, Vector2 pos, float radio) {
     if (texturaAncla == null) texturaAncla = crearTexturaAncla();
-    float radioVisual = radio * 2.5f; 
-    batch.draw(texturaAncla, pos.x - radioVisual, pos.y - radioVisual, radioVisual * 2, radioVisual * 2);
+    // wide shelf mount drawn above the anchor point so the rope hangs from its bottom
+    float w = 2.5f, h = 0.8f;
+    batch.draw(texturaAncla, pos.x - w / 2f, pos.y, w, h);
     }
     public int contarSegmentos() {
     return 1 + (siguiente != null ? siguiente.contarSegmentos() : 0);

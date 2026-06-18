@@ -1,7 +1,6 @@
 package Game;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.*;
@@ -52,22 +51,9 @@ public class Pelota {
         shape.dispose();
     }
 
-    // ── textura procedural ────────────────────────────────────────────────────
+    // ── textura ───────────────────────────────────────────────────────────────
     private static Texture crearTextura(float radio) {
-        int d = Math.max(2, (int)(radio * 100));
-        Pixmap pm = new Pixmap(d, d, Pixmap.Format.RGBA8888);
-
-        // base verde (color típico del dulce de Cut the Rope)
-        pm.setColor(new Color(0.15f, 0.72f, 0.22f, 1f));
-        pm.fillCircle(d / 2, d / 2, d / 2);
-
-        // reflejo
-        pm.setColor(new Color(1f, 1f, 1f, 0.45f));
-        pm.fillCircle(d / 3, d / 3, Math.max(1, d / 5));
-
-        Texture tex = new Texture(pm);
-        pm.dispose();
-        return tex;
+        return new Texture(Gdx.files.internal("images/candy.png"));
     }
 
     // ── dibujo ────────────────────────────────────────────────────────────────
