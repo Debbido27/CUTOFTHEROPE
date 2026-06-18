@@ -49,7 +49,7 @@ public class Nivel4Screen extends NivelBaseScreen {
         obstaculos.add(new Obstaculo(mundo, 3.0f, 8.5f, 1.0f, 5.0f, TipoObstaculo.LARGO));
 
         limiteInferior = 0.5f;
-        camaraFisica.setToOrtho(false, 18f, 24f);
+        camaraFisica.setToOrtho(false, 14f, 18f);
         camaraFisica.position.set(7.5f, 12.0f, 0);
         camaraFisica.update();
     }

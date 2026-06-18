@@ -9,6 +9,7 @@ package NIVELES;
  * @author Dell
  */
 
+import Game.Burbuja;
 import Game.Cuerda;
 import Game.Estrella;
 import Game.Pelota;
@@ -29,29 +30,36 @@ public class Nivel1Screen extends NivelBaseScreen {
     }
     @Override
     protected String rutaFondo() {
-        return "images/lvl1.png"; // ← tu fondo específico
+        return "images/lvl1.png";
     }
 
-    @Override
+   @Override
+
 protected void crearNivel() {
-    float anclaX = 4f, anclaY = 5.5f;
-    int   segmentos = 10;
-    float largoSeg  = 0.3f;
+    float anclaX = 4f;
+    float anclaY = -12.0f;    // ← ANCLA AL MÁXIMO ABAJO
+    int segmentos = 8;        // ← CUERDA MÁS LARGA
+    float largoSeg = 0.3f;
     float dist = segmentos * largoSeg;
 
     crearPelota(anclaX, anclaY - dist, 0.3f);
     anclarCuerda(anclaX, anclaY, segmentos, largoSeg);
 
-    float ey = anclaY - dist - 0.8f;
+    float ey = anclaY - dist - 4.0f;  // ← ESTRELLAS AL MÁXIMO ABAJO
+
+    // BURBUJA EN LA LÍNEA DE ESTRELLAS
+    burbujas.add(new Burbuja(mundo, anclaX, ey + 0.3f, 0.6f, 8f));
+
     estrellas.add(new Estrella(mundo, anclaX, ey,        0.2f));
     estrellas.add(new Estrella(mundo, anclaX, ey - 0.8f, 0.2f));
     estrellas.add(new Estrella(mundo, anclaX, ey - 1.6f, 0.2f));
 
-    colocarNomNom(anclaX, ey - 2.6f, 0.5f);
-    limiteInferior = anclaY - dist - 6f;
+    colocarNomNom(anclaX, ey - 3.5f, 0.5f);
+
+    limiteInferior = anclaY - dist - 15f;
 
     camaraFisica.setToOrtho(false, 16f, 12f);
-    camaraFisica.position.set(anclaX, anclaY - 4f, 0);
+    camaraFisica.position.set(anclaX, anclaY - 5f, 0);
     camaraFisica.update();
 }
 }

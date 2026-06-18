@@ -684,62 +684,47 @@
 
             
             
-          private void construirSelectorNivelReto(String retado) {
-    escenario.clear();
-    Table tabla = new Table();
-    tabla.setFillParent(true);
-    tabla.center();
+            private void construirSelectorNivelReto(String retado) {
+                escenario.clear();
+                Table tabla = new Table();
+                tabla.setFillParent(true);
+                tabla.center();
 
-    Label titulo = new Label(Idioma.get(Idioma.Clave.ELEGIR_NIVEL), piel);
-    titulo.setColor(VERDE);
-    Label sub = new Label(Idioma.get(Idioma.Clave.RETANDO_A) + retado, piel);
-    sub.setColor(NARANJA);
-    Label mensaje = new Label("", piel);
+                Label titulo = new Label(Idioma.get(Idioma.Clave.ELEGIR_NIVEL), piel);
+                titulo.setColor(VERDE);
+                Label sub = new Label(Idioma.get(Idioma.Clave.RETANDO_A) + retado, piel);
+                sub.setColor(NARANJA);
+                Label mensaje = new Label("", piel);
 
-    tabla.add(titulo).padBottom(8).row();
-    tabla.add(sub).padBottom(20).row();
+                tabla.add(titulo).padBottom(8).row();
+                tabla.add(sub).padBottom(20).row();
 
-    // 🔥 OBTENER NIVELES DESBLOQUEADOS DEL USUARIO ACTUAL
-    USER u = gestor.buscarUser(usuario);
-    int nivelesDesbloqueados = u != null ? u.getNivelActual() : 1;
-    // Asegurar que al menos el nivel 1 esté disponible
-    if (nivelesDesbloqueados < 1) nivelesDesbloqueados = 1;
-
-    for (int i = 1; i <= 5; i++) {
-        final int n = i;
-        boolean desbloqueado = i <= nivelesDesbloqueados;
-        
-        TextButton btnNivel;
-        if (desbloqueado) {
-            btnNivel = crearBoton(Idioma.get(Idioma.Clave.NIVEL) + " " + i, VERDE);
-            final int nivelFinal = i;
-            btnNivel.addListener(new ClickListener() {
-                public void clicked(InputEvent e, float x, float y) {
-                    boolean ok = retosManager.enviarReto(usuario, retado, nivelFinal);
-                    mensaje.setColor(ok ? VERDE : ROJO);
-                    mensaje.setText(ok ? 
-                        Idioma.get(Idioma.Clave.RETO_ENVIADO_NIVEL) + nivelFinal + "!" :
-                        Idioma.get(Idioma.Clave.RETO_PENDIENTE_EXISTENTE));
+                for (int i = 1; i <= 5; i++) {
+                    final int nivelFinal = i;
+                    TextButton btnNivel = crearBoton(Idioma.get(Idioma.Clave.NIVEL) + " " + i, VERDE);
+                    btnNivel.addListener(new ClickListener() {
+                        public void clicked(InputEvent e, float x, float y) {
+                            boolean ok = retosManager.enviarReto(usuario, retado, nivelFinal);
+                            mensaje.setColor(ok ? VERDE : ROJO);
+                            mensaje.setText(ok ? 
+                                Idioma.get(Idioma.Clave.RETO_ENVIADO_NIVEL) + nivelFinal + "!" :
+                                Idioma.get(Idioma.Clave.RETO_PENDIENTE_EXISTENTE));
+                        }
+                    });
+                    tabla.add(btnNivel).width(260).height(40).padBottom(8).row();
                 }
-            });
-        } else {
-            btnNivel = crearBoton(Idioma.get(Idioma.Clave.NIVEL) + " " + i + " 🔒", GRIS);
-            btnNivel.setDisabled(true);
-        }
-        tabla.add(btnNivel).width(260).height(40).padBottom(8).row();
-    }
 
-    tabla.add(mensaje).padBottom(10).row();
-    TextButton btnVolver = crearBoton(Idioma.get(Idioma.Clave.VOLVER), NARANJA);
-    btnVolver.addListener(new ClickListener() {
-        public void clicked(InputEvent e, float x, float y) { construirRetarAmigo(); }
-    });
-    tabla.add(btnVolver).width(260).height(44).row();
-    escenario.addActor(tabla);
-}
+                tabla.add(mensaje).padBottom(10).row();
+                TextButton btnVolver = crearBoton(Idioma.get(Idioma.Clave.VOLVER), NARANJA);
+                btnVolver.addListener(new ClickListener() {
+                    public void clicked(InputEvent e, float x, float y) { construirRetarAmigo(); }
+                });
+                tabla.add(btnVolver).width(260).height(44).row();
+                escenario.addActor(tabla);
+            }
 
             private void construirNotificaciones() {
-                limpiarTexturas();//Liberar memoria de texturas de avatares
+                limpiarTexturas();
                 retosManager.marcarTodasLeidas(usuario);
                 escenario.clear();
 
@@ -750,7 +735,6 @@
                 titulo.setColor(VERDE);
                 contenido.add(titulo).padBottom(16).row();
 
-                // Solicitudes de amistad recibidas (con botones aceptar/rechazar)
                 String[] solicitudes = friendsManager.getSolicitudes(usuario);
                 boolean haySolicitudes = solicitudes.length > 0;
                 if (haySolicitudes) {
@@ -784,7 +768,6 @@
                     }
                 }
 
-                // Notificaciones generales SOLO de amistad
                 List<Notificacion> notifs = retosManager.getNotificaciones(usuario);
                 List<Notificacion> notifsAmistad = new ArrayList<>();
                 for (Notificacion n : notifs)
@@ -836,7 +819,6 @@
                 }
             }
 
-            // ── MENÚ DE RETOS ────────────────────────────────────────────────
             private void construirMenuRetos() {
                 escenario.clear();
                 Table tabla = new Table();
@@ -893,7 +875,6 @@
                 escenario.addActor(tabla);
             }
 
-            // ── RETOS PENDIENTES (recibidos + enviados) ──────────────────────
             private void construirRetosPendientes() {
                 escenario.clear();
                 Table contenido = new Table();
@@ -966,7 +947,6 @@
                 escenario.addActor(scroll);
             }
 
-            // ── RETOS ACTIVOS ─────────────────────────────────────────────────
             private void construirRetosActivos() {
                 escenario.clear();
                 Table contenido = new Table();
@@ -1028,7 +1008,6 @@
                 escenario.addActor(scroll);
             }
 
-            // ── HISTORIAL DE RETOS ───────────────────────────────────────────
             private void construirHistorialRetos() {
                 escenario.clear();
                 Table contenido = new Table();
@@ -1045,7 +1024,6 @@
                     lblVacio.setColor(GRIS);
                     contenido.add(lblVacio).padBottom(16).row();
                 } else {
-                    // Encabezado
                     Table enc = new Table();
                     for (String h : new String[]{
                         Idioma.get(Idioma.Clave.RETADOR),
@@ -1083,7 +1061,6 @@
                 escenario.addActor(scroll);
             }
 
-            // ── RANKING DE AMIGOS ────────────────────────────────────────────
             private void construirRankingAmigos() {
                 escenario.clear();
                 Table tabla = new Table();

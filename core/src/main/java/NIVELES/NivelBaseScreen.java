@@ -157,16 +157,22 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
                         juego.setScreen(new SeleccionNivelScreen(juego, usuario, gestor)));
                 }
             });
-            raiz.add(btnVolver).width(120).height(38).pad(12);
-        } else {
+            raiz.add(btnVolver)
+            .width(120)
+            .height(38)
+            .padLeft(4)   // Muy cerca del borde izquierdo
+            .padTop(4);          } else {
             TextButton btnRendir = crearBoton("Rendirse", ROJO);
             btnRendir.addListener(new ClickListener() {
                 public void clicked(InputEvent e, float x, float y) {
                     finalizarReto(false);
                 }
             });
-            raiz.add(btnRendir).width(120).height(38).pad(12);
-        }
+    raiz.add(btnRendir)
+            .width(120)
+            .height(38)
+            .padLeft(4)
+            .padTop(4);        }
         escenario.addActor(raiz);
     }
 
