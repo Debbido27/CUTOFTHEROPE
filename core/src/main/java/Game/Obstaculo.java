@@ -75,8 +75,18 @@ public class Obstaculo extends ElementoNivel implements Interactuable {
     @Override
     public void dibujar(SpriteBatch batch) {
         if (!activo) return;
-        //centrado en y para que la punta coincida con donde llega el candy al impactar
-        batch.draw(textura, x - ancho / 2f, y - altoDibujo / 2f, ancho, altoDibujo);
+        float tileSize = ancho;                    // tile cuadrado basado en el grosor
+        int tiles = Math.max(1, Math.round(alto / tileSize)); // cuántos tiles caben en el largo
+        float startY = y - alto / 2f;
+
+        for (int i = 0; i < tiles; i++) {
+            batch.draw(textura,
+                x - tileSize / 2f,
+                startY + i * tileSize,
+                tileSize,
+                tileSize
+            );
+        }
     }
 
     @Override

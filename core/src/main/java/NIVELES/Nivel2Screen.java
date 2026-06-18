@@ -26,7 +26,7 @@
         protected void crearNivel() {
         float bajar = 2.5f;
         float pelotaX = 7.5f;
-        float pelotaY = 15f - bajar; // 12.5f
+        float pelotaY = 15f - bajar; //12.5f
 
         crearPelota(pelotaX, pelotaY, 0.3f);
 
