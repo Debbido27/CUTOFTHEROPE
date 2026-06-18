@@ -1,57 +1,59 @@
+package NIVELES;
 
-        package NIVELES;
+import Game.*;
+import LOGIC.LoginManager;
+import com.cutherope.CutTheRope;
 
-        import Game.*;
-        import Game.Obstaculo.TipoObstaculo;
-        import LOGIC.LoginManager;
-        import com.cutherope.CutTheRope;
+public class Nivel3Screen extends NivelBaseScreen {
 
-        public class Nivel3Screen extends NivelBaseScreen {
-
-        public Nivel3Screen(CutTheRope juego, String usuario, LoginManager gestor) {
+    public Nivel3Screen(CutTheRope juego, String usuario, LoginManager gestor) {
         super(juego, usuario, gestor, 3);
-            construirUI();
+        construirUI();
+    }
 
-        }
-            public Nivel3Screen(CutTheRope juego, String usuario, LoginManager gestor,
-                                String retoRetador, String retoRetado) {
-                super(juego, usuario, gestor, 3, retoRetador, retoRetado);
-            }
-        @Override
-        protected String rutaFondo() {
+    public Nivel3Screen(CutTheRope juego, String usuario, LoginManager gestor,
+                        String retoRetador, String retoRetado) {
+        super(juego, usuario, gestor, 3, retoRetador, retoRetado);
+    }
+
+    @Override
+    protected String rutaFondo() {
         return "images/lvl23.png";
-        }
+    }
 
-        @Override
-        protected void crearNivel() {
-        float pelotaX = 4.5f;
-        float pelotaY = 13f;
+    @Override
+    protected void crearNivel() {
+        // caramelo en la V entre ambas anclas; cuerda izq casi tensa, der con holgura
+        // -> la izq jala mas fuerte hacia arriba-izquierda => oscila hacia omnom
+        float pelotaX = 9f, pelotaY = 6f;
 
         crearPelota(pelotaX, pelotaY, 0.3f);
 
-        anclarCuerda(pelotaX - 6.0f, pelotaY + 3.5f, 10, 0.6f);
+        // ancla izquierda: debajo de omnom (y=17), X alineada con burbuja izq y omnom
+        // dist (3.5,12) -> (9,6) ~= 8.14  =>  10 * 0.83 = 8.3 (casi tensa)
+        // fondo del pendulo izquierdo: (3.5, 12-8.3) = (3.5, 3.7) => cae en burbuja izq
+        anclarCuerda(3.5f, 12f, 10, 0.83f);
 
-        anclarCuerda(pelotaX, pelotaY + 3.5f, 9, 0.75f);
+        // ancla derecha: mas arriba y a la derecha => V amplia, arco mas largo
+        // dist (13,15) -> (9,6) ~= 9.85  =>  11 * 0.95 = 10.45 (mas holgura, menos tension)
+        anclarCuerda(13f, 15f, 11, 0.95f);
 
-        anclarCuerda(pelotaX, pelotaY - 2.5f, 7, 0.65f);
+        estrellas.add(new Estrella(mundo,  6f,  9f,  0.22f));
+        estrellas.add(new Estrella(mundo, 13f,  9f,  0.22f));
+        estrellas.add(new Estrella(mundo,  9f,  4.5f, 0.22f));
 
-        anclarCuerda(pelotaX, pelotaY - 6.0f, 9, 0.7f);
+        // burbuja izq alineada con omnom (X=3.5); al entrar con velocidad izq
+        // la burbuja flota y el caramelo deriva ~1 unidad izq hasta omnom en X=2.5
+        burbujas.add(new Burbuja(mundo,  3.5f, 3.5f, 1.0f));
+        burbujas.add(new Burbuja(mundo,  9f,   3.5f, 1.0f));
+        burbujas.add(new Burbuja(mundo, 13f,   3.5f, 1.0f));
 
-        obstaculos.add(new Obstaculo(mundo, pelotaX, pelotaY - 4.0f, 4.5f, 0.3f, TipoObstaculo.LARGO));
-        obstaculos.add(new Obstaculo(mundo, pelotaX, pelotaY - 8.0f, 4.5f, 0.3f, TipoObstaculo.LARGO));
+        colocarNomNom(2.5f, 17f, 0.6f);
 
-        estrellas.add(new Estrella(mundo, pelotaX + 2.0f, pelotaY - 2.0f, 0.22f));
-        estrellas.add(new Estrella(mundo, pelotaX, pelotaY - 5.0f, 0.22f));
-        estrellas.add(new Estrella(mundo, pelotaX - 2.0f, pelotaY - 7.0f, 0.22f));
-
-        colocarNomNom(pelotaX, pelotaY - 11f, 0.6f);
-
-        limiteInferior = pelotaY - 14f;
+        limiteInferior = 0f;
 
         camaraFisica.setToOrtho(false, 18f, 24f);
-        camaraFisica.position.set(pelotaX + 2f, pelotaY - 5f, 0);
+        camaraFisica.position.set(9f, 12f, 0);
         camaraFisica.update();
-        }
-
-
-        }
+    }
+}
