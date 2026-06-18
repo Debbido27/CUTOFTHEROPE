@@ -418,8 +418,7 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
         for (Obstaculo o : obstaculos) o.dibujar(batch);
         for (Burbuja   b : burbujas)   b.dibujar(batch);
 
-        if (estadoNivel == EstadoNivel.PERDIENDO)
-            dibujarBannerTexto("¡Inténtalo de nuevo!", ROJO);
+        //banners removed — replaced by overlays
 
         batch.end();
 
