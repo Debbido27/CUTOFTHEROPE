@@ -159,22 +159,23 @@
 
         u.setPartidasJugadas(u.getPartidasJugadas() + 1);
 
-        int estrellasViejas = u.getEstrellasPorNivel()[nivel];
-        if (estrellas > estrellasViejas) {
-        u.setEstrellasTotal(u.getEstrellasTotal() + (estrellas - estrellasViejas));
-        u.setEstrellasNivel(nivel, estrellas);
-        }
+        if (puntaje > 0) { // Solo si gano la partida
+            int estrellasViejas = u.getEstrellasPorNivel()[nivel];
+            if (estrellas > estrellasViejas) {
+                u.setEstrellasTotal(u.getEstrellasTotal() + (estrellas - estrellasViejas));
+                u.setEstrellasNivel(nivel, estrellas);
+            }
 
+            if (puntaje > u.getPuntajesPorNivel()[nivel]) {
+                u.setPuntajeNivel(nivel, puntaje);
+            }
+
+            if (nivel + 1 < 5) u.desbloquearNivel(nivel + 1);
+            if (nivel + 1 > u.getNivelActual()) u.setNivelActual(nivel + 1);
+        }
 
         u.setTiempoTotalJugado(u.getTiempoTotalJugado() + tiempoMs);
         u.setFallosTotales(u.getFallosTotales() + fallos);
-
-        if (puntaje > u.getPuntajesPorNivel()[nivel]) {
-        u.setPuntajeNivel(nivel, puntaje);
-        }
-
-        if (nivel + 1 < 5) u.desbloquearNivel(nivel + 1);
-        if (nivel + 1 > u.getNivelActual()) u.setNivelActual(nivel + 1);
 
         int total = 0;
         for (int p : u.getPuntajesPorNivel()) total += p;
@@ -806,6 +807,7 @@
         f.writeInt(n.nivel);
         f.writeUTF(n.fecha.toString());
         f.writeBoolean(n.leida);
+        f.writeUTF(n.getId());//Guardar el ID persistente
         }
 
         private Notificacion leerNotificacion(RandomAccessFile f) throws IOException {
@@ -815,6 +817,7 @@
         int nivel = f.readInt();
         String fechaStr = f.readUTF();
         boolean leida = f.readBoolean();
+        String id = f.readUTF();//Leer el ID guardado
 
         Notificacion n = new Notificacion(
         Notificacion.Tipo.valueOf(tipoStr),
@@ -822,6 +825,7 @@
         );
         n.fecha = java.time.LocalDateTime.parse(fechaStr);
         n.leida = leida;
+        n.setId(id);//Asignar el ID recuperado
         return n;
         }
 

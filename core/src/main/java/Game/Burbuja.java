@@ -23,8 +23,8 @@ public class Burbuja extends ElementoNivel implements Interactuable {
     private final float radio;
     private       Joint jointBurbuja = null;
 
-    private final Texture[] fVuelo;
-    private final Texture[] fPop;
+    private static Texture[] fVuelo;//Texturas compartidas
+    private static Texture[] fPop;
     private int   frameVuelo = 0;
     private int   framePop   = 0;
     private float tiempoAnim = 0f;
@@ -35,8 +35,8 @@ public class Burbuja extends ElementoNivel implements Interactuable {
         this.mundo = mundo;
         this.radio = radio;
 
-        fVuelo = frames("bubble_flight", 14);
-        fPop   = frames("bubble_pop",    12);
+        if (fVuelo == null) fVuelo = frames("bubble_flight", 14);
+        if (fPop == null)   fPop   = frames("bubble_pop",    12);
 
         this.body = crearCuerpoFisico(x, y, radio);
     }
@@ -191,7 +191,17 @@ public class Burbuja extends ElementoNivel implements Interactuable {
 
     @Override
     public void dispose() {
-        for (Texture t : fVuelo) if (t != null) t.dispose();
-        for (Texture t : fPop)   if (t != null) t.dispose();
+        //No disparamos texturas aqui porque son estaticas y compartidas
+    }
+
+    public static void disposeTexturas() {
+        if (fVuelo != null) {
+            for (Texture t : fVuelo) if (t != null) t.dispose();
+            fVuelo = null;
+        }
+        if (fPop != null) {
+            for (Texture t : fPop) if (t != null) t.dispose();
+            fPop = null;
+        }
     }
 }

@@ -14,6 +14,7 @@ public class Notificacion implements java.io.Serializable {    public enum Tipo 
     public int           nivel;
     public LocalDateTime fecha;
     public boolean       leida;
+    private String       id;//Identificador persistente
 
     public Notificacion(Tipo tipo, String origen, String destino, int nivel) {
         this.tipo    = tipo;
@@ -22,9 +23,14 @@ public class Notificacion implements java.io.Serializable {    public enum Tipo 
         this.nivel   = nivel;
         this.fecha   = LocalDateTime.now();
         this.leida   = false;
+        this.id      = origen + "_" + System.currentTimeMillis() + "_" + (int)(Math.random()*1000);//Generar ID único sencillo
     }
 
     public String getId() {
-        return origen + "_" + destino + "_" + nivel + "_" + fecha.toString();
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

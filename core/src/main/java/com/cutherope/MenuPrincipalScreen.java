@@ -25,6 +25,7 @@
         private LoginManager gestor;
         private Stage        escenario;
         private Skin         piel;
+        private Texture      logoTexture;
         private Texture      bgTexture;
         private SpriteBatch  batch;
 
@@ -40,6 +41,7 @@
         this.gestor   = gestor;
         this.escenario = new Stage(new FitViewport(640, 480));
         this.piel      = crearPiel();
+        this.logoTexture = new Texture(Gdx.files.internal("images/Cut_the_Rope_Logo.png"));
         bgTexture = new Texture(Gdx.files.internal("images/mainmenu.png"));
         bgTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         batch = new SpriteBatch();
@@ -55,8 +57,7 @@
         tabla.setFillParent(true);
         tabla.center();
 
-        Label titulo = new Label("Cut the Rope", piel);
-        titulo.setColor(VERDE);
+        Image logo = new Image(logoTexture);
 
         USER u = gestor.buscarUser(usuario);
         if (u != null) Idioma.setIngles(u.isIngles());
@@ -108,7 +109,7 @@
         }
         });
 
-        tabla.add(titulo).padBottom(4).row();
+        tabla.add(logo).width(300).height(110).padBottom(4).row();
         tabla.add(bienvenida).padBottom(20).row();
         tabla.add(btnJugar).width(260).height(38).padBottom(8).row();
         tabla.add(btnEstadisticas).width(260).height(38).padBottom(8).row();
@@ -199,5 +200,5 @@
         @Override public void pause()   {}
         @Override public void resume()  {}
         @Override public void hide()    {}
-        @Override public void dispose() { escenario.dispose(); piel.dispose(); bgTexture.dispose(); batch.dispose(); }
+        @Override public void dispose() { escenario.dispose(); piel.dispose(); logoTexture.dispose(); bgTexture.dispose(); batch.dispose(); }
         }
