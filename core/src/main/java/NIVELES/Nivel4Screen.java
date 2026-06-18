@@ -28,19 +28,13 @@ public class Nivel4Screen extends NivelBaseScreen {
         float pelotaY = 14.0f;
         crearPelota(pelotaX, pelotaY, 0.35f);
 
-        //Ancla izquierda-alto más corta
         anclarCuerda(2.0f, 16.5f, 3, 1.05f);
-        //Ancla centro-alto más corta
         anclarCuerda(6.5f, 18.0f, 5, 1.0f);
-        //Ancla derecha-alto más larga
         anclarCuerda(11.5f, 18.0f, 13, 0.88f);
-        //Ancla abajo-izquierda más corta
         anclarCuerda(3.5f, 11.0f, 3, 1.0f);
 
-        //omNom abajo-derecha
         colocarNomNom(11.0f, 5.0f, 0.6f);
 
-        //Estrellas
         estrellas.add(new Estrella(mundo, 5.0f, 13.5f, 0.22f));
         estrellas.add(new Estrella(mundo, 9.5f, 12.5f, 0.22f));
         estrellas.add(new Estrella(mundo, 9.5f, 7.0f, 0.22f)); // top-right de NomNom (11.0, 5.0)

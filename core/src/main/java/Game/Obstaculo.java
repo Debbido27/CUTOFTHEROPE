@@ -76,7 +76,6 @@ public class Obstaculo extends ElementoNivel implements Interactuable {
     public void dibujar(SpriteBatch batch) {
         if (!activo) return;
         
-        // DIBUJAR NORMAL SIN APLASTAR
         float xPos = x - ancho / 2f;
         float yPos = y - alto / 2f;
         batch.draw(textura, xPos, yPos, ancho, alto);

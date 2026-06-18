@@ -23,7 +23,7 @@ public class Notificacion implements java.io.Serializable {    public enum Tipo 
         this.nivel   = nivel;
         this.fecha   = LocalDateTime.now();
         this.leida   = false;
-        this.id      = origen + "_" + System.currentTimeMillis() + "_" + (int)(Math.random()*1000);//Generar ID único sencillo
+        this.id      = origen + "_" + System.currentTimeMillis() + "_" + (int)(Math.random()*1000);
     }
 
     public String getId() {

@@ -37,17 +37,16 @@ public class Nivel1Screen extends NivelBaseScreen {
 
 protected void crearNivel() {
     float anclaX = 4f;
-    float anclaY = -12.0f;    // ← ANCLA AL MÁXIMO ABAJO
-    int segmentos = 8;        // ← CUERDA MÁS LARGA
+    float anclaY = -12.0f;    
+    int segmentos = 8;       
     float largoSeg = 0.3f;
     float dist = segmentos * largoSeg;
 
     crearPelota(anclaX, anclaY - dist, 0.3f);
     anclarCuerda(anclaX, anclaY, segmentos, largoSeg);
 
-    float ey = anclaY - dist - 4.0f;  // ← ESTRELLAS AL MÁXIMO ABAJO
+    float ey = anclaY - dist - 4.0f;  
 
-    // BURBUJA EN LA LÍNEA DE ESTRELLAS
     burbujas.add(new Burbuja(mundo, anclaX, ey + 0.3f, 0.6f, 8f));
 
     estrellas.add(new Estrella(mundo, anclaX, ey,        0.2f));
