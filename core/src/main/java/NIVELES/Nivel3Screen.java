@@ -38,8 +38,8 @@ estrellas.add(new Estrella(mundo, pelotaX - 2f, pelotaY - 11.5f, 0.22f));
 estrellas.add(new Estrella(mundo, pelotaX - 2f, pelotaY - 7f, 0.22f));
     colocarNomNom(pelotaX, pelotaY - 12.0f, 0.6f);
     limiteInferior = pelotaY - 14f;
-    camaraFisica.setToOrtho(false, 18f, 24f);
-    camaraFisica.position.set(pelotaX + 2f, pelotaY - 5f, 0);
+    camaraFisica.setToOrtho(false, 14f, 18f);
+    camaraFisica.position.set(pelotaX - 2f, pelotaY - 5f, 0);
     camaraFisica.update();
 }
 }

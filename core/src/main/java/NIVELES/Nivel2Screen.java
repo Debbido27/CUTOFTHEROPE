@@ -35,9 +35,9 @@
         anclarCuerda(pelotaX - 3.5f,  5f,          5,   1.1f);
         colocarNomNom(pelotaX, 19f, 0.6f);
 
-        burbujas.add(new Burbuja(mundo, pelotaX, 7f - bajar, 0.6f, 9f));
+        burbujas.add(new Burbuja(mundo, pelotaX + 0.5f, 7f - bajar, 0.6f, 9f));
 
-        estrellas.add(new Estrella(mundo, pelotaX, 7f - bajar, 0.22f));
+        estrellas.add(new Estrella(mundo, pelotaX + 0.5f, 7f - bajar, 0.22f));
 
 
         estrellas.add(new Estrella(mundo, pelotaX - 2.2f, 10f, 0.22f));
@@ -45,7 +45,7 @@
         estrellas.add(new Estrella(mundo, pelotaX - 2.5f, 16f - bajar, 0.22f));
 
         limiteInferior = 1f;
-        camaraFisica.setToOrtho(false, 18f, 22f);
+        camaraFisica.setToOrtho(false, 14f, 18f);
         camaraFisica.position.set(7.5f, 11f, 0);
         camaraFisica.update();
         }
