@@ -55,13 +55,13 @@
         fallosAcumulados++;
         }
 
-        public void finalizarNivel(boolean gano) {
+    public void finalizarNivel(boolean gano, boolean reto) {
         long tiempoMs   = System.currentTimeMillis() - tiempoInicioNivel;
         int  puntuacion = calcularPuntuacion(gano, estrellasNivel, tiempoMs);
 
         gestor.registrarPartida(username, nivelActual - 1,
-        puntuacion, gano ? estrellasNivel : 0,
-        fallosAcumulados, tiempoMs);
+            puntuacion, gano ? estrellasNivel : 0,
+            fallosAcumulados, tiempoMs, reto);
 
         PartidaHistorial partida = new PartidaHistorial(
         nivelActual, gano, estrellasNivel,

@@ -167,14 +167,14 @@
         return true;
         }
 
-        public synchronized void registrarPartida(String username, int nivel, int puntaje,
-                                  int estrellas, int fallos, long tiempoMs) {
+    public synchronized void registrarPartida(String username, int nivel, int puntaje,
+                              int estrellas, int fallos, long tiempoMs, boolean reto) {
         USER u = dataManager.cargarUsuarioCompleto(username);
         if (u == null) return;
 
         u.setPartidasJugadas(u.getPartidasJugadas() + 1);
 
-        if (puntaje > 0) { 
+        if (!reto && puntaje > 0) {
             int estrellasViejas = u.getEstrellasPorNivel()[nivel];
             if (estrellas > estrellasViejas) {
                 u.setEstrellasTotal(u.getEstrellasTotal() + (estrellas - estrellasViejas));
@@ -197,7 +197,7 @@
         u.setPuntuacionGeneral(total);
 
         dataManager.guardarUsuarioCompleto(u);
-        }
+    }
 
         public synchronized void guardarPartidaHistorial(String username, PartidaHistorial partida) {
         dataManager.guardarPartidaHistorial(username, partida);

@@ -37,8 +37,8 @@
         private static final int[] R_BLOQUEADO   = {  0,   0, 128, 128 };
         private static final int[] R_DESBLOQUEAD = {  0, 130, 128, 128 };
 
-        private static final int[] R_STAR_LLENA  = {   0,  0, 137, 129 };
-        private static final int[] R_STAR_VACIA  = { 163, 13, 121, 116 };
+    private static final int[] R_STAR_LLENA  = {   4,  0, 133, 129 };
+    private static final int[] R_STAR_VACIA  = { 163, 13, 121, 116 };
 
         private final Color FONDO   = new Color(0.96f, 0.92f, 0.82f, 1f);
         private final Color VERDE   = new Color(0.33f, 0.59f, 0.31f, 1f);

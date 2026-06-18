@@ -8,6 +8,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
@@ -15,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import LOGIC.LoginManager;
@@ -57,6 +59,10 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
     private Texture selectLvlBtnTex;
     private Texture overlayBgTex;
     private Table overlayTable;
+    private Table overlayVictoriaTable;
+    private Table filaEstrellasVictoria;
+    private Texture sheetResultado;
+    private TextureRegion regStarLlena, regStarVacia;
 
     protected Stage   escenario;
     protected Skin    piel;
@@ -95,6 +101,10 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
         SesionJuego.get().iniciarNivel(nivel);
         escenario = new Stage(new FitViewport(640, 480));
         piel = crearPiel();
+        sheetResultado = new Texture(Gdx.files.internal("images/menu_result_hd.png"));
+        sheetResultado.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        regStarLlena = new TextureRegion(sheetResultado, 4, 0, 133, 129);
+        regStarVacia = new TextureRegion(sheetResultado, 163, 13, 121, 116);
         Gdx.input.setInputProcessor(escenario);
     }
     public NivelBaseScreen(CutTheRope juego, String usuario, LoginManager gestor, int nivel,
@@ -224,6 +234,46 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
 
         overlayTable.setVisible(false);
         escenario.addActor(overlayTable);
+        construirOverlayVictoria();
+    }
+
+    private void construirOverlayVictoria() {
+        overlayVictoriaTable = new Table();
+        overlayVictoriaTable.setFillParent(true);
+
+        Label lblTitulo = new Label("NIVEL COMPLETADO", piel, "pause-titulo");
+        Label lblNivel  = new Label("Nivel " + nivel, piel, "titulo");
+
+        filaEstrellasVictoria = new Table();
+
+        Image imgPlay = new Image(playBtnTex);
+        imgPlay.setScaling(com.badlogic.gdx.utils.Scaling.fit);
+        imgPlay.addListener(new ClickListener() {
+            public void clicked(InputEvent e, float x, float y) {
+                overlayVictoriaTable.setVisible(false);
+                irAlSiguienteNivel();
+            }
+        });
+
+        Image imgSelect = new Image(selectLvlBtnTex);
+        imgSelect.setScaling(com.badlogic.gdx.utils.Scaling.fit);
+        imgSelect.addListener(new ClickListener() {
+            public void clicked(InputEvent e, float x, float y) {
+                overlayVictoriaTable.setVisible(false);
+                irASeleccionNiveles();
+            }
+        });
+
+        Table contenido = new Table();
+        contenido.add(lblTitulo).padBottom(12).row();
+        contenido.add(lblNivel).padBottom(10).row();
+        contenido.add(filaEstrellasVictoria).padBottom(20).row();
+        contenido.add(imgPlay).width(160).height(65).padBottom(8).row();
+        contenido.add(imgSelect).width(160).height(65).row();
+        overlayVictoriaTable.add(contenido).expand().center();
+
+        overlayVictoriaTable.setVisible(false);
+        escenario.addActor(overlayVictoriaTable);
     }
 
     private void pausar() {
@@ -241,7 +291,7 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
         if (modoReto) {
             finalizarReto(false);
         } else {
-            SesionJuego.get().finalizarNivel(false);
+            SesionJuego.get().finalizarNivel(false, false);
             Gdx.app.postRunnable(() ->
                 juego.setScreen(new SeleccionNivelScreen(juego, usuario, gestor)));
         }
@@ -316,11 +366,16 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
             case GANANDO:
                 mundo.step(delta, 6, 2);
                 if (nomnom != null) nomnom.actualizar(delta);
-                timerTransicion -= delta;
-                if (timerTransicion <= 0) {
-                    timerTransicion = Float.MAX_VALUE;
-                    irAlSiguienteNivel();
+                filaEstrellasVictoria.clearChildren();
+                {
+                    int estrellas = SesionJuego.get().getEstrellasNivel();
+                    for (int i = 0; i < 3; i++) {
+                        Image star = new Image(new TextureRegionDrawable(
+                            i < estrellas ? regStarLlena : regStarVacia));
+                        filaEstrellasVictoria.add(star).size(44, 44).pad(6);
+                    }
                 }
+                overlayVictoriaTable.setVisible(true);
                 break;
 
             case PERDIENDO:
@@ -363,14 +418,12 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
         for (Obstaculo o : obstaculos) o.dibujar(batch);
         for (Burbuja   b : burbujas)   b.dibujar(batch);
 
-        if (estadoNivel == EstadoNivel.GANANDO)
-            dibujarBannerTexto("¡NomNom comió!", VERDE);
         if (estadoNivel == EstadoNivel.PERDIENDO)
             dibujarBannerTexto("¡Inténtalo de nuevo!", ROJO);
 
         batch.end();
 
-        if (pausado) {
+        if (pausado || overlayVictoriaTable.isVisible()) {
             Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
             Gdx.gl.glEnable(GL20.GL_BLEND);
             Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
@@ -432,7 +485,7 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
             return;
         }
         final int sig = nivel + 1;
-        SesionJuego.get().finalizarNivel(true);
+        SesionJuego.get().finalizarNivel(true, false);
         Gdx.app.postRunnable(() -> juego.setScreen(crearPantallaNivel(sig)));
     }
 
@@ -480,7 +533,7 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
         int puntaje = gano ? (1000 + (200 * estrellas) - (5 * segundos)) : 0;
         if (puntaje < 0) puntaje = 0;
 
-        SesionJuego.get().finalizarNivel(gano);
+        SesionJuego.get().finalizarNivel(gano, true);
 
         new RetosManager(gestor).registrarResultadoJugador(
             retoRetador, retoRetado, nivel, retoJugadorActual,
@@ -626,6 +679,7 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
         if (playBtnTex != null) playBtnTex.dispose();
         if (selectLvlBtnTex != null) selectLvlBtnTex.dispose();
         if (overlayBgTex != null) overlayBgTex.dispose();
+        if (sheetResultado != null) sheetResultado.dispose();
         batch.dispose();
     }
 }
