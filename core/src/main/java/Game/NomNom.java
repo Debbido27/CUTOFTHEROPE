@@ -14,6 +14,8 @@ public class NomNom extends ElementoNivel implements Interactuable {
     private float radio;
     private boolean comio = false;
 
+    private Texture texturaPlataforma;
+
     private Estado    estado     = Estado.NORMAL;
     private Texture[] fNormal;
     private Texture[] fAbrirBoca;
@@ -36,6 +38,8 @@ public class NomNom extends ElementoNivel implements Interactuable {
         fCerrarBoca= frames("pet_closeMouth",  4);
         fComiendo  = frames("pet_chew",       34);
         fTriste    = frames("pet_sad",        14);
+
+        texturaPlataforma = new Texture(Gdx.files.internal("images/support.png"));
 
         crearCuerpoFisico();
     }
@@ -136,6 +140,11 @@ public class NomNom extends ElementoNivel implements Interactuable {
 
     @Override
     public void dibujar(SpriteBatch batch) {
+        //plataforma debajo de omnom — el bowl del sprite coincide con la base del cuerpo
+        float pw = radio * 5.5f;
+        float ph = radio * 1.7f;
+        batch.draw(texturaPlataforma, x - pw / 2f, y - radio * 0.3f - ph, pw, ph);
+
         Texture[] f;
         switch (estado) {
             case ABRIENDO:
@@ -163,5 +172,6 @@ public class NomNom extends ElementoNivel implements Interactuable {
         for (Texture t : fCerrarBoca)if (t != null) t.dispose();
         for (Texture t : fComiendo)  if (t != null) t.dispose();
         for (Texture t : fTriste)    if (t != null) t.dispose();
+        if (texturaPlataforma != null) texturaPlataforma.dispose();
     }
 }

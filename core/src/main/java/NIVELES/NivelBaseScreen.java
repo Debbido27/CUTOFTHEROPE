@@ -58,6 +58,7 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
 
     private Vector2 puntoAnterior       = new Vector2();
     private boolean puntoAnteriorValido = false;
+    private boolean pelotaCayoEnEspina  = false;
 
     protected final Color VERDE = new Color(0.33f, 0.59f, 0.31f, 1f);
     protected final Color CAFE  = new Color(0.23f, 0.16f, 0.08f, 1f);
@@ -188,7 +189,14 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
                     }
                 }
 
-                if (pelotaCayoFuera()) {
+                if (pelotaCayoEnEspina && pelota != null && !pelota.estaRota()) {
+                    pelotaCayoEnEspina = false;
+                    SesionJuego.get().registrarFallo();
+                    pelota.romper();
+                    if (nomnom != null) nomnom.ponerTriste();
+                    estadoNivel     = EstadoNivel.PERDIENDO;
+                    timerTransicion = 2.0f;
+                } else if (pelotaCayoFuera()) {
                     SesionJuego.get().registrarFallo();
                     estadoNivel     = EstadoNivel.PERDIENDO;
                     timerTransicion = 1.0f;
@@ -210,6 +218,7 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
                 break;
 
             case PERDIENDO:
+                if (pelota != null) pelota.actualizar(delta);
                 if (nomnom != null) nomnom.actualizar(delta);
                 timerTransicion -= delta;
                 if (timerTransicion <= 0) reiniciarNivel();
@@ -252,31 +261,35 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
         escenario.draw();
     }
 
+    //convierte coordenadas de pantalla a coordenadas del mundo fisico,
+    //teniendo en cuenta las barras negras del fitviewport
+    private Vector2 desdePixel(int x, int y) {
+        FitViewport vp = (FitViewport) escenario.getViewport();
+        Vector3 raw = new Vector3(x, y, 0);
+        camaraFisica.unproject(raw,
+            vp.getLeftGutterWidth(), vp.getBottomGutterHeight(),
+            vp.getScreenWidth(),     vp.getScreenHeight());
+        return new Vector2(raw.x, raw.y);
+    }
+
     private void procesarToqueBurbujas() {
         if (!Gdx.input.justTouched()) return;
-
-        Vector3 raw = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-        camaraFisica.unproject(raw);
-
+        Vector2 pos = desdePixel(Gdx.input.getX(), Gdx.input.getY());
         for (Burbuja b : burbujas) {
-            if (b.revisarToque(raw.x, raw.y, pelota)) {
-                break;
-            }
+            if (b.revisarToque(pos.x, pos.y, pelota)) break;
         }
     }
 
     private boolean pelotaCayoFuera() {
-        if (pelota == null) return false;
+        if (pelota == null || pelota.estaRota()) return false;
         Vector2 pos = pelota.getBody().getPosition();
         return pos.y < limiteInferior || pos.x < -5f || pos.x > 25f;
     }
 
     private void procesarCorte() {
         if (Gdx.input.isTouched()) {
-            Vector3 raw = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-            camaraFisica.unproject(raw);
-            Vector2 actual = new Vector2(raw.x, raw.y);
-            if (puntoAnteriorValido) {
+            Vector2 actual = desdePixel(Gdx.input.getX(), Gdx.input.getY());
+            if (puntoAnteriorValido && actual.dst2(puntoAnterior) > 0.01f) {
                 for (Cuerda c : cuerdas) {
                     c.revisarCorte(puntoAnterior, actual, mundo);
                 }
@@ -375,8 +388,10 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
             }
             est.interactuar();
         }
-        if (a instanceof Obstaculo && b instanceof Pelota) ((Obstaculo) a).interactuar();
-        else if (b instanceof Obstaculo && a instanceof Pelota) ((Obstaculo) b).interactuar();
+        if ((a instanceof Obstaculo && b instanceof Pelota)
+                || (b instanceof Obstaculo && a instanceof Pelota)) {
+            pelotaCayoEnEspina = true;
+        }
     }
 
 

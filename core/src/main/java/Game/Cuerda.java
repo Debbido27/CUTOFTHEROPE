@@ -108,7 +108,11 @@
     Vector2 extremoA = new Vector2(pos.x - dx, pos.y - dy);
     Vector2 extremoB = new Vector2(pos.x + dx, pos.y + dy);
 
-    if (segmentosSeCruzan(p1, p2, extremoA, extremoB) || distanciaPuntoASegmento(p1, extremoA, extremoB) < 0.15f || distanciaPuntoASegmento(p2, extremoA, extremoB) < 0.15f) {
+    if (segmentosSeCruzan(p1, p2, extremoA, extremoB)
+    || distanciaPuntoASegmento(p1,      extremoA, extremoB) < 0.3f
+    || distanciaPuntoASegmento(p2,      extremoA, extremoB) < 0.3f
+    || distanciaPuntoASegmento(extremoA, p1,      p2)       < 0.3f
+    || distanciaPuntoASegmento(extremoB, p1,      p2)       < 0.3f) {
     mundo.destroyJoint(joint);
     joint = null;
     return true;
@@ -175,14 +179,13 @@
     }
 
     private static Texture crearTexturaAncla() {
-    return new Texture(Gdx.files.internal("images/support.png"));
+    return new Texture(Gdx.files.internal("images/pin.png"));
     }
 
     public static void dibujarAncla(SpriteBatch batch, Vector2 pos, float radio) {
     if (texturaAncla == null) texturaAncla = crearTexturaAncla();
-    // wide shelf mount drawn above the anchor point so the rope hangs from its bottom
-    float w = 2.5f, h = 0.8f;
-    batch.draw(texturaAncla, pos.x - w / 2f, pos.y, w, h);
+    float r = radio * 2f;
+    batch.draw(texturaAncla, pos.x - r, pos.y - r, r * 2f, r * 2f);
     }
     public int contarSegmentos() {
     return 1 + (siguiente != null ? siguiente.contarSegmentos() : 0);
