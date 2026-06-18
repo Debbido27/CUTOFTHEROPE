@@ -1,35 +1,33 @@
 package Game;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.*;
 
-/**
- * Pelota — cuerpo dinámico Box2D.
- *
- * Se expone setGravityScale() de forma implícita a través de getBody(),
- * que es lo que Burbuja necesita para controlar la flotación.
- *
- * Bits de filtro:
- *   categoryBits = 0x0001  (PELOTA)
- *   maskBits     = 0xFFFF  (choca con todo)
- */
 public class Pelota {
 
     private final Body    body;
     private final float   radio;
     private final Texture textura;
+    private final Texture texIzq;
+    private final Texture texDer;
+
+    private boolean rota  = false;
+    private float izqX, izqY, izqVX, izqVY;
+    private float derX, derY, derVX, derVY;
+
+    private static final float GRAVEDAD = -14f;
 
     public Pelota(World mundo, float x, float y, float radio) {
         this.radio   = radio;
-        this.textura = crearTextura(radio);
+        this.textura = new Texture(Gdx.files.internal("images/candy.png"));
+        this.texIzq  = new Texture(Gdx.files.internal("images/candy_left.png"));
+        this.texDer  = new Texture(Gdx.files.internal("images/candy_right.png"));
 
         BodyDef def = new BodyDef();
-        def.type     = BodyDef.BodyType.DynamicBody;
+        def.type         = BodyDef.BodyType.DynamicBody;
         def.position.set(x, y);
-        // gravityScale explícito = 1 por defecto; Burbuja lo cambia al entrar/salir
         def.gravityScale = 1f;
 
         body = mundo.createBody(def);
@@ -44,46 +42,58 @@ public class Pelota {
         fix.shape       = shape;
         fix.density     = 1f;
         fix.friction    = 0.3f;
-        fix.restitution = 0.1f;          // rebote mínimo (más parecido al juego real)
-        fix.filter.categoryBits = 0x0001; // PELOTA
+        fix.restitution = 0.1f;
+        fix.filter.categoryBits = 0x0001;
         fix.filter.maskBits     = (short) 0xFFFF;
 
         body.createFixture(fix);
         shape.dispose();
     }
 
-    // ── textura procedural ────────────────────────────────────────────────────
-    private static Texture crearTextura(float radio) {
-        int d = Math.max(2, (int)(radio * 100));
-        Pixmap pm = new Pixmap(d, d, Pixmap.Format.RGBA8888);
+    //llama esto desde fuera del paso de fisicas (no desde beginContact)
+    public void romper() {
+        if (rota) return;
+        rota = true;
+        float cx = body.getPosition().x;
+        float cy = body.getPosition().y;
+        body.setActive(false);
 
-        // base verde (color típico del dulce de Cut the Rope)
-        pm.setColor(new Color(0.15f, 0.72f, 0.22f, 1f));
-        pm.fillCircle(d / 2, d / 2, d / 2);
-
-        // reflejo
-        pm.setColor(new Color(1f, 1f, 1f, 0.45f));
-        pm.fillCircle(d / 3, d / 3, Math.max(1, d / 5));
-
-        Texture tex = new Texture(pm);
-        pm.dispose();
-        return tex;
+        //mitad izquierda sale hacia arriba-izquierda, derecha hacia arriba-derecha
+        izqX = cx;  izqY = cy;  izqVX = -3.5f;  izqVY = 2.5f;
+        derX = cx;  derY = cy;  derVX =  3.5f;  derVY = 2.5f;
     }
 
-    // ── dibujo ────────────────────────────────────────────────────────────────
+    public void actualizar(float delta) {
+        if (!rota) return;
+        izqVY += GRAVEDAD * delta;
+        derVY += GRAVEDAD * delta;
+        izqX  += izqVX * delta;
+        izqY  += izqVY * delta;
+        derX  += derVX * delta;
+        derY  += derVY * delta;
+    }
+
     public void dibujar(SpriteBatch batch) {
-        float d = radio * 2;
-        batch.draw(textura,
-            body.getPosition().x - radio,
-            body.getPosition().y - radio,
-            d, d);
+        if (rota) {
+            float r = radio * 1.8f;
+            batch.draw(texIzq, izqX - r, izqY - r, r * 2f, r * 2f);
+            batch.draw(texDer, derX - r, derY - r, r * 2f, r * 2f);
+        } else {
+            float d = radio * 2f;
+            batch.draw(textura,
+                body.getPosition().x - radio,
+                body.getPosition().y - radio,
+                d, d);
+        }
     }
 
-    // ── getters ───────────────────────────────────────────────────────────────
-    public Body  getBody()  { return body; }
-    public float getRadio() { return radio; }
+    public boolean estaRota() { return rota; }
+    public Body    getBody()  { return body; }
+    public float   getRadio() { return radio; }
 
     public void dispose() {
         textura.dispose();
+        texIzq.dispose();
+        texDer.dispose();
     }
 }

@@ -19,7 +19,7 @@
             }
         @Override
         protected String rutaFondo() {
-        return "images/lvl1.png";
+        return "images/lvl23.png";
         }
 
         @Override

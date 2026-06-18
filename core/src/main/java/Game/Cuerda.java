@@ -1,6 +1,7 @@
 
     package Game;
 
+    import com.badlogic.gdx.Gdx;
     import com.badlogic.gdx.graphics.Color;
     import com.badlogic.gdx.graphics.Pixmap;
     import com.badlogic.gdx.graphics.Texture;
@@ -107,7 +108,11 @@
     Vector2 extremoA = new Vector2(pos.x - dx, pos.y - dy);
     Vector2 extremoB = new Vector2(pos.x + dx, pos.y + dy);
 
-    if (segmentosSeCruzan(p1, p2, extremoA, extremoB) || distanciaPuntoASegmento(p1, extremoA, extremoB) < 0.15f || distanciaPuntoASegmento(p2, extremoA, extremoB) < 0.15f) {
+    if (segmentosSeCruzan(p1, p2, extremoA, extremoB)
+    || distanciaPuntoASegmento(p1,      extremoA, extremoB) < 0.3f
+    || distanciaPuntoASegmento(p2,      extremoA, extremoB) < 0.3f
+    || distanciaPuntoASegmento(extremoA, p1,      p2)       < 0.3f
+    || distanciaPuntoASegmento(extremoB, p1,      p2)       < 0.3f) {
     mundo.destroyJoint(joint);
     joint = null;
     return true;
@@ -174,25 +179,13 @@
     }
 
     private static Texture crearTexturaAncla() {
-    int d = 70; // antes 24, ahora más grande
-    Pixmap px = new Pixmap(d, d, Pixmap.Format.RGBA8888);
-
-    // Círculo gris claro exterior
-    px.setColor(new Color(0.75f, 0.75f, 0.75f, 1f)); 
-    px.fillCircle(d / 2, d / 2, d / 4); 
-
-    px.setColor(new Color(0.35f, 0.35f, 0.35f, 1f)); 
-    px.fillCircle(d / 2, d / 2, d / 6); 
-
-    Texture t = new Texture(px);
-    px.dispose();
-    return t;
+    return new Texture(Gdx.files.internal("images/pin.png"));
     }
 
     public static void dibujarAncla(SpriteBatch batch, Vector2 pos, float radio) {
     if (texturaAncla == null) texturaAncla = crearTexturaAncla();
-    float radioVisual = radio * 2.5f; 
-    batch.draw(texturaAncla, pos.x - radioVisual, pos.y - radioVisual, radioVisual * 2, radioVisual * 2);
+    float r = radio * 2f;
+    batch.draw(texturaAncla, pos.x - r, pos.y - r, r * 2f, r * 2f);
     }
     public int contarSegmentos() {
     return 1 + (siguiente != null ? siguiente.contarSegmentos() : 0);

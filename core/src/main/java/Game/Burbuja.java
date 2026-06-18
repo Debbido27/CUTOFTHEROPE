@@ -1,8 +1,6 @@
 package Game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -11,38 +9,52 @@ import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 
 public class Burbuja extends ElementoNivel implements Interactuable {
 
-    // ── constantes ───────────────────────────────────────────────────
-    private static final float GRAVITY_BURBUJA  = -1f;
-    private static final float DAMPING_BURBUJA  = 2f;
-    private static final float DAMPING_NORMAL   = 0f;
+    private static final float GRAVITY_BURBUJA = -1f;
+    private static final float DAMPING_BURBUJA = 2f;
+    private static final float DAMPING_NORMAL  = 0f;
+    private static final float FPS             = 1f / 14f;
 
-    // ── estado ───────────────────────────────────────────────────────
     private boolean activa       = true;
     private boolean pelotaDentro = false;
+    private boolean popActivo    = false;
 
-    // ── física ───────────────────────────────────────────────────────
     private final World mundo;
     private final Body  body;
     private final float radio;
     private       Joint jointBurbuja = null;
 
-    // ── constructores ────────────────────────────────────────────────
+    private final Texture[] fVuelo;
+    private final Texture[] fPop;
+    private int   frameVuelo = 0;
+    private int   framePop   = 0;
+    private float tiempoAnim = 0f;
+    private float popX, popY;
+
     public Burbuja(World mundo, float x, float y, float radio) {
-        super(x, y, radio * 2, radio * 2, TipoElemento.BURBUJA,
-              crearTexturaBurbuja(radio));
+        super(x, y, radio * 2, radio * 2, TipoElemento.BURBUJA, null);
         this.mundo = mundo;
         this.radio = radio;
-        this.body  = crearCuerpoFisico(x, y, radio);
+
+        fVuelo = frames("bubble_flight", 14);
+        fPop   = frames("bubble_pop",    12);
+
+        this.body = crearCuerpoFisico(x, y, radio);
     }
 
     public Burbuja(World mundo, float x, float y, float radio, float ignorado) {
         this(mundo, x, y, radio);
     }
 
-    // ── cuerpo físico ────────────────────────────────────────────────
+    private static Texture[] frames(String prefijo, int n) {
+        Texture[] arr = new Texture[n];
+        for (int i = 0; i < n; i++)
+            arr[i] = new Texture(Gdx.files.internal("images/" + prefijo + i + ".png"));
+        return arr;
+    }
+
     private Body crearCuerpoFisico(float cx, float cy, float r) {
         BodyDef def = new BodyDef();
-        def.type = BodyDef.BodyType.StaticBody; // empieza estática
+        def.type = BodyDef.BodyType.StaticBody;
         def.position.set(cx, cy);
 
         Body b = mundo.createBody(def);
@@ -52,8 +64,8 @@ public class Burbuja extends ElementoNivel implements Interactuable {
         shape.setRadius(r);
 
         FixtureDef fix = new FixtureDef();
-        fix.shape           = shape;
-        fix.isSensor        = true;
+        fix.shape               = shape;
+        fix.isSensor            = true;
         fix.filter.categoryBits = 0x0004;
         fix.filter.maskBits     = 0x0001;
         b.createFixture(fix);
@@ -61,83 +73,59 @@ public class Burbuja extends ElementoNivel implements Interactuable {
         return b;
     }
 
-    // ── API pública ──────────────────────────────────────────────────
-
-    /**
-     * Pelota entra a la burbuja:
-     * - Burbuja se vuelve dinámica y empieza a flotar
-     * - Pelota se pega a la burbuja con WeldJoint
-     * - Ambas suben juntas
-     */
     public void entrar(Pelota pelota) {
         if (!activa || pelotaDentro) return;
         pelotaDentro = true;
 
-        // Burbuja pasa a dinámica y flota
         body.setType(BodyDef.BodyType.DynamicBody);
         body.setGravityScale(GRAVITY_BURBUJA);
         body.setLinearDamping(DAMPING_BURBUJA);
 
-        // Pelota también flota
         Body pb = pelota.getBody();
         pb.setGravityScale(GRAVITY_BURBUJA);
         pb.setLinearDamping(DAMPING_BURBUJA);
 
-        // Cancelar velocidad brusca para arranque suave
         Vector2 vel = pb.getLinearVelocity();
         pb.setLinearVelocity(vel.x * 0.3f, 0f);
 
-        // Pegar burbuja y pelota
-       WeldJointDef weld = new WeldJointDef();
-weld.bodyA = body;
-weld.bodyB = pb;
-weld.localAnchorA.set(0, 0);
-weld.localAnchorB.set(0, 0);
-weld.referenceAngle = 0f;
-jointBurbuja = mundo.createJoint(weld);
+        WeldJointDef weld = new WeldJointDef();
+        weld.bodyA = body;
+        weld.bodyB = pb;
+        weld.localAnchorA.set(0, 0);
+        weld.localAnchorB.set(0, 0);
+        weld.referenceAngle = 0f;
+        jointBurbuja = mundo.createJoint(weld);
     }
 
-    /**
-     * No se usa — la pelota solo se separa al explotar la burbuja.
-     */
-    public void salir(Pelota pelota) {
-        // intencional vacío
-    }
+    public void salir(Pelota pelota) {}
 
-    /**
-     * Explotar la burbuja:
-     * - Destruye el joint
-     * - Burbuja vuelve a estática y desaparece
-     * - Pelota recupera gravedad normal
-     */
     public void explotar(Pelota pelota) {
         if (!activa) return;
 
-        // Destruir joint
+        popX = body.getPosition().x;
+        popY = body.getPosition().y;
+
         if (jointBurbuja != null) {
             mundo.destroyJoint(jointBurbuja);
             jointBurbuja = null;
         }
 
-        // Burbuja desaparece
         body.setType(BodyDef.BodyType.StaticBody);
         activa       = false;
         pelotaDentro = false;
 
-        // Pelota recupera física normal
+        popActivo = true;
+        framePop  = 0;
+        tiempoAnim = 0f;
+
         if (pelota != null) {
             Body pb = pelota.getBody();
             pb.setGravityScale(1f);
             pb.setLinearDamping(DAMPING_NORMAL);
-            // Dar pequeño impulso hacia arriba para que no caiga brutal
             pb.setLinearVelocity(pb.getLinearVelocity().x, 2f);
         }
     }
 
-    /**
-     * Revisar si el toque del jugador cayó sobre la burbuja.
-     * Llamar desde NivelBaseScreen con coordenadas ya desprojectadas.
-     */
     public boolean revisarToque(float mundoX, float mundoY, Pelota pelota) {
         if (!activa) return false;
         float dx = mundoX - body.getPosition().x;
@@ -149,53 +137,61 @@ jointBurbuja = mundo.createJoint(weld);
         return false;
     }
 
-    // ── Interactuable ────────────────────────────────────────────────
     @Override
     public void interactuar() {
-        activa = false; // legacy, no restaura gravedad
+        activa = false;
     }
 
     @Override
     public boolean estaActivo() { return activa; }
 
-    // ── actualizar ───────────────────────────────────────────────────
     @Override
-    public void actualizar(float delta) {}
+    public void actualizar(float delta) {
+        tiempoAnim += delta;
+        if (tiempoAnim < FPS) return;
+        tiempoAnim -= FPS;
 
-    // ── dibujar ──────────────────────────────────────────────────────
+        if (popActivo) {
+            if (framePop < fPop.length - 1) {
+                framePop++;
+            } else {
+                popActivo = false;
+            }
+        } else if (activa) {
+            frameVuelo = (frameVuelo + 1) % fVuelo.length;
+        }
+    }
+
     @Override
     public void dibujar(SpriteBatch batch) {
-        if (!activa) return;
-        float cx = body.getPosition().x;
-        float cy = body.getPosition().y;
-        batch.draw(textura, cx - radio, cy - radio, radio * 2, radio * 2);
+        if (!activa && !popActivo) return;
+
+        float cx, cy;
+        Texture frame;
+        float drawRadio;
+
+        if (popActivo) {
+            cx        = popX;
+            cy        = popY;
+            frame     = fPop[framePop];
+            drawRadio = radio * 1.5f; // pop ring draws slightly larger
+        } else {
+            cx        = body.getPosition().x;
+            cy        = body.getPosition().y;
+            frame     = fVuelo[frameVuelo];
+            drawRadio = radio;
+        }
+
+        batch.draw(frame, cx - drawRadio, cy - drawRadio, drawRadio * 2, drawRadio * 2);
     }
 
-    // ── textura ──────────────────────────────────────────────────────
-    private static Texture crearTexturaBurbuja(float radio) {
-        int d = Math.max(4, (int)(radio * 100));
-        Pixmap pm = new Pixmap(d, d, Pixmap.Format.RGBA8888);
-
-        pm.setColor(0, 0, 0, 0);
-        pm.fill();
-
-        pm.setColor(new Color(0.55f, 0.80f, 1f, 0.55f));
-        pm.fillCircle(d / 2, d / 2, d / 2 - 1);
-
-        pm.setColor(new Color(0.7f, 0.9f, 1f, 0.85f));
-        pm.drawCircle(d / 2, d / 2, d / 2 - 1);
-
-        int br = Math.max(1, d / 6);
-        pm.setColor(new Color(1, 1, 1, 0.75f));
-        pm.fillCircle(d / 3, d / 3, br);
-
-        Texture tex = new Texture(pm);
-        pm.dispose();
-        return tex;
-    }
-
-    // ── getters ──────────────────────────────────────────────────────
     public Body    getBody()        { return body; }
     public float   getRadio()       { return radio; }
     public boolean isPelotaDentro() { return pelotaDentro; }
+
+    @Override
+    public void dispose() {
+        for (Texture t : fVuelo) if (t != null) t.dispose();
+        for (Texture t : fPop)   if (t != null) t.dispose();
+    }
 }

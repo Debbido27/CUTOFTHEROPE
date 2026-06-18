@@ -61,7 +61,7 @@ public class SesionJuego {
 
         // 1. Guardar stats (LoginManager)
         gestor.registrarPartida(username, nivelActual - 1,
-            puntuacion, estrellasNivel,
+            puntuacion, gano ? estrellasNivel : 0,
             fallosAcumulados, tiempoMs);
 
         // 2. Crear partida historial
