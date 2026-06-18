@@ -99,9 +99,9 @@
                 MusicaManager.getInstance().aplicarPreferencias(nuevoEstado, usr.getVolumen());
                 btnMusica[0].setText(nuevoEstado ? "ON" : "OFF");
                 Color c = nuevoEstado ? VERDE : ROJO;
-                btnMusica[0].getStyle().up   = piel.newDrawable("white", c);
-                btnMusica[0].getStyle().down = piel.newDrawable("white", c.cpy().mul(0.8f,0.8f,0.8f,1f));
-                btnMusica[0].getStyle().over = piel.newDrawable("white", c.cpy().mul(1.1f,1.1f,1.1f,1f));
+                btnMusica[0].getStyle().up   = piel.newDrawable("btn-up", c);
+                btnMusica[0].getStyle().down = piel.newDrawable("btn-up", c.cpy().mul(0.8f,0.8f,0.8f,1f));
+                btnMusica[0].getStyle().over = piel.newDrawable("btn-over", c.cpy().mul(1.1f,1.1f,1.1f,1f));
             }
         });
 
