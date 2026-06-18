@@ -488,6 +488,7 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
         if (pelota != null) pelota.dispose();
         if (nomnom != null) nomnom.dispose();
         Cuerda.disposeTextura();
+        Burbuja.disposeTexturas();//Liberar texturas estaticas de las burbujas
         for (Cuerda    c : cuerdas)    c.dispose();
         for (Estrella  e : estrellas)  e.dispose();
         for (Obstaculo o : obstaculos) o.dispose();
