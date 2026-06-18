@@ -1,7 +1,6 @@
 package com.cutherope;
 
 import LOGIC.Idioma;
-import LOGIC.PartidaHistorial;
 import LOGIC.USER;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
