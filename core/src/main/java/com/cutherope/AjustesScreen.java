@@ -1,24 +1,24 @@
+package com.cutherope;
 
-        package com.cutherope;
+import LOGIC.Idioma;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import LOGIC.LoginManager;
 
-        import LOGIC.Idioma;
-        import com.badlogic.gdx.Gdx;
-        import com.badlogic.gdx.Screen;
-        import com.badlogic.gdx.graphics.Color;
-        import com.badlogic.gdx.graphics.GL20;
-        import com.badlogic.gdx.graphics.Pixmap;
-        import com.badlogic.gdx.graphics.Texture;
-        import com.badlogic.gdx.graphics.g2d.BitmapFont;
-        import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-        import com.badlogic.gdx.scenes.scene2d.InputEvent;
-        import com.badlogic.gdx.scenes.scene2d.Stage;
-        import com.badlogic.gdx.scenes.scene2d.ui.*;
-        import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-        import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-        import com.badlogic.gdx.utils.viewport.FitViewport;
-        import LOGIC.LoginManager;
-
-        public class AjustesScreen implements Screen {
+public class AjustesScreen implements Screen {
 
         private CutTheRope   juego;
         private String       usuario;
@@ -26,6 +26,8 @@
         private Stage        escenario;
         private Skin         piel;
         private Texture      bgTexture;
+        private Texture      btnTexture;
+        private Texture      btnOverTexture;
         private SpriteBatch  batch;
 
         private final Color FONDO   = new Color(0.96f, 0.92f, 0.82f, 1f);
@@ -44,13 +46,17 @@
         bgTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         batch = new SpriteBatch();
         Gdx.input.setInputProcessor(escenario);
+        construirMenu();
+        }
+
+        private void construirMenu() {
+        escenario.clear();
 
         Table tabla = new Table();
         tabla.setFillParent(true);
         tabla.center();
 
-        Label titulo = new Label(Idioma.get(Idioma.Clave.AJUSTES), piel);
-        titulo.setColor(VERDE);
+        Label titulo = new Label(Idioma.get(Idioma.Clave.AJUSTES), piel, "titulo");
 
         TextButton btnPerfil       = crearBoton(Idioma.get(Idioma.Clave.PERFIL),       VERDE);
         TextButton btnPreferencias = crearBoton(Idioma.get(Idioma.Clave.PREFERENCIAS), NARANJA);
@@ -73,7 +79,7 @@
         }
         });
 
-        tabla.add(titulo).padBottom(40).row();
+        tabla.add(titulo).padBottom(30).row();
         tabla.add(btnPerfil).width(280).height(50).padBottom(12).row();
         tabla.add(btnPreferencias).width(280).height(50).padBottom(12).row();
         tabla.add(btnVolver).width(280).height(50).row();
@@ -81,10 +87,12 @@
         }
 
         private TextButton crearBoton(String texto, Color color) {
-        TextButton btn = new TextButton(texto, piel);
-        btn.getStyle().up   = piel.newDrawable("white", color);
-        btn.getStyle().down = piel.newDrawable("white", color.cpy().mul(0.8f, 0.8f, 0.8f, 1f));
-        btn.getStyle().over = piel.newDrawable("white", color.cpy().mul(1.1f, 1.1f, 1.1f, 1f));
+        TextButton.TextButtonStyle estilo = new TextButton.TextButtonStyle(piel.get(TextButton.TextButtonStyle.class));
+        estilo.up   = piel.newDrawable("btn-up", color);
+        estilo.down = piel.newDrawable("btn-up", color.cpy().mul(0.8f, 0.8f, 0.8f, 1f));
+        estilo.over = piel.newDrawable("btn-over", color.cpy().mul(1.1f, 1.1f, 1.1f, 1f));
+        TextButton btn = new TextButton(texto, estilo);
+        btn.pad(5, 15, 5, 15);
         return btn;
         }
 
@@ -93,6 +101,12 @@
         Pixmap px = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         px.setColor(Color.WHITE); px.fill();
         skin.add("white", new Texture(px)); px.dispose();
+
+        btnTexture = new Texture(Gdx.files.internal("images/button.png"));
+        skin.add("btn-up", new NinePatch(btnTexture, 35, 35, 20, 20));
+        btnOverTexture = new Texture(Gdx.files.internal("images/button_over.png"));
+        skin.add("btn-over", new NinePatch(btnOverTexture, 35, 35, 20, 20));
+
         FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("fonts/GOODDC__.TTF"));
         FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
         float escala = Math.min(Gdx.graphics.getWidth() / 640f, Gdx.graphics.getHeight() / 480f);
@@ -142,5 +156,5 @@
         @Override public void pause()   {}
         @Override public void resume()  {}
         @Override public void hide()    {}
-        @Override public void dispose() { escenario.dispose(); piel.dispose(); bgTexture.dispose(); batch.dispose(); }
+        @Override public void dispose() { escenario.dispose(); piel.dispose(); bgTexture.dispose(); btnTexture.dispose(); btnOverTexture.dispose(); batch.dispose(); }
         }

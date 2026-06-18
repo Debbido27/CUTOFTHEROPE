@@ -26,6 +26,8 @@ public class RankingScreen implements Screen {
     private Stage        escenario;
     private Skin         piel;
     private Texture      bgTexture;
+    private Texture      btnTexture;
+    private Texture      btnOverTexture;
     private SpriteBatch  batch;
 
     private final Color VERDE   = new Color(0.33f, 0.59f, 0.31f, 1f);
@@ -247,10 +249,13 @@ public class RankingScreen implements Screen {
     }
 
     private TextButton crearBoton(String texto, Color color) {
-        TextButton btn = new TextButton(texto, piel);
-        btn.getStyle().up   = piel.newDrawable("blanco", color);
-        btn.getStyle().down = piel.newDrawable("blanco", color.cpy().mul(0.8f, 0.8f, 0.8f, 1f));
-        btn.getStyle().over = piel.newDrawable("blanco", color.cpy().mul(1.1f, 1.1f, 1.1f, 1f));
+        // boton con estilo propio para evitar compartir estado
+        TextButton.TextButtonStyle estilo = new TextButton.TextButtonStyle(piel.get(TextButton.TextButtonStyle.class));
+        estilo.up   = piel.newDrawable("btn-up", color);
+        estilo.down = piel.newDrawable("btn-up", color.cpy().mul(0.8f, 0.8f, 0.8f, 1f));
+        estilo.over = piel.newDrawable("btn-over", color.cpy().mul(1.1f, 1.1f, 1.1f, 1f));
+        TextButton btn = new TextButton(texto, estilo);
+        btn.pad(5, 15, 5, 15);
         return btn;
     }
 
@@ -259,6 +264,12 @@ public class RankingScreen implements Screen {
         Pixmap px = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         px.setColor(Color.WHITE); px.fill();
         skin.add("blanco", new Texture(px)); px.dispose();
+
+        // texturas del boton como ninepatch para evitar estiramiento
+        btnTexture = new Texture(Gdx.files.internal("images/button.png"));
+        skin.add("btn-up", new com.badlogic.gdx.graphics.g2d.NinePatch(btnTexture, 35, 35, 20, 20));
+        btnOverTexture = new Texture(Gdx.files.internal("images/button_over.png"));
+        skin.add("btn-over", new com.badlogic.gdx.graphics.g2d.NinePatch(btnOverTexture, 35, 35, 20, 20));
 
         FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("fonts/GOODDC__.TTF"));
         FreeTypeFontGenerator.FreeTypeFontParameter p = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -308,5 +319,12 @@ public class RankingScreen implements Screen {
     @Override public void pause()   {}
     @Override public void resume()  {}
     @Override public void hide()    {}
-    @Override public void dispose() { escenario.dispose(); piel.dispose(); bgTexture.dispose(); batch.dispose(); }
+    @Override public void dispose() {
+        escenario.dispose();
+        piel.dispose();
+        bgTexture.dispose();
+        if (btnTexture != null) btnTexture.dispose();
+        if (btnOverTexture != null) btnOverTexture.dispose();
+        batch.dispose();
+    }
 }

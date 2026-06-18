@@ -31,6 +31,8 @@
         private Skin         piel;
         private ArrayList<Texture> texturasDinamicas = new ArrayList<>();
         private Texture     bgTexture;
+        private Texture     btnTexture;
+        private Texture     btnOverTexture;
         private SpriteBatch batch;
         private RetosManager retosManager;
         private final Color FONDO   = new Color(0.96f, 0.92f, 0.82f, 1f);
@@ -536,10 +538,13 @@
         }
 
         private TextButton crearBoton(String texto, Color color) {
-        TextButton btn = new TextButton(texto, piel);
-        btn.getStyle().up   = piel.newDrawable("white", color);
-        btn.getStyle().down = piel.newDrawable("white", color.cpy().mul(0.8f, 0.8f, 0.8f, 1f));
-        btn.getStyle().over = piel.newDrawable("white", color.cpy().mul(1.1f, 1.1f, 1.1f, 1f));
+        // boton con estilo propio para evitar compartir estado
+        TextButton.TextButtonStyle estilo = new TextButton.TextButtonStyle(piel.get(TextButton.TextButtonStyle.class));
+        estilo.up   = piel.newDrawable("btn-up", color);
+        estilo.down = piel.newDrawable("btn-up", color.cpy().mul(0.8f, 0.8f, 0.8f, 1f));
+        estilo.over = piel.newDrawable("btn-over", color.cpy().mul(1.1f, 1.1f, 1.1f, 1f));
+        TextButton btn = new TextButton(texto, estilo);
+        btn.pad(5, 15, 5, 15);
         return btn;
         }
 
@@ -549,6 +554,13 @@
         Pixmap px = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         px.setColor(Color.WHITE); px.fill();
         skin.add("white", new Texture(px)); px.dispose();
+
+        // texturas del boton como ninepatch para evitar estiramiento
+        btnTexture = new Texture(Gdx.files.internal("images/button.png"));
+        skin.add("btn-up", new com.badlogic.gdx.graphics.g2d.NinePatch(btnTexture, 35, 35, 20, 20));
+        btnOverTexture = new Texture(Gdx.files.internal("images/button_over.png"));
+        skin.add("btn-over", new com.badlogic.gdx.graphics.g2d.NinePatch(btnOverTexture, 35, 35, 20, 20));
+
         FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("fonts/GOODDC__.TTF"));
         FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
         float escala = Math.min(Gdx.graphics.getWidth() / 640f, Gdx.graphics.getHeight() / 480f);
@@ -1132,7 +1144,7 @@
         @Override public void pause()   {}
         @Override public void resume()  {}
         @Override public void hide()    {}
-        @Override public void dispose() { escenario.dispose(); piel.dispose(); bgTexture.dispose(); batch.dispose(); limpiarTexturas(); }
+        @Override public void dispose() { escenario.dispose(); piel.dispose(); bgTexture.dispose(); btnTexture.dispose(); btnOverTexture.dispose(); batch.dispose(); limpiarTexturas(); }
 
         private void limpiarTexturas() { for (Texture t : texturasDinamicas) t.dispose(); texturasDinamicas.clear(); }
 }

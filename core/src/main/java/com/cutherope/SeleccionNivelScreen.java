@@ -30,6 +30,8 @@
         private Texture      sheetNiveles;
         private Texture      sheetResultado;
         private Texture      bgTexture;
+        private Texture      btnTexture;
+        private Texture      btnOverTexture;
         private SpriteBatch  batch;
 
         private static final int[] R_BLOQUEADO   = {  0,   0, 128, 128 };
@@ -164,10 +166,13 @@
         }
 
         private TextButton crearBoton(String texto, Color color) {
-        TextButton btn = new TextButton(texto, piel);
-        btn.getStyle().up   = piel.newDrawable("blanco", color);
-        btn.getStyle().down = piel.newDrawable("blanco", color.cpy().mul(0.8f, 0.8f, 0.8f, 1f));
-        btn.getStyle().over = piel.newDrawable("blanco", color.cpy().mul(1.1f, 1.1f, 1.1f, 1f));
+        // boton con estilo propio para evitar compartir estado
+        TextButton.TextButtonStyle estilo = new TextButton.TextButtonStyle(piel.get(TextButton.TextButtonStyle.class));
+        estilo.up   = piel.newDrawable("btn-up", color);
+        estilo.down = piel.newDrawable("btn-up", color.cpy().mul(0.8f, 0.8f, 0.8f, 1f));
+        estilo.over = piel.newDrawable("btn-over", color.cpy().mul(1.1f, 1.1f, 1.1f, 1f));
+        TextButton btn = new TextButton(texto, estilo);
+        btn.pad(5, 15, 5, 15);
         return btn;
         }
 
@@ -179,6 +184,12 @@
         pixmap.fill();
         skin.add("blanco", new Texture(pixmap));
         pixmap.dispose();
+
+        // texturas del boton como ninepatch para evitar estiramiento
+        btnTexture = new Texture(Gdx.files.internal("images/button.png"));
+        skin.add("btn-up", new com.badlogic.gdx.graphics.g2d.NinePatch(btnTexture, 35, 35, 20, 20));
+        btnOverTexture = new Texture(Gdx.files.internal("images/button_over.png"));
+        skin.add("btn-over", new com.badlogic.gdx.graphics.g2d.NinePatch(btnOverTexture, 35, 35, 20, 20));
 
         FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("fonts/GOODDC__.TTF"));
         FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -240,5 +251,5 @@
         @Override public void pause()   {}
         @Override public void resume()  {}
         @Override public void hide()    {}
-        @Override public void dispose() { escenario.dispose(); piel.dispose(); sheetNiveles.dispose(); sheetResultado.dispose(); bgTexture.dispose(); batch.dispose(); }
+        @Override public void dispose() { escenario.dispose(); piel.dispose(); sheetNiveles.dispose(); sheetResultado.dispose(); bgTexture.dispose(); btnTexture.dispose(); btnOverTexture.dispose(); batch.dispose(); }
         }

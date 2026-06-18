@@ -54,6 +54,8 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
     protected Stage   escenario;
     protected Skin    piel;
     protected Texture bgTexture;
+    protected Texture btnTexture;
+    protected Texture btnOverTexture;
     protected SpriteBatch batch;
 
     private Vector2 puntoAnterior       = new Vector2();
@@ -441,10 +443,13 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
 
 
     protected TextButton crearBoton(String texto, Color color) {
-        TextButton btn = new TextButton(texto, piel);
-        btn.getStyle().up   = piel.newDrawable("blanco", color);
-        btn.getStyle().down = piel.newDrawable("blanco", color.cpy().mul(0.8f, 0.8f, 0.8f, 1f));
-        btn.getStyle().over = piel.newDrawable("blanco", color.cpy().mul(1.1f, 1.1f, 1.1f, 1f));
+        // boton con estilo propio para evitar compartir estado
+        TextButton.TextButtonStyle estilo = new TextButton.TextButtonStyle(piel.get(TextButton.TextButtonStyle.class));
+        estilo.up   = piel.newDrawable("btn-up", color);
+        estilo.down = piel.newDrawable("btn-up", color.cpy().mul(0.8f, 0.8f, 0.8f, 1f));
+        estilo.over = piel.newDrawable("btn-over", color.cpy().mul(1.1f, 1.1f, 1.1f, 1f));
+        TextButton btn = new TextButton(texto, estilo);
+        btn.pad(5, 15, 5, 15);
         return btn;
     }
 
@@ -454,6 +459,12 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
         px.setColor(Color.WHITE); px.fill();
         skin.add("blanco", new Texture(px));
         px.dispose();
+
+        // texturas del boton como ninepatch para evitar estiramiento
+        btnTexture = new Texture(Gdx.files.internal("images/button.png"));
+        skin.add("btn-up", new com.badlogic.gdx.graphics.g2d.NinePatch(btnTexture, 35, 35, 20, 20));
+        btnOverTexture = new Texture(Gdx.files.internal("images/button_over.png"));
+        skin.add("btn-over", new com.badlogic.gdx.graphics.g2d.NinePatch(btnOverTexture, 35, 35, 20, 20));
 
         FreeTypeFontGenerator gen = new FreeTypeFontGenerator(
             Gdx.files.internal("fonts/GOODDC__.TTF"));
@@ -502,6 +513,8 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
         escenario.dispose();
         piel.dispose();
         bgTexture.dispose();
+        if (btnTexture != null) btnTexture.dispose();
+        if (btnOverTexture != null) btnOverTexture.dispose();
         batch.dispose();
     }
 }

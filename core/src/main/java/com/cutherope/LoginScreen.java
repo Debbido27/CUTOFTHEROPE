@@ -27,6 +27,8 @@
         private Skin skin;
         private Texture logoTexture;
         private Texture bgTexture;
+        private Texture btnTexture;
+        private Texture btnOverTexture;
         private SpriteBatch batch;
         private int categoriaActual = 0;
         private final Color FONDO   = new Color(0.96f, 0.92f, 0.82f, 1f);
@@ -392,10 +394,13 @@
         }
 
         private TextButton crearBoton(String texto, Color color) {
-        TextButton btn = new TextButton(texto, skin);
-        btn.getStyle().up   = skin.newDrawable("white", color);
-        btn.getStyle().down = skin.newDrawable("white", color.cpy().mul(0.8f, 0.8f, 0.8f, 1f));
-        btn.getStyle().over = skin.newDrawable("white", color.cpy().mul(1.1f, 1.1f, 1.1f, 1f));
+        // boton con estilo propio para evitar compartir estado
+        TextButton.TextButtonStyle estilo = new TextButton.TextButtonStyle(skin.get(TextButton.TextButtonStyle.class));
+        estilo.up   = skin.newDrawable("btn-up", color);
+        estilo.down = skin.newDrawable("btn-up", color.cpy().mul(0.8f, 0.8f, 0.8f, 1f));
+        estilo.over = skin.newDrawable("btn-over", color.cpy().mul(1.1f, 1.1f, 1.1f, 1f));
+        TextButton btn = new TextButton(texto, estilo);
+        btn.pad(5, 15, 5, 15);
         return btn;
         }
 
@@ -408,6 +413,12 @@
         pixmap.fill();
         skin.add("white", new Texture(pixmap));
         pixmap.dispose();
+
+        // texturas del boton como ninepatch para evitar estiramiento
+        btnTexture = new Texture(Gdx.files.internal("images/button.png"));
+        skin.add("btn-up", new com.badlogic.gdx.graphics.g2d.NinePatch(btnTexture, 35, 35, 20, 20));
+        btnOverTexture = new Texture(Gdx.files.internal("images/button_over.png"));
+        skin.add("btn-over", new com.badlogic.gdx.graphics.g2d.NinePatch(btnOverTexture, 35, 35, 20, 20));
 
         FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("fonts/GOODDC__.TTF"));
         FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -486,5 +497,5 @@
         @Override public void pause() {}
         @Override public void resume() {}
         @Override public void hide() {}
-        @Override public void dispose() { stage.dispose(); skin.dispose(); logoTexture.dispose(); bgTexture.dispose(); batch.dispose(); }
+        @Override public void dispose() { stage.dispose(); skin.dispose(); logoTexture.dispose(); bgTexture.dispose(); btnTexture.dispose(); btnOverTexture.dispose(); batch.dispose(); }
         }
