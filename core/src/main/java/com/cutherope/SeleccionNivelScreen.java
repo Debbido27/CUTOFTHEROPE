@@ -76,7 +76,7 @@
 
         Table raiz = new Table();
         raiz.setFillParent(true);
-        raiz.bottom();
+        raiz.center();
 
         Table filaNiveles = new Table();
 
@@ -144,7 +144,7 @@
         }
         });
 
-        raiz.add(filaNiveles).padBottom(20).row();
+        raiz.add(filaNiveles).padBottom(50).row();
         raiz.add(btnVolver).width(200).height(45).padBottom(20).row();
 
         escenario.addActor(raiz);
