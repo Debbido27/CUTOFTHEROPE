@@ -13,7 +13,8 @@ public class Pelota {
     private final Texture texIzq;
     private final Texture texDer;
 
-    private boolean rota  = false;
+    private boolean rota   = false;
+    private boolean oculta = false;
     private float izqX, izqY, izqVX, izqVY;
     private float derX, derY, derVX, derVY;
 
@@ -73,9 +74,12 @@ public class Pelota {
         derY  += derVY * delta;
     }
 
+    public void ocultar() { oculta = true; }
+
     public void dibujar(SpriteBatch batch) {
+        if (oculta) return;
         if (rota) {
-            float r = radio * 1.8f;
+            float r = radio;
             batch.draw(texIzq, izqX - r, izqY - r, r * 2f, r * 2f);
             batch.draw(texDer, derX - r, derY - r, r * 2f, r * 2f);
         } else {

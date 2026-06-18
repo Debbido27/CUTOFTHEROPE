@@ -60,6 +60,9 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
     private boolean puntoAnteriorValido = false;
     private boolean pelotaCayoEnEspina  = false;
 
+    //viewport del mundo fisico — se recalcula cada frame para mantener la proporcion de la camara
+    private int vpX, vpY, vpW, vpH;
+
     protected final Color VERDE = new Color(0.33f, 0.59f, 0.31f, 1f);
     protected final Color CAFE  = new Color(0.23f, 0.16f, 0.08f, 1f);
     protected final Color ROJO  = new Color(0.70f, 0.27f, 0.20f, 1f);
@@ -167,8 +170,27 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
         escenario.addActor(raiz);
     }
 
+    //calcula el viewport que mantiene la proporcion de la camara sin estirar
+    private void recalcularViewportFisico() {
+        if (camaraFisica.viewportWidth == 0 || camaraFisica.viewportHeight == 0) return;
+        float camAspect    = camaraFisica.viewportWidth / camaraFisica.viewportHeight;
+        int   screenW      = Gdx.graphics.getWidth();
+        int   screenH      = Gdx.graphics.getHeight();
+        float screenAspect = (float) screenW / screenH;
+        if (screenAspect > camAspect) {
+            vpH = screenH;
+            vpW = (int) (screenH * camAspect);
+        } else {
+            vpW = screenW;
+            vpH = (int) (screenW / camAspect);
+        }
+        vpX = (screenW - vpW) / 2;
+        vpY = (screenH - vpH) / 2;
+    }
+
     @Override
     public void render(float delta) {
+        recalcularViewportFisico();
         Gdx.gl.glClearColor(0, 0, 0, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -184,6 +206,11 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
                     }
                     nomnom.actualizar(delta);
                     if (nomnom.comioLaPelota()) {
+                        if (burbujaActiva != null) {
+                            burbujaActiva.explotar(pelota);
+                            burbujaActiva = null;
+                        }
+                        pelota.ocultar();
                         estadoNivel     = EstadoNivel.GANANDO;
                         timerTransicion = 1.8f;
                     }
@@ -225,6 +252,8 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
                 break;
         }
 
+        //fondo en pantalla completa
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.getProjectionMatrix().setToOrtho2D(
             0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.begin();
@@ -232,10 +261,11 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
             Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.end();
 
-
         for (Estrella e : estrellas) e.actualizar(delta);
         for (Burbuja  b : burbujas)  b.actualizar(delta);
 
+        //objetos fisicos con viewport que respeta la proporcion de la camara
+        Gdx.gl.glViewport(vpX, vpY, vpW, vpH);
         batch.setProjectionMatrix(camaraFisica.combined);
         batch.begin();
 
@@ -261,14 +291,10 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
         escenario.draw();
     }
 
-    //convierte coordenadas de pantalla a coordenadas del mundo fisico,
-    //teniendo en cuenta las barras negras del fitviewport
+    //convierte coordenadas de pantalla a coordenadas del mundo fisico
     private Vector2 desdePixel(int x, int y) {
-        FitViewport vp = (FitViewport) escenario.getViewport();
         Vector3 raw = new Vector3(x, y, 0);
-        camaraFisica.unproject(raw,
-            vp.getLeftGutterWidth(), vp.getBottomGutterHeight(),
-            vp.getScreenWidth(),     vp.getScreenHeight());
+        camaraFisica.unproject(raw, vpX, vpY, vpW, vpH);
         return new Vector2(raw.x, raw.y);
     }
 

@@ -1,6 +1,7 @@
 package NIVELES;
 
 import Game.*;
+import Game.Obstaculo.TipoObstaculo;
 import LOGIC.LoginManager;
 import com.cutherope.CutTheRope;
 
@@ -12,7 +13,7 @@ public class Nivel4Screen extends NivelBaseScreen {
     }
 
     public Nivel4Screen(CutTheRope juego, String usuario, LoginManager gestor,
-                        String retoRetador, String retoRetado) {
+            String retoRetador, String retoRetado) {
         super(juego, usuario, gestor, 4, retoRetador, retoRetado);
     }
 
@@ -23,28 +24,33 @@ public class Nivel4Screen extends NivelBaseScreen {
 
     @Override
     protected void crearNivel() {
-        float anclaX = 5f;
-        float anclaY = 13f;
-        int   segs   = 9;
-        float largo  = 0.45f;
-        float dist   = segs * largo;
+        float pelotaX = 3.5f;
+        float pelotaY = 14.0f;
+        crearPelota(pelotaX, pelotaY, 0.35f);
 
-        crearPelota(anclaX, anclaY - dist, 0.3f);
-        anclarCuerda(anclaX, anclaY, segs, largo);
+        //Ancla izquierda-alto más corta
+        anclarCuerda(2.0f, 16.5f, 3, 1.05f);
+        //Ancla centro-alto más corta
+        anclarCuerda(6.5f, 18.0f, 5, 1.0f);
+        //Ancla derecha-alto más larga
+        anclarCuerda(11.5f, 18.0f, 13, 0.88f);
+        //Ancla abajo-izquierda más corta
+        anclarCuerda(3.5f, 11.0f, 3, 1.0f);
 
-        // bubble blocks the path — player must tap to pop it
-        burbujas.add(new Burbuja(mundo, anclaX, 6.5f, 0.55f));
+        //omNom abajo-derecha
+        colocarNomNom(11.0f, 5.0f, 0.6f);
 
-        // stars: first two collected on the way down, third after the bubble pops
-        estrellas.add(new Estrella(mundo, anclaX, 8.0f,  0.22f));
-        estrellas.add(new Estrella(mundo, anclaX, 6.5f,  0.22f));
-        estrellas.add(new Estrella(mundo, anclaX, 4.5f,  0.22f));
+        //Estrellas
+        estrellas.add(new Estrella(mundo, 5.0f, 13.5f, 0.22f));
+        estrellas.add(new Estrella(mundo, 9.5f, 12.5f, 0.22f));
+        estrellas.add(new Estrella(mundo, 9.5f, 7.0f, 0.22f)); // top-right de NomNom (11.0, 5.0)
 
-        colocarNomNom(anclaX, 2.5f, 0.6f);
-        limiteInferior = 0f;
+        obstaculos.add(new Obstaculo(mundo, 12.5f, 8.0f, 1.0f, 5.0f, TipoObstaculo.LARGO));
+        obstaculos.add(new Obstaculo(mundo, 3.0f, 8.5f, 1.0f, 5.0f, TipoObstaculo.LARGO));
 
-        camaraFisica.setToOrtho(false, 16f, 18f);
-        camaraFisica.position.set(anclaX, 7.5f, 0);
+        limiteInferior = 0.5f;
+        camaraFisica.setToOrtho(false, 18f, 24f);
+        camaraFisica.position.set(7.5f, 12.0f, 0);
         camaraFisica.update();
     }
 }
