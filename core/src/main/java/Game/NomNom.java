@@ -67,7 +67,6 @@ public class NomNom extends ElementoNivel implements Interactuable {
         forma.dispose();
     }
 
-    // called every frame from NivelBaseScreen with the candy's current position
     public void setPelotaCerca(boolean cerca) {
         if (estado == Estado.COMIENDO || estado == Estado.TRISTE) return;
 
