@@ -6,12 +6,12 @@ import com.cutherope.CutTheRope;
 
 public class Nivel5Screen extends NivelBaseScreen {
     public Nivel5Screen(CutTheRope juego, String usuario, LoginManager gestor) {
-        super(juego, usuario, gestor, 4);
+        super(juego, usuario, gestor, 5);
         construirUI();
     }
     public Nivel5Screen(CutTheRope juego, String usuario, LoginManager gestor,
                         String retoRetador, String retoRetado) {
-        super(juego, usuario, gestor, 4, retoRetador, retoRetado);
+        super(juego, usuario, gestor, 5, retoRetador, retoRetado);
     }
 
     @Override
