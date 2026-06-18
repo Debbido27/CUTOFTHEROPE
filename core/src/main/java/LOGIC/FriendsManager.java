@@ -1,147 +1,63 @@
+package LOGIC;
 
-        package LOGIC;
+public class FriendsManager {
 
-        import java.io.BufferedReader;
-        import java.io.BufferedWriter;
-        import java.io.File;
-        import java.io.FileReader;
-        import java.io.FileWriter;
-        import java.io.IOException;
+    private LoginManager loginManager;
 
+    public FriendsManager(LoginManager loginManager) {
+        this.loginManager = loginManager;
+    }
 
-        public class FriendsManager {
-
-        private static final String BASE_FOLDER = "../assets/CTR_RAIZ";    
-        private String getAmigosPath(String username){
-        return BASE_FOLDER+"/"+username+"/amigos.ctr";
-        }
-
-        private String getSolicitudesPath(String username) {
-        File f = new File(BASE_FOLDER + "/" + username + "/solicitudes.ctr");
-        if (!f.exists()) {
-        try { f.createNewFile(); } catch (IOException e) {}
-        }
-        return f.getPath();
-        }
-
-
-        public boolean enviarSolicitud(String de, String para, LoginManager loginManager) {
+    public synchronized boolean enviarSolicitud(String de, String para) {
         if (loginManager.buscarUser(para) == null) return false;
         if (sonAmigos(de, para)) return false;
         if (tieneSolicitudPendiente(de, para)) return false;
-        return agregarLinea(getSolicitudesPath(para), de);
-        }
+        if (de.equals(para)) return false;
 
-        public boolean aceptarSolicitud(String solicitante, String receptor) {
+        loginManager.guardarSolicitud(para, de);
+        return true;
+    }
+
+    public synchronized boolean aceptarSolicitud(String solicitante, String receptor) {
         if (!tieneSolicitudPendiente(solicitante, receptor)) return false;
-        eliminarLinea(getSolicitudesPath(receptor), solicitante);
-        agregarLinea(getAmigosPath(receptor), solicitante);
-        agregarLinea(getAmigosPath(solicitante), receptor);
+
+        loginManager.eliminarSolicitud(receptor, solicitante);
+        loginManager.agregarAmigo(receptor, solicitante);
+        loginManager.agregarAmigo(solicitante, receptor);
+
         return true;
-        }
+    }
 
-        public boolean rechazarSolicitud(String solicitante, String receptor) {
-        return eliminarLinea(getSolicitudesPath(receptor), solicitante);
-        }
+    public synchronized boolean rechazarSolicitud(String solicitante, String receptor) {
+        return loginManager.eliminarSolicitud(receptor, solicitante);
+    }
 
-        public boolean eliminarAmigo(String userA, String userB) {
-        boolean a = eliminarLinea(getAmigosPath(userA), userB);
-        boolean b = eliminarLinea(getAmigosPath(userB), userA);
-        return a && b;
-        }
+    public synchronized boolean eliminarAmigo(String userA, String userB) {
+        loginManager.eliminarAmigo(userA, userB);
+        loginManager.eliminarAmigo(userB, userA);
+        return true;
+    }
 
-        public boolean sonAmigos(String userA, String userB) {
-        return contieneLinea(getAmigosPath(userA), userB);
+    public synchronized boolean sonAmigos(String userA, String userB) {
+        for (String amigo : loginManager.cargarAmigos(userA)) {
+            if (amigo.equals(userB)) return true;
         }
+        return false;
+    }
 
-        public boolean tieneSolicitudPendiente(String solicitante, String receptor) {
-        return contieneLinea(getSolicitudesPath(receptor), solicitante);
-        }
+    public synchronized boolean tieneSolicitudPendiente(String solicitante, String receptor) {
+        return loginManager.tieneSolicitudPendiente(solicitante, receptor);
+    }
 
-        public String[] getAmigos(String username) {
-        return leerLineas(getAmigosPath(username));
-        }
+    public synchronized String[] getAmigos(String username) {
+        return loginManager.cargarAmigos(username);
+    }
 
-        public String[] getSolicitudes(String username) {
-        return leerLineas(getSolicitudesPath(username));
-        }
+    public synchronized String[] getSolicitudes(String username) {
+        return loginManager.cargarSolicitudes(username).toArray(new String[0]);
+    }
 
-        public int contarAmigos(String username) {
+    public synchronized int contarAmigos(String username) {
         return getAmigos(username).length;
-        }
-
-        private boolean agregarLinea(String path, String valor) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(path, true))) {
-        bw.write(valor);
-        bw.newLine();
-        return true;
-        } catch (IOException e) {
-        System.out.println("Error escribiendo en " + path + ": " + e.getMessage());
-        return false;
-        }
-        }
-
-        private boolean eliminarLinea(String path, String valor) {
-        File file = new File(path);
-        if (!file.exists()) return false;
-        try {
-        StringBuilder sb = new StringBuilder();
-        boolean encontrado = false;
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String linea;
-            while ((linea = br.readLine()) != null) {
-                if (linea.equals(valor) && !encontrado) {
-                    encontrado = true;
-                } else {
-                    sb.append(linea).append(System.lineSeparator());
-                }
-            }
-        }
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
-            bw.write(sb.toString());
-        }
-        return encontrado;
-        } catch (IOException e) {
-        System.out.println("Error eliminando linea: " + e.getMessage());
-        return false;
-        }
-        }
-
-        private boolean contieneLinea(String path, String valor) {
-        File file = new File(path);
-        if (!file.exists()) return false;
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-        String linea;
-        while ((linea = br.readLine()) != null) {
-            if (linea.equals(valor)) return true;
-        }
-        } catch (IOException e) {
-        System.out.println("Error leyendo " + path);
-        }
-        return false;
-        }
-
-        private String[] leerLineas(String path) {
-        File file = new File(path);
-        if (!file.exists()) return new String[0];
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-        String[] temp = new String[500];
-        int total = 0;
-        String linea;
-        while ((linea = br.readLine()) != null) {
-            if (!linea.trim().isEmpty()) temp[total++] = linea.trim();
-        }
-        String[] resultado = new String[total];
-        for (int i = 0; i < total; i++) resultado[i] = temp[i];
-        return resultado;
-        } catch (IOException e) {
-        System.out.println("Error leyendo lineas: " + e.getMessage());
-        return new String[0];
-        }
-        }
-
-
-
-
-
-        }
+    }
+}
