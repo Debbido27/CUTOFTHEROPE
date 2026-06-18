@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import LOGIC.LoginManager;
+import LOGIC.PartidaHistorial;
 
 public class Estadisticas implements Screen {
 
