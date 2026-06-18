@@ -140,12 +140,10 @@ public class Estadisticas implements Screen {
                 Label lblNv = new Label(Idioma.get(Idioma.Clave.NIVEL) + " " + (i + 1), piel);
                 lblNv.setColor(Color.WHITE);
 
-                // Estrellas como texto "llenas/vacias" sin simbolos raros
                 int cant = epn[i];
                 Label lblCant = new Label(cant + " " + Idioma.get(Idioma.Clave.DE) + " 3", piel);
                 lblCant.setColor(cant == 3 ? CREMA : new Color(1f,1f,1f,0.6f));
 
-                // Barra pequeña de estrellas
                 Table barraNv = new Table();
                 for (int s = 0; s < 3; s++) {
                     Pixmap px2 = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
@@ -184,7 +182,8 @@ public class Estadisticas implements Screen {
                     Idioma.get(Idioma.Clave.ESTRELLAS),
                     Idioma.get(Idioma.Clave.PUNTUACION),
                     Idioma.get(Idioma.Clave.TIEMPO)
-                };                int[]    aenchs = { 70,      110,         90,          80,       80 };
+                };
+                int[]    aenchs = { 70,      110,         90,          80,       80 };
                 for (int i = 0; i < heads.length; i++) {
                     Label l = new Label(heads[i], piel);
                     l.setColor(DORADO);
@@ -203,15 +202,16 @@ public class Estadisticas implements Screen {
                     PartidaHistorial p = historial[i];
                     Table fila = new Table();
 
-                    Label lNv  = new Label("Nivel " + p.nivel, piel);
-                    Label lRes = new Label(p.gano ? Idioma.get(Idioma.Clave.GANO) : Idioma.get(Idioma.Clave.PERDIO), piel);
-                    Label lEst = new Label(p.estrellas + " " + Idioma.get(Idioma.Clave.DE) + " 3", piel);
-                    Label lPts = new Label(String.valueOf(p.puntuacion), piel);
-                    Label lTmp = new Label((p.tiempoMs / 1000) + " " + Idioma.get(Idioma.Clave.SEGUNDOS), piel);
+                    // 🔥 CAMBIOS AQUÍ: usar getters en lugar de acceso directo
+                    Label lNv  = new Label(Idioma.get(Idioma.Clave.NIVEL) + " " + p.getNivel(), piel);
+                    Label lRes = new Label(p.isGano() ? Idioma.get(Idioma.Clave.GANO) : Idioma.get(Idioma.Clave.PERDIO), piel);
+                    Label lEst = new Label(p.getEstrellas() + " " + Idioma.get(Idioma.Clave.DE) + " 3", piel);
+                    Label lPts = new Label(String.valueOf(p.getPuntaje()), piel);
+                    Label lTmp = new Label((p.getTiempoMs() / 1000) + " " + Idioma.get(Idioma.Clave.SEGUNDOS), piel);
 
                     lNv.setColor(CREMA);
-                    lRes.setColor(p.gano ? VERDE : ROJO);
-                    lRes.setColor(p.gano ? new Color(0.6f,1f,0.5f,1f) : new Color(1f,0.5f,0.4f,1f));
+                    lRes.setColor(p.isGano() ? VERDE : ROJO);
+                    lRes.setColor(p.isGano() ? new Color(0.6f,1f,0.5f,1f) : new Color(1f,0.5f,0.4f,1f));
                     lEst.setColor(DORADO);
                     lPts.setColor(CREMA);
                     lTmp.setColor(GRIS_CLARO);
@@ -245,7 +245,6 @@ public class Estadisticas implements Screen {
 
     // ── HELPERS ──────────────────────────────────────────────────
 
-    /** Crea una tabla con fondo de color y padding interno */
     private Table crearCaja(Color color, float ancho, float alto) {
         Table caja = new Table();
         Pixmap px = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
@@ -256,7 +255,6 @@ public class Estadisticas implements Screen {
         return caja;
     }
 
-    /** Fila "clave : valor" dentro de una caja */
     private void agregarFilaCaja(Table t, String clave, String valor) {
         Label lClave = new Label(clave + ":", piel);
         lClave.setColor(new Color(1f, 1f, 1f, 0.75f));
@@ -268,7 +266,6 @@ public class Estadisticas implements Screen {
         t.add(fila).padBottom(4).row();
     }
 
-    /** Barra de progreso segmentada */
     private Table crearBarra(int llenos, int total) {
         Table barra = new Table();
         for (int i = 0; i < total; i++) {
@@ -301,21 +298,18 @@ public class Estadisticas implements Screen {
         float escala = Math.min(Gdx.graphics.getWidth() / 640f,
             Gdx.graphics.getHeight() / 480f);
 
-        // Fuente normal
         FreeTypeFontGenerator.FreeTypeFontParameter p = new FreeTypeFontGenerator.FreeTypeFontParameter();
         p.size = Math.round(14 * escala);
         p.characters = FreeTypeFontGenerator.DEFAULT_CHARS + "áéíóúÁÉÍÓÚñÑüÜ¡¿";
         BitmapFont fuente = gen.generateFont(p);
         fuente.getData().setScale(1f / escala);
 
-        // Fuente subtitulo (para headers de caja)
         FreeTypeFontGenerator.FreeTypeFontParameter pS = new FreeTypeFontGenerator.FreeTypeFontParameter();
         pS.size = Math.round(16 * escala);
         pS.characters = FreeTypeFontGenerator.DEFAULT_CHARS + "áéíóúÁÉÍÓÚñÑüÜ¡¿";
         BitmapFont fuenteSub = gen.generateFont(pS);
         fuenteSub.getData().setScale(1f / escala);
 
-        // Fuente titulo
         FreeTypeFontGenerator.FreeTypeFontParameter pT = new FreeTypeFontGenerator.FreeTypeFontParameter();
         pT.size = Math.round(36 * escala);
         pT.characters = FreeTypeFontGenerator.DEFAULT_CHARS + "áéíóúÁÉÍÓÚñÑüÜ¡¿";

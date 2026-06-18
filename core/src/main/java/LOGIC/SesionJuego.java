@@ -29,6 +29,11 @@ public class SesionJuego {
         this.username = username;
         this.gestor   = gestor;
         historial.clear();
+
+        List<PartidaHistorial> historialGuardado = gestor.cargarHistorial(username);
+        if (historialGuardado != null) {
+            historial.addAll(historialGuardado);
+        }
     }
 
     public void iniciarNivel(int nivel) {
@@ -54,12 +59,19 @@ public class SesionJuego {
         long tiempoMs   = System.currentTimeMillis() - tiempoInicioNivel;
         int  puntuacion = calcularPuntuacion(gano, estrellasNivel, tiempoMs);
 
+        // 1. Guardar stats (LoginManager)
         gestor.registrarPartida(username, nivelActual - 1,
             puntuacion, estrellasNivel,
             fallosAcumulados, tiempoMs);
-        historial.add(new PartidaHistorial(
+
+        // 2. Crear partida historial
+        PartidaHistorial partida = new PartidaHistorial(
             nivelActual, gano, estrellasNivel,
-            puntuacion, tiempoMs, LocalDate.now()));
+            puntuacion, tiempoMs, LocalDate.now());
+
+        historial.add(partida);
+
+        gestor.guardarPartidaHistorial(username, partida);
 
         fallosAcumulados = 0;
         nivelActual      = -1;

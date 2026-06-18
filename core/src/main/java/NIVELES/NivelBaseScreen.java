@@ -334,7 +334,7 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
 
         SesionJuego.get().finalizarNivel(gano);
 
-        new RetosManager().registrarResultadoJugador(
+        new RetosManager(gestor).registrarResultadoJugador(
             retoRetador, retoRetado, nivel, retoJugadorActual,
             puntaje, estrellas, segundos);
 

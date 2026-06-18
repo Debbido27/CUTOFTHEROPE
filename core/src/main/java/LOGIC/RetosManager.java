@@ -7,55 +7,115 @@ import java.util.List;
 
 public class RetosManager {
 
-    private static final String BASE  = "../assets/CTR_RAIZ";
-    private static final String RETOS = BASE + "/retos.dat";
-    private static final String NOTIF = BASE + "/notificaciones.dat";
+    private LoginManager loginManager;
 
+    // Constructor que recibe LoginManager
+    public RetosManager(LoginManager loginManager) {
+        this.loginManager = loginManager;
+    }
 
+    // Constructor vacío para compatibilidad (si se usa sin LoginManager)
+    public RetosManager() {
+        // Intenta obtener el LoginManager de la sesión
+        // Si no está disponible, se usa sin persistencia
+        this.loginManager = null;
+    }
 
     public boolean enviarReto(String retador, String retado, int nivel) {
-        for (Reto r : getTodosRetos()) {
+        // Verificar si ya existe un reto pendiente
+        List<Reto> retosRetado = loginManager != null ?
+            loginManager.cargarRetos(retado) : new ArrayList<>();
+
+        for (Reto r : retosRetado) {
             if (r.retador.equals(retador) && r.retado.equals(retado)
                 && r.nivel == nivel && r.estado == Reto.Estado.PENDIENTE)
                 return false;
         }
-        List<Reto> lista = getTodosRetos();
-        lista.add(new Reto(retador, retado, nivel));
-        guardarRetos(lista);
 
-        agregarNotificacion(new Notificacion(
-            Notificacion.Tipo.RETO_RECIBIDO, retador, retado, nivel));
+        Reto nuevoReto = new Reto(retador, retado, nivel);
+
+        if (loginManager != null) {
+            // Guardar en carpeta del retado
+            loginManager.guardarReto(retado, nuevoReto);
+
+            // Crear notificación para el retado
+            Notificacion notif = new Notificacion(
+                Notificacion.Tipo.RETO_RECIBIDO, retador, retado, nivel);
+            loginManager.guardarNotificacion(retado, notif);
+        }
         return true;
     }
 
     public boolean aceptarReto(String retador, String retado, int nivel) {
         return cambiarEstado(retador, retado, nivel,
-            Reto.Estado.PENDIENTE, Reto.Estado.ACEPTADO, () ->
-                agregarNotificacion(new Notificacion(
-                    Notificacion.Tipo.RETO_ACEPTADO, retado, retador, nivel)));
+            Reto.Estado.PENDIENTE, Reto.Estado.ACEPTADO, () -> {
+                if (loginManager != null) {
+                    Notificacion notif = new Notificacion(
+                        Notificacion.Tipo.RETO_ACEPTADO, retado, retador, nivel);
+                    loginManager.guardarNotificacion(retador, notif);
+                }
+            });
     }
 
     public boolean rechazarReto(String retador, String retado, int nivel) {
         return cambiarEstado(retador, retado, nivel,
-            Reto.Estado.PENDIENTE, Reto.Estado.RECHAZADO, () ->
-                agregarNotificacion(new Notificacion(
-                    Notificacion.Tipo.RETO_RECHAZADO, retado, retador, nivel)));
+            Reto.Estado.PENDIENTE, Reto.Estado.RECHAZADO, () -> {
+                if (loginManager != null) {
+                    Notificacion notif = new Notificacion(
+                        Notificacion.Tipo.RETO_RECHAZADO, retado, retador, nivel);
+                    loginManager.guardarNotificacion(retador, notif);
+                }
+            });
     }
-
 
     public List<Reto> getRetosRecibidos(String usuario) {
         List<Reto> res = new ArrayList<>();
-        for (Reto r : getTodosRetos())
-            if (r.retado.equals(usuario) && r.estado == Reto.Estado.PENDIENTE)
+        if (loginManager == null) return res;
+
+        for (Reto r : loginManager.cargarRetos(usuario)) {
+            if (r.retado.equals(usuario) && r.estado == Reto.Estado.PENDIENTE) {
                 res.add(r);
+            }
+        }
         return res;
     }
 
     public List<Reto> getHistorialRetos(String usuario) {
         List<Reto> res = new ArrayList<>();
-        for (Reto r : getTodosRetos())
-            if (r.retador.equals(usuario) || r.retado.equals(usuario))
+        if (loginManager == null) return res;
+
+        for (Reto r : loginManager.cargarRetos(usuario)) {
+            if (r.retador.equals(usuario) || r.retado.equals(usuario)) {
                 res.add(r);
+            }
+        }
+        return res;
+    }
+
+    public List<Reto> getRetosEnviados(String usuario) {
+        List<Reto> res = new ArrayList<>();
+        if (loginManager == null) return res;
+
+        for (Reto r : loginManager.cargarRetos(usuario)) {
+            if (r.retador.equals(usuario) && r.estado == Reto.Estado.PENDIENTE) {
+                res.add(r);
+            }
+        }
+        return res;
+    }
+
+    public List<Reto> getRetosActivos(String usuario) {
+        List<Reto> res = new ArrayList<>();
+        if (loginManager == null) return res;
+
+        for (Reto r : loginManager.cargarRetos(usuario)) {
+            if (!(r.retador.equals(usuario) || r.retado.equals(usuario))) continue;
+            if (r.estado != Reto.Estado.ACEPTADO && r.estado != Reto.Estado.ESPERANDO_RIVAL) continue;
+            boolean esRetador = r.retador.equals(usuario);
+            if (esRetador && r.jugoRetador) continue;
+            if (!esRetador && r.jugoRetado) continue;
+            res.add(r);
+        }
         return res;
     }
 
@@ -68,7 +128,15 @@ public class RetosManager {
         int[] ganados  = new int[n];
         int[] perdidos = new int[n];
 
-        for (Reto r : getTodosRetos()) {
+        // Recoger todos los retos de todos los amigos
+        List<Reto> todosRetos = new ArrayList<>();
+        if (loginManager != null) {
+            for (String jugador : jugadores) {
+                todosRetos.addAll(loginManager.cargarRetos(jugador));
+            }
+        }
+
+        for (Reto r : todosRetos) {
             if (r.estado != Reto.Estado.COMPLETADO || r.ganador == null) continue;
             String perdedor = r.ganador.equals(r.retador) ? r.retado : r.retador;
             for (int i = 0; i < n; i++) {
@@ -96,115 +164,108 @@ public class RetosManager {
         return res;
     }
 
-
     public List<Notificacion> getNotificaciones(String usuario) {
         List<Notificacion> res = new ArrayList<>();
-        for (Notificacion n : todasNotificaciones())
+        if (loginManager == null) return res;
+
+        for (Notificacion n : loginManager.cargarNotificaciones(usuario)) {
             if (n.destino.equals(usuario)) res.add(n);
+        }
         return res;
     }
 
     public int contarNoLeidas(String usuario) {
         int c = 0;
-        for (Notificacion n : todasNotificaciones())
+        if (loginManager == null) return 0;
+
+        for (Notificacion n : loginManager.cargarNotificaciones(usuario)) {
             if (n.destino.equals(usuario) && !n.leida) c++;
+        }
         return c;
     }
 
     public void marcarTodasLeidas(String usuario) {
-        List<Notificacion> lista = todasNotificaciones();
-        for (Notificacion n : lista)
-            if (n.destino.equals(usuario)) n.leida = true;
-        guardarNotificaciones(lista);
-    }
+        if (loginManager == null) return;
 
-
-    @SuppressWarnings("unchecked")
-    private List<Reto> getTodosRetos() {
-        try (ObjectInputStream in = new ObjectInputStream(
-            new FileInputStream(RETOS))) {
-            return (List<Reto>) in.readObject();
-        } catch (Exception e) { return new ArrayList<>(); }
-    }
-
-    private void guardarRetos(List<Reto> lista) {
-        new File(BASE).mkdirs();
-        try (ObjectOutputStream out = new ObjectOutputStream(
-            new FileOutputStream(RETOS))) {
-            out.writeObject(lista);
-        } catch (IOException e) { e.printStackTrace(); }
-    }
-
-    @SuppressWarnings("unchecked")
-    private List<Notificacion> todasNotificaciones() {
-        try (ObjectInputStream in = new ObjectInputStream(
-            new FileInputStream(NOTIF))) {
-            return (List<Notificacion>) in.readObject();
-        } catch (Exception e) { return new ArrayList<>(); }
-    }
-
-    private void guardarNotificaciones(List<Notificacion> lista) {
-        new File(BASE).mkdirs();
-        try (ObjectOutputStream out = new ObjectOutputStream(
-            new FileOutputStream(NOTIF))) {
-            out.writeObject(lista);
-        } catch (IOException e) { e.printStackTrace(); }
-    }
-
-    private void agregarNotificacion(Notificacion n) {
-        List<Notificacion> lista = todasNotificaciones();
-        lista.add(n);
-        guardarNotificaciones(lista);
-    }
-
-    private boolean cambiarEstado(String retador, String retado, int nivel,
-                                  Reto.Estado de, Reto.Estado a, Runnable callback) {
-        List<Reto> lista = getTodosRetos();
-        for (Reto r : lista) {
-            if (r.retador.equals(retador) && r.retado.equals(retado)
-                && r.nivel == nivel && r.estado == de) {
-                r.estado = a;
-                guardarRetos(lista);
-                callback.run();
-                return true;
+        List<Notificacion> notifs = loginManager.cargarNotificaciones(usuario);
+        for (Notificacion n : notifs) {
+            if (n.destino.equals(usuario) && !n.leida) {
+                n.leida = true;
+                loginManager.marcarNotificacionLeida(usuario, n.getId());
             }
         }
-        return false;
     }
+
     public void registrarResultadoJugador(String retador, String retado, int nivel,
                                           String quienJugo, int puntaje, int estrellas, int tiempoSeg) {
-        List<Reto> lista = getTodosRetos();
-        for (Reto r : lista) {
-            if (!r.retador.equals(retador) || !r.retado.equals(retado) || r.nivel != nivel) continue;
-            if (r.estado != Reto.Estado.ACEPTADO && r.estado != Reto.Estado.ESPERANDO_RIVAL) continue;
+        if (loginManager == null) return;
 
-            boolean esRetador = quienJugo.equals(retador);
-            if (esRetador) {
-                r.puntajeRetador   = puntaje;
-                r.estrellasRetador = estrellas;
-                r.tiempoRetador    = tiempoSeg;
-                r.jugoRetador      = true;
-            } else {
-                r.puntajeRetado    = puntaje;
-                r.estrellasRetado  = estrellas;
-                r.tiempoRetado     = tiempoSeg;
-                r.jugoRetado       = true;
+        // Buscar el reto en el retador (o en el retado)
+        List<Reto> retos = loginManager.cargarRetos(retador);
+        Reto retoEncontrado = null;
+        int indice = -1;
+
+        for (int i = 0; i < retos.size(); i++) {
+            Reto r = retos.get(i);
+            if (r.retador.equals(retador) && r.retado.equals(retado) && r.nivel == nivel) {
+                if (r.estado == Reto.Estado.ACEPTADO || r.estado == Reto.Estado.ESPERANDO_RIVAL) {
+                    retoEncontrado = r;
+                    indice = i;
+                    break;
+                }
             }
+        }
 
-            if (r.jugoRetador && r.jugoRetado) {
-                r.ganador = determinarGanador(r);
-                r.estado  = Reto.Estado.COMPLETADO;
-                String perdedor = r.ganador.equals(retador) ? retado : retador;
-                agregarNotificacion(new Notificacion(
-                    Notificacion.Tipo.RETO_GANADO, perdedor, r.ganador, nivel));
-                agregarNotificacion(new Notificacion(
-                    Notificacion.Tipo.RETO_PERDIDO, r.ganador, perdedor, nivel));
-            } else {
-                r.estado = Reto.Estado.ESPERANDO_RIVAL;
+        if (retoEncontrado == null) return;
+
+        // Actualizar datos del jugador
+        boolean esRetador = quienJugo.equals(retador);
+        if (esRetador) {
+            retoEncontrado.puntajeRetador   = puntaje;
+            retoEncontrado.estrellasRetador = estrellas;
+            retoEncontrado.tiempoRetador    = tiempoSeg;
+            retoEncontrado.jugoRetador      = true;
+        } else {
+            retoEncontrado.puntajeRetado    = puntaje;
+            retoEncontrado.estrellasRetado  = estrellas;
+            retoEncontrado.tiempoRetado     = tiempoSeg;
+            retoEncontrado.jugoRetado       = true;
+        }
+
+        if (retoEncontrado.jugoRetador && retoEncontrado.jugoRetado) {
+            retoEncontrado.ganador = determinarGanador(retoEncontrado);
+            retoEncontrado.estado  = Reto.Estado.COMPLETADO;
+            String perdedor = retoEncontrado.ganador.equals(retador) ? retado : retador;
+
+            Notificacion notifGanador = new Notificacion(
+                Notificacion.Tipo.RETO_GANADO, perdedor, retoEncontrado.ganador, nivel);
+            loginManager.guardarNotificacion(retoEncontrado.ganador, notifGanador);
+
+            Notificacion notifPerdedor = new Notificacion(
+                Notificacion.Tipo.RETO_PERDIDO, retoEncontrado.ganador, perdedor, nivel);
+            loginManager.guardarNotificacion(perdedor, notifPerdedor);
+        } else {
+            retoEncontrado.estado = Reto.Estado.ESPERANDO_RIVAL;
+        }
+
+        // Guardar reto actualizado (en la carpeta del retador)
+        retos.set(indice, retoEncontrado);
+        loginManager.actualizarReto(retador, retoEncontrado);
+
+        // También guardar en la carpeta del retado (para sincronización)
+        // Esto es un poco redundante pero asegura que ambos tengan el estado actualizado
+        List<Reto> retosRetado = loginManager.cargarRetos(retado);
+        boolean encontradoEnRetado = false;
+        for (int i = 0; i < retosRetado.size(); i++) {
+            Reto r = retosRetado.get(i);
+            if (r.retador.equals(retador) && r.retado.equals(retado) && r.nivel == nivel) {
+                retosRetado.set(i, retoEncontrado);
+                encontradoEnRetado = true;
+                break;
             }
-
-            guardarRetos(lista);
-            return;
+        }
+        if (encontradoEnRetado) {
+            loginManager.actualizarReto(retado, retoEncontrado);
         }
     }
 
@@ -214,26 +275,22 @@ public class RetosManager {
         return r.tiempoRetador <= r.tiempoRetado ? r.retador : r.retado;
     }
 
-    public List<Reto> getRetosEnviados(String usuario) {
-        List<Reto> res = new ArrayList<>();
-        for (Reto r : getTodosRetos())
-            if (r.retador.equals(usuario) && r.estado == Reto.Estado.PENDIENTE)
-                res.add(r);
-        return res;
-    }
+    private boolean cambiarEstado(String retador, String retado, int nivel,
+                                  Reto.Estado de, Reto.Estado a, Runnable callback) {
+        if (loginManager == null) return false;
 
-    public List<Reto> getRetosActivos(String usuario) {
-        List<Reto> res = new ArrayList<>();
-        for (Reto r : getTodosRetos()) {
-            if (!(r.retador.equals(usuario) || r.retado.equals(usuario))) continue;
-            if (r.estado != Reto.Estado.ACEPTADO && r.estado != Reto.Estado.ESPERANDO_RIVAL) continue;
-            boolean esRetador = r.retador.equals(usuario);
-            if (esRetador && r.jugoRetador) continue;
-            if (!esRetador && r.jugoRetado) continue;
-            res.add(r);
+        List<Reto> retos = loginManager.cargarRetos(retado);
+        for (int i = 0; i < retos.size(); i++) {
+            Reto r = retos.get(i);
+            if (r.retador.equals(retador) && r.retado.equals(retado)
+                && r.nivel == nivel && r.estado == de) {
+                r.estado = a;
+                retos.set(i, r);
+                loginManager.actualizarReto(retado, r);
+                callback.run();
+                return true;
+            }
         }
-        return res;
+        return false;
     }
-
-
 }

@@ -1,390 +1,808 @@
+package LOGIC;
 
-        package LOGIC;
+import java.io.*;
+import java.time.LocalDate;
+import java.util.*;
 
-        import java.io.EOFException;
-        import java.io.File;
-        import java.io.IOException;
-        import java.io.RandomAccessFile;
-        import java.time.LocalDate;
+public class LoginManager {
 
+    private static final String BASE_FOLDER = "../CTR_RAIZ";
+    private USER currentUser;
+    private final UserDataManager dataManager;
 
-        public class LoginManager {
-
-private static final String BASE_FOLDER = "../CTR_RAIZ";
-private static final String USERS_FILE  = BASE_FOLDER + "/users.ctr";
-        private static final String USERS_TEMP  = BASE_FOLDER + "/users_temp.ctr";
-        private USER currentUser;
-
-        public LoginManager() {
+    public LoginManager() {
         File base = new File(BASE_FOLDER);
-        if (!base.exists()) base.mkdir();
-        try { new File(USERS_FILE).createNewFile(); } catch (IOException e) {}
-        limpiarUsuariosHuerfanos();
-        currentUser = cargarUltimoUsuarioActivo();
-        }
+        if (!base.exists()) base.mkdirs();
+        this.dataManager = new UserDataManager();
+        // Cargar último usuario activo (si existe)
+        this.currentUser = cargarUltimoUsuarioActivo();
+    }
 
+    // ==================== MÉTODOS PÚBLICOS ====================
 
-        private USER leerRegistro(RandomAccessFile f) throws IOException {
-        long posInicio = f.getFilePointer();
-        try {
-        String username   = f.readUTF();
-        String password   = f.readUTF();
-        String fullname   = f.readUTF();
-        long fechaReg     = f.readLong();
-        long ultimaSesion = f.readLong();
-        String avatarPath = f.readUTF();
-        int nivelActual   = f.readInt();
+    public synchronized boolean userExiste(String username) {
+        return dataManager.usuarioExiste(username);
+    }
 
-        boolean[] niveles = new boolean[5];
-        for (int i = 0; i < 5; i++) niveles[i] = f.readBoolean();
+    public synchronized USER buscarUser(String username) {
+        return dataManager.cargarUsuarioCompleto(username);
+    }
 
-        int[] puntajes = new int[5];
-        for (int i = 0; i < 5; i++) puntajes[i] = f.readInt();
+    public synchronized boolean crearUser(String username, String password, String fullname, String avatar) {
+        if (userExiste(username)) return false;
+        if (!dataManager.crearCarpetaUsuario(username)) return false;
 
-        int[] estrellasPorNivel = new int[5];
-        for (int i = 0; i < 5; i++) estrellasPorNivel[i] = f.readInt();
-        long tiempoTotal = f.readLong();
-        int partidas     = f.readInt();
-        int fallos       = f.readInt();
-        int estrellas    = f.readInt();
-        int puntuacion   = f.readInt();
-        float volumen    = f.readFloat();
-        boolean ingles       = f.readBoolean();
-        boolean musicaActiva = f.readBoolean();
-
-
-        int totalAmigos  = f.readInt();
-        String[] amigos  = new String[totalAmigos];
-        for (int i = 0; i < totalAmigos; i++) amigos[i] = f.readUTF();
-
-        USER u = new USER(username, password, fullname);
-        u.setFechaRegistro(LocalDate.ofEpochDay(fechaReg));
-        u.setUltimaSesion(ultimaSesion);
-        u.setAvatarPath(avatarPath);
-        u.setNivelActual(nivelActual);
-        for (int i = 0; i < 5; i++) if (niveles[i]) u.desbloquearNivel(i);
-        for (int i = 0; i < 5; i++) u.setPuntajeNivel(i, puntajes[i]);
-        u.setTiempoTotalJugado(tiempoTotal);
-        u.setPartidasJugadas(partidas);
-        u.setFallosTotales(fallos);
-        u.setEstrellasTotal(estrellas);
-        u.setPuntuacionGeneral(puntuacion);
-        u.setVolumen(volumen);
-        u.setIngles(ingles);
-        u.setMusicaActiva(musicaActiva);
-        u.setAmigos(amigos);
-        u.setEstrellasPorNivel(estrellasPorNivel);
-        return u;
-
-        } catch (EOFException e) {
-        f.seek(f.length());
-        throw e;
-        }
-        }
-
-
-        private void escribirRegistro(RandomAccessFile f, USER u) throws IOException {
-        f.writeUTF(u.getUsername());
-        f.writeUTF(u.getPassword());
-        f.writeUTF(u.getFullname());
-        f.writeLong(u.getFechaRegistro().toEpochDay());
-        f.writeLong(u.getUltimaSesion());
-        f.writeUTF(u.getAvatarPath());
-        f.writeInt(u.getNivelActual());
-
-        boolean[] niveles = u.getNivelesDesbloqueados();
-        for (boolean b : niveles) f.writeBoolean(b);
-
-        int[] puntajes = u.getPuntajesPorNivel();
-        for (int p : puntajes) f.writeInt(p);
-        int[] estrellasPorNivel = u.getEstrellasPorNivel();
-        for (int ep : estrellasPorNivel) f.writeInt(ep);
-        f.writeLong(u.getTiempoTotalJugado());
-        f.writeInt(u.getPartidasJugadas());
-        f.writeInt(u.getFallosTotales());
-        f.writeInt(u.getEstrellasTotal());
-        f.writeInt(u.getPuntuacionGeneral());
-        f.writeFloat(u.getVolumen());
-        f.writeBoolean(u.isIngles());
-        f.writeBoolean(u.isMusicaActiva());
-        String[] amigos = u.getAmigos();
-        f.writeInt(amigos.length);
-        for (String a : amigos) f.writeUTF(a);
-        }
-
-        private USER cargarUltimoUsuarioActivo(){
-        USER lastActive = null;
-        try(RandomAccessFile  f = new RandomAccessFile (USERS_FILE, "r")){
-          while(f.getFilePointer()<f.length()){
-                  USER u = leerRegistro(f);
-            if (new File(BASE_FOLDER + "/" + u.getUsername()).exists())
-                lastActive = u;
-        }
-        } catch (IOException e) {}
-        return lastActive;
-        }
-
-
-        public boolean userExiste(String username) {
-        try (RandomAccessFile f = new RandomAccessFile(USERS_FILE, "rw")) {
-        while (f.getFilePointer() < f.length()) {
-        USER u = leerRegistro(f);
-        if (u.getUsername().equals(username)) return true;
-        }
-        } catch (IOException e) {
-        e.printStackTrace();
-        }
-        return false;
-        }
-
-        public USER buscarUser(String username){
-        try (RandomAccessFile f = new RandomAccessFile(USERS_FILE, "r")) {
-        while (f.getFilePointer() < f.length()) {
-            USER u = leerRegistro(f);
-            if (u.getUsername().equals(username)) return u;
-        }
-        } catch (IOException e) {}
-        return null;
-        }
-
-        public boolean crearUser(String username, String password, String fullname, String avatar) {        if (userExiste(username)) return false;
-        if (!crearCarpetaUsuario(username)) return false;
-        try (RandomAccessFile f = new RandomAccessFile(USERS_FILE, "rw")) {
-        f.seek(f.length());
         USER nuevo = new USER(username, password, fullname);
         nuevo.setAvatarPath(avatar);
-        escribirRegistro(f, nuevo);
+        nuevo.setFechaRegistro(LocalDate.now());
+        nuevo.setUltimaSesion(System.currentTimeMillis());
+        nuevo.setAmigos(new String[0]);
+        nuevo.setVolumen(1.0f);
+        nuevo.setIngles(false);
+        nuevo.setMusicaActiva(true);
+
+        dataManager.guardarUsuarioCompleto(nuevo);
         currentUser = nuevo;
         return true;
-        } catch (IOException e) { System.out.println("Error creando usuario: " + e.getMessage()); }
-        return false;
-        }
+    }
 
-
-        private boolean crearCarpetaUsuario(String username) {
-        try {
-        File userFolder = new File(BASE_FOLDER + "/" + username);
-        if (userFolder.exists()) borrarCarpeta(userFolder);
-        if (!userFolder.mkdir()) return false;
-        new File(userFolder, "stats.ctr").createNewFile();
-        new File(userFolder, "sessions.ctr").createNewFile();
-        new File(userFolder, "preferences.ctr").createNewFile();
-        new File(userFolder, "amigos.ctr").createNewFile();
-        new File(userFolder, "avatar").mkdir();
-        return true;
-        } catch (IOException e) { System.out.println("Error creando carpeta: " + e.getMessage()); return false; }
-        }
-
-
-        public boolean login(String username, String password){
-        USER u = buscarUser(username);
+    public synchronized boolean login(String username, String password) {
+        USER u = dataManager.cargarUsuarioCompleto(username);
         if (u != null && u.getPassword().equals(password)) {
-        if (!new File(BASE_FOLDER + "/" + username).exists()) return false;
-        u.setUltimaSesion(System.currentTimeMillis());
-        guardarCambios(u);
-        currentUser = u;
+            if (!dataManager.usuarioExiste(username)) return false;
+            u.setUltimaSesion(System.currentTimeMillis());
+            dataManager.guardarUsuarioCompleto(u);
+            currentUser = u;
+            return true;
+        }
+        return false;
+    }
+
+    public synchronized void guardarCambios(USER u) {
+        dataManager.guardarUsuarioCompleto(u);
+    }
+
+    public synchronized boolean cambiarPassword(String username, String newPassword) {
+        USER u = dataManager.cargarUsuarioCompleto(username);
+        if (u == null) return false;
+        u.setPassword(newPassword);
+        dataManager.guardarUsuarioCompleto(u);
+        if (currentUser != null && currentUser.getUsername().equals(username)) {
+            currentUser.setPassword(newPassword);
+        }
         return true;
+    }
+
+    public synchronized boolean cambiarNombre(String username, String newFullname) {
+        USER u = dataManager.cargarUsuarioCompleto(username);
+        if (u == null) return false;
+        u.setFullname(newFullname);
+        dataManager.guardarUsuarioCompleto(u);
+        return true;
+    }
+
+    public synchronized boolean cambiarAvatar(String username, String rutaAvatar) {
+        USER u = dataManager.cargarUsuarioCompleto(username);
+        if (u == null) return false;
+        u.setAvatarPath(rutaAvatar);
+        dataManager.guardarUsuarioCompleto(u);
+        return true;
+    }
+
+    public synchronized boolean cambiarVolumen(String username, float volumen) {
+        USER u = dataManager.cargarUsuarioCompleto(username);
+        if (u == null) return false;
+        u.setVolumen(volumen);
+        dataManager.guardarUsuarioCompleto(u);
+        return true;
+    }
+
+    public synchronized boolean cambiarIdioma(String username, boolean ingles) {
+        USER u = dataManager.cargarUsuarioCompleto(username);
+        if (u == null) return false;
+        u.setIngles(ingles);
+        dataManager.guardarUsuarioCompleto(u);
+        if (currentUser != null && currentUser.getUsername().equals(username)) {
+            currentUser.setIngles(ingles);
         }
-        return false;
+        return true;
+    }
+
+    public synchronized boolean cambiarMusica(String username, boolean activa) {
+        USER u = dataManager.cargarUsuarioCompleto(username);
+        if (u == null) return false;
+        u.setMusicaActiva(activa);
+        dataManager.guardarUsuarioCompleto(u);
+        if (currentUser != null && currentUser.getUsername().equals(username)) {
+            currentUser.setMusicaActiva(activa);
         }
+        return true;
+    }
 
-
-        private interface RegistroModificador { void modificar(USER u); }
-
-        private boolean reescribir(String usernameObjetivo, RegistroModificador mod) {
-        File tempFile = new File(USERS_TEMP);
-        try (RandomAccessFile original = new RandomAccessFile(USERS_FILE, "rw");
-        RandomAccessFile temp    = new RandomAccessFile(tempFile, "rw")) {
-        while (original.getFilePointer() < original.length()) {
-        USER u = leerRegistro(original);
-        if (u.getUsername().equals(usernameObjetivo)) mod.modificar(u);
-        escribirRegistro(temp, u);
-        }
-        } catch (IOException e) {
-        System.out.println("Error reescribiendo: " + e.getMessage());
-        e.printStackTrace();
-        return false;
-        }
-        new File(USERS_FILE).delete();
-        return tempFile.renameTo(new File(USERS_FILE));
-        }
-
-        public void guardarCambios(USER u) {
-        reescribir(u.getUsername(), existing -> {
-        existing.setNivelActual(u.getNivelActual());
-        existing.setPartidasJugadas(u.getPartidasJugadas());
-        existing.setFallosTotales(u.getFallosTotales());
-        existing.setEstrellasTotal(u.getEstrellasTotal());
-        existing.setTiempoTotalJugado(u.getTiempoTotalJugado());
-        existing.setPuntuacionGeneral(u.getPuntuacionGeneral());
-        existing.setUltimaSesion(u.getUltimaSesion());
-        existing.setVolumen(u.getVolumen());
-        existing.setAmigos(u.getAmigos());
-        existing.setAvatarPath(u.getAvatarPath());
-        existing.setEstrellasPorNivel(u.getEstrellasPorNivel());
-        });
-        }
-
-        public boolean cambiarPassword(String username, String newPassword){
-        boolean ok = reescribir(username, u -> u.setPassword(newPassword));
-        if (ok && currentUser != null && currentUser.getUsername().equals(username))
-        currentUser.setPassword(newPassword);
-        return ok;
-        }
-
-        public boolean cambiarNombre(String username, String newFullname) {
-        return reescribir(username, u -> u.setFullname(newFullname));
-        }
-
-        public boolean cambiarAvatar(String username, String rutaAvatar) {
-        return reescribir(username, u -> u.setAvatarPath(rutaAvatar));
-        }
-
-        public boolean cambiarVolumen(String username, float volumen) {
-        return reescribir(username, u -> u.setVolumen(volumen));
-        }
-
-
-
-        public void registrarPartida(String username, int nivel, int puntaje,
-                          int estrellas, int fallos, long tiempoMs) {
-        reescribir(username, u -> {
-        u.setPartidasJugadas(u.getPartidasJugadas() + 1);
-            int estrellasViejas = u.getEstrellasPorNivel()[nivel];
-            if (estrellas > estrellasViejas) {
-                u.setEstrellasTotal(u.getEstrellasTotal() + (estrellas - estrellasViejas));
-                u.setEstrellasNivel(nivel, estrellas);
-            }
-        u.setTiempoTotalJugado(u.getTiempoTotalJugado() + tiempoMs);
-        u.setFallosTotales(u.getFallosTotales() + fallos);
-        if (puntaje > u.getPuntajesPorNivel()[nivel])
-            u.setPuntajeNivel(nivel, puntaje);
-
-        if (nivel + 1 < 5) u.desbloquearNivel(nivel + 1);
-        if (nivel + 1 > u.getNivelActual()) u.setNivelActual(nivel + 1);
-        int total = 0;
-        for (int p : u.getPuntajesPorNivel()) total += p;
-        u.setPuntuacionGeneral(total);
-        });
-        }
-
-        private int calcularPuntuacionGeneral(USER u) {
-        int total = 0;
-        for (int p : u.getPuntajesPorNivel()) total += p;
-        return total;
-        }
-
-
-
-        public USER[] getRanking() {
-        USER[] todos = new USER[50];
-        int count = 0;
-        try (RandomAccessFile f = new RandomAccessFile(USERS_FILE, "r")) {
-        while (f.getFilePointer() < f.length() && count < 50)
-            todos[count++] = leerRegistro(f);
-        } catch (IOException e) {}
-
-        for (int i = 0; i < count - 1; i++)
-        for (int j = 0; j < count - i - 1; j++)
-            if (todos[j].getPuntuacionGeneral() < todos[j+1].getPuntuacionGeneral()) {
-                USER tmp = todos[j]; todos[j] = todos[j+1]; todos[j+1] = tmp;
-            }
-        USER[] resultado = new USER[count];
-        for (int i = 0; i < count; i++) resultado[i] = todos[i];
-        return resultado;
-        }
-
-        public boolean cambiarUsername(String usernameViejo, String usernameNuevo) {
+    public synchronized boolean cambiarUsername(String usernameViejo, String usernameNuevo) {
         if (userExiste(usernameNuevo)) return false;
 
         File carpetaVieja = new File(BASE_FOLDER + "/" + usernameViejo);
         File carpetaNueva = new File(BASE_FOLDER + "/" + usernameNuevo);
         if (!carpetaVieja.renameTo(carpetaNueva)) return false;
 
-        boolean ok = reescribir(usernameViejo, u -> u.setUsername(usernameNuevo));
+        USER u = dataManager.cargarUsuarioCompleto(usernameNuevo);
+        if (u == null) return false;
+        u.setUsername(usernameNuevo);
+        dataManager.guardarUsuarioCompleto(u);
 
-        if (ok && currentUser != null && currentUser.getUsername().equals(usernameViejo))
-         currentUser.setUsername(usernameNuevo);
-
-        return ok;
+        if (currentUser != null && currentUser.getUsername().equals(usernameViejo)) {
+            currentUser.setUsername(usernameNuevo);
         }
 
-        public boolean eliminarUsuario(String username) {
-        File tempFile = new File(USERS_TEMP);
-        boolean encontrado = false;
-        try (RandomAccessFile original = new RandomAccessFile(USERS_FILE, "r");
-         RandomAccessFile temp    = new RandomAccessFile(tempFile, "rw")) {
-        while (original.getFilePointer() < original.length()) {
-            USER u = leerRegistro(original);
-            if (!u.getUsername().equals(username)) {
-                escribirRegistro(temp, u);
-            } else {
-                borrarCarpeta(new File(BASE_FOLDER + "/" + username));
-                encontrado = true;
+        return true;
+    }
+
+    public synchronized boolean eliminarUsuario(String username) {
+        if (!dataManager.usuarioExiste(username)) return false;
+        dataManager.borrarCarpetaUsuario(username);
+        if (currentUser != null && currentUser.getUsername().equals(username)) {
+            currentUser = null;
+        }
+        return true;
+    }
+
+    public synchronized void registrarPartida(String username, int nivel, int puntaje,
+                                              int estrellas, int fallos, long tiempoMs) {
+        USER u = dataManager.cargarUsuarioCompleto(username);
+        if (u == null) return;
+
+        u.setPartidasJugadas(u.getPartidasJugadas() + 1);
+
+        int estrellasViejas = u.getEstrellasPorNivel()[nivel];
+        if (estrellas > estrellasViejas) {
+            u.setEstrellasTotal(u.getEstrellasTotal() + (estrellas - estrellasViejas));
+            u.setEstrellasNivel(nivel, estrellas);
+        }
+
+        u.setTiempoTotalJugado(u.getTiempoTotalJugado() + tiempoMs);
+        u.setFallosTotales(u.getFallosTotales() + fallos);
+
+        if (puntaje > u.getPuntajesPorNivel()[nivel]) {
+            u.setPuntajeNivel(nivel, puntaje);
+        }
+
+        if (nivel + 1 < 5) u.desbloquearNivel(nivel + 1);
+        if (nivel + 1 > u.getNivelActual()) u.setNivelActual(nivel + 1);
+
+        int total = 0;
+        for (int p : u.getPuntajesPorNivel()) total += p;
+        u.setPuntuacionGeneral(total);
+
+        dataManager.guardarUsuarioCompleto(u);
+    }
+
+    public synchronized void guardarPartidaHistorial(String username, PartidaHistorial partida) {
+        dataManager.guardarPartidaHistorial(username, partida);
+    }
+
+    public synchronized List<PartidaHistorial> cargarHistorial(String username) {
+        return dataManager.cargarHistorial(username, 10);
+    }
+
+    public synchronized USER[] getRanking() {
+        String[] usuarios = dataManager.listarUsuarios();
+        List<USER> ranking = new ArrayList<>();
+
+        for (String username : usuarios) {
+            USER u = dataManager.cargarUsuarioCompleto(username);
+            if (u != null) {
+                ranking.add(u);
             }
         }
-        }
-        catch (IOException e) {}
-        new File(USERS_FILE).delete();
-        tempFile.renameTo(new File(USERS_FILE));
-        return encontrado;
 
+        ranking.sort((a, b) -> Integer.compare(b.getPuntuacionGeneral(), a.getPuntuacionGeneral()));
+
+        return ranking.toArray(new USER[0]);
+    }
+
+    // ==================== MÉTODOS PARA RETOS ====================
+
+    public synchronized void guardarReto(String username, Reto reto) {
+        dataManager.agregarReto(username, reto);
+    }
+
+    public synchronized void actualizarReto(String username, Reto reto) {
+        dataManager.actualizarReto(username, reto);
+    }
+
+    public synchronized List<Reto> cargarRetos(String username) {
+        return dataManager.cargarRetos(username);
+    }
+
+    // ==================== MÉTODOS PARA NOTIFICACIONES ====================
+
+    public synchronized void guardarNotificacion(String username, Notificacion notificacion) {
+        dataManager.agregarNotificacion(username, notificacion);
+    }
+
+    public synchronized void marcarNotificacionLeida(String username, String idNotificacion) {
+        dataManager.marcarNotificacionLeida(username, idNotificacion);
+    }
+
+    public synchronized List<Notificacion> cargarNotificaciones(String username) {
+        return dataManager.cargarNotificaciones(username);
+    }
+
+    // ==================== MÉTODOS PARA AMIGOS ====================
+
+    public synchronized void agregarAmigo(String username, String amigo) {
+        dataManager.agregarAmigo(username, amigo);
+    }
+
+    public synchronized void eliminarAmigo(String username, String amigo) {
+        dataManager.eliminarAmigo(username, amigo);
+    }
+
+    public synchronized String[] cargarAmigos(String username) {
+        return dataManager.cargarAmigos(username);
+    }
+
+    // ==================== GETTERS / SETTERS ====================
+
+    public USER getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(USER u) {
+        this.currentUser = u;
+    }
+
+    public PartidaHistorial[] getHistorialMemoria() {
+        return SesionJuego.get().getHistorial().toArray(new PartidaHistorial[0]);
+    }
+
+    // ==================== MÉTODOS PRIVADOS ====================
+
+    private USER cargarUltimoUsuarioActivo() {
+        USER lastActive = null;
+        long maxSesion = 0;
+        String[] usuarios = dataManager.listarUsuarios();
+
+        for (String username : usuarios) {
+            USER u = dataManager.cargarUsuarioCompleto(username);
+            if (u != null && u.getUltimaSesion() > maxSesion) {
+                maxSesion = u.getUltimaSesion();
+                lastActive = u;
+            }
+        }
+        return lastActive;
+    }
+
+    // ==================== CLASE INTERNA UserDataManager ====================
+
+    private static class UserDataManager {
+
+        private static final String BASE_FOLDER = "../CTR_RAIZ";
+
+        // ---------- SERIALIZABLE ----------
+
+        public synchronized void guardarPerfil(String username, USER u) {
+            try {
+                File file = new File(BASE_FOLDER + "/" + username + "/perfil.ctr");
+                try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
+                    oos.writeObject(u);
+                }
+            } catch (IOException e) {
+                System.err.println("Error guardando perfil: " + e.getMessage());
+            }
         }
 
+        public synchronized USER cargarPerfil(String username) {
+            try {
+                File file = new File(BASE_FOLDER + "/" + username + "/perfil.ctr");
+                if (!file.exists()) return null;
+                try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+                    return (USER) ois.readObject();
+                }
+            } catch (IOException | ClassNotFoundException e) {
+                System.err.println("Error cargando perfil: " + e.getMessage());
+                return null;
+            }
+        }
 
-        private void limpiarUsuariosHuerfanos() {
-        File tempFile = new File(USERS_TEMP);
-        boolean ok = false;
-        try (RandomAccessFile original = new RandomAccessFile(USERS_FILE, "rw");
-        RandomAccessFile temp    = new RandomAccessFile(tempFile, "rw")) {
-        while (original.getFilePointer() < original.length()) {
-        USER u = leerRegistro(original);
-        if (new File(BASE_FOLDER + "/" + u.getUsername()).exists()) {
-            escribirRegistro(temp, u);
-        } else {
+        public synchronized void guardarStats(String username, USER u) {
+            try {
+                File file = new File(BASE_FOLDER + "/" + username + "/stats.ctr");
+                try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
+                    oos.writeObject(u);
+                }
+            } catch (IOException e) {
+                System.err.println("Error guardando stats: " + e.getMessage());
+            }
         }
+
+        public synchronized USER cargarStats(String username) {
+            try {
+                File file = new File(BASE_FOLDER + "/" + username + "/stats.ctr");
+                if (!file.exists()) return null;
+                try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+                    return (USER) ois.readObject();
+                }
+            } catch (IOException | ClassNotFoundException e) {
+                System.err.println("Error cargando stats: " + e.getMessage());
+                return null;
+            }
         }
-        ok = true;
-        } catch (IOException e) {
-        e.printStackTrace();
+
+        public synchronized void guardarPreferencias(String username, USER u) {
+            try {
+                File file = new File(BASE_FOLDER + "/" + username + "/preferencias.ctr");
+                try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
+                    oos.writeObject(u);
+                }
+            } catch (IOException e) {
+                System.err.println("Error guardando preferencias: " + e.getMessage());
+            }
         }
-        if (ok) {
-        new File(USERS_FILE).delete();
-        tempFile.renameTo(new File(USERS_FILE));
-        } else {
-        tempFile.delete();
+
+        public synchronized USER cargarPreferencias(String username) {
+            try {
+                File file = new File(BASE_FOLDER + "/" + username + "/preferencias.ctr");
+                if (!file.exists()) return null;
+                try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+                    return (USER) ois.readObject();
+                }
+            } catch (IOException | ClassNotFoundException e) {
+                System.err.println("Error cargando preferencias: " + e.getMessage());
+                return null;
+            }
         }
+
+        public synchronized void guardarUsuarioCompleto(USER u) {
+            String username = u.getUsername();
+            guardarPerfil(username, u);
+            guardarStats(username, u);
+            guardarPreferencias(username, u);
+            guardarAmigos(username, u.getAmigos());
+            guardarSesion(username, u.getFechaRegistro().toEpochDay(), u.getUltimaSesion());
+        }
+
+        public synchronized USER cargarUsuarioCompleto(String username) {
+            USER u = cargarPerfil(username);
+            if (u == null) return null;
+
+            USER stats = cargarStats(username);
+            if (stats != null) {
+                u.setPuntuacionGeneral(stats.getPuntuacionGeneral());
+                u.setPartidasJugadas(stats.getPartidasJugadas());
+                u.setFallosTotales(stats.getFallosTotales());
+                u.setEstrellasTotal(stats.getEstrellasTotal());
+                u.setTiempoTotalJugado(stats.getTiempoTotalJugado());
+                u.setPuntajesPorNivel(stats.getPuntajesPorNivel());
+                u.setEstrellasPorNivel(stats.getEstrellasPorNivel());
+                u.setNivelesDesbloqueados(stats.getNivelesDesbloqueados());
+                u.setNivelActual(stats.getNivelActual());
+            }
+
+            USER pref = cargarPreferencias(username);
+            if (pref != null) {
+                u.setVolumen(pref.getVolumen());
+                u.setIngles(pref.isIngles());
+                u.setMusicaActiva(pref.isMusicaActiva());
+                u.setAvatarPath(pref.getAvatarPath());
+            }
+
+            u.setAmigos(cargarAmigos(username));
+
+            long[] sesion = cargarSesion(username);
+            if (sesion[0] > 0) {
+                u.setFechaRegistro(LocalDate.ofEpochDay(sesion[0]));
+            }
+            if (sesion[1] > 0) {
+                u.setUltimaSesion(sesion[1]);
+            }
+
+            return u;
+        }
+
+        // ---------- RANDOM ACCESS FILE ----------
+
+        public synchronized void guardarAmigos(String username, String[] amigos) {
+            try {
+                File file = new File(BASE_FOLDER + "/" + username + "/amigos.ctr");
+                try (RandomAccessFile f = new RandomAccessFile(file, "rw")) {
+                    f.setLength(0);
+                    for (String amigo : amigos) {
+                        f.writeUTF(amigo);
+                    }
+                }
+            } catch (IOException e) {
+                System.err.println("Error guardando amigos: " + e.getMessage());
+            }
+        }
+
+        public synchronized void agregarAmigo(String username, String amigo) {
+            try {
+                File file = new File(BASE_FOLDER + "/" + username + "/amigos.ctr");
+                try (RandomAccessFile f = new RandomAccessFile(file, "rw")) {
+                    f.seek(f.length());
+                    f.writeUTF(amigo);
+                }
+            } catch (IOException e) {
+                System.err.println("Error agregando amigo: " + e.getMessage());
+            }
+        }
+
+        public synchronized void eliminarAmigo(String username, String amigo) {
+            try {
+                File file = new File(BASE_FOLDER + "/" + username + "/amigos.ctr");
+                File tempFile = new File(BASE_FOLDER + "/" + username + "/amigos_temp.ctr");
+
+                try (RandomAccessFile f = new RandomAccessFile(file, "r");
+                     RandomAccessFile temp = new RandomAccessFile(tempFile, "rw")) {
+
+                    while (f.getFilePointer() < f.length()) {
+                        String a = f.readUTF();
+                        if (!a.equals(amigo)) {
+                            temp.writeUTF(a);
+                        }
+                    }
+                }
+
+                file.delete();
+                tempFile.renameTo(file);
+
+            } catch (IOException e) {
+                System.err.println("Error eliminando amigo: " + e.getMessage());
+            }
+        }
+
+        public synchronized String[] cargarAmigos(String username) {
+            try {
+                File file = new File(BASE_FOLDER + "/" + username + "/amigos.ctr");
+                if (!file.exists()) return new String[0];
+
+                List<String> amigos = new ArrayList<>();
+                try (RandomAccessFile f = new RandomAccessFile(file, "r")) {
+                    while (f.getFilePointer() < f.length()) {
+                        amigos.add(f.readUTF());
+                    }
+                }
+                return amigos.toArray(new String[0]);
+
+            } catch (IOException e) {
+                System.err.println("Error cargando amigos: " + e.getMessage());
+                return new String[0];
+            }
+        }
+
+        public synchronized void guardarSesion(String username, long fechaRegistro, long ultimaSesion) {
+            try {
+                File file = new File(BASE_FOLDER + "/" + username + "/sesiones.ctr");
+                try (RandomAccessFile f = new RandomAccessFile(file, "rw")) {
+                    f.seek(0);
+                    f.writeLong(fechaRegistro);
+                    f.writeLong(ultimaSesion);
+                }
+            } catch (IOException e) {
+                System.err.println("Error guardando sesion: " + e.getMessage());
+            }
+        }
+
+        public synchronized long[] cargarSesion(String username) {
+            try {
+                File file = new File(BASE_FOLDER + "/" + username + "/sesiones.ctr");
+                if (!file.exists()) return new long[]{0, 0};
+
+                try (RandomAccessFile f = new RandomAccessFile(file, "r")) {
+                    long fechaRegistro = f.readLong();
+                    long ultimaSesion = f.readLong();
+                    return new long[]{fechaRegistro, ultimaSesion};
+                }
+
+            } catch (IOException e) {
+                System.err.println("Error cargando sesion: " + e.getMessage());
+                return new long[]{0, 0};
+            }
+        }
+
+        public synchronized void guardarPartidaHistorial(String username, PartidaHistorial p) {
+            try {
+                File file = new File(BASE_FOLDER + "/" + username + "/historial.ctr");
+                try (RandomAccessFile f = new RandomAccessFile(file, "rw")) {
+                    f.seek(f.length());
+                    f.writeInt(p.getNivel());
+                    f.writeInt(p.getPuntaje());
+                    f.writeInt(p.getEstrellas());
+                    f.writeInt(p.getFallos());
+                    f.writeLong(p.getTiempoMs());
+                    f.writeLong(p.getFecha().toEpochDay());
+                    f.writeBoolean(p.isGano());
+                }
+            } catch (IOException e) {
+                System.err.println("Error guardando historial: " + e.getMessage());
+            }
+        }
+
+        public synchronized List<PartidaHistorial> cargarHistorial(String username, int maxPartidas) {
+            List<PartidaHistorial> partidas = new ArrayList<>();
+            try {
+                File file = new File(BASE_FOLDER + "/" + username + "/historial.ctr");
+                if (!file.exists()) return partidas;
+
+                int registroSize = 4 + 4 + 4 + 4 + 8 + 8 + 1;
+                try (RandomAccessFile f = new RandomAccessFile(file, "r")) {
+                    long fileLength = f.length();
+                    int totalRegistros = (int) (fileLength / registroSize);
+                    int startIndex = Math.max(0, totalRegistros - maxPartidas);
+
+                    f.seek(startIndex * registroSize);
+
+                    while (f.getFilePointer() < fileLength) {
+                        int nivel = f.readInt();
+                        int puntaje = f.readInt();
+                        int estrellas = f.readInt();
+                        int fallos = f.readInt();
+                        long tiempoMs = f.readLong();
+                        long fechaEpoch = f.readLong();
+                        boolean gano = f.readBoolean();
+
+                        PartidaHistorial p = new PartidaHistorial(
+                            nivel, puntaje, estrellas, fallos,
+                            tiempoMs, LocalDate.ofEpochDay(fechaEpoch), gano
+                        );
+                        partidas.add(p);
+                    }
+                }
+
+            } catch (IOException e) {
+                System.err.println("Error cargando historial: " + e.getMessage());
+            }
+            return partidas;
+        }
+
+        // ---------- RETOS ----------
+
+        public synchronized void agregarReto(String username, Reto reto) {
+            try {
+                File file = new File(BASE_FOLDER + "/" + username + "/retos.ctr");
+                try (RandomAccessFile f = new RandomAccessFile(file, "rw")) {
+                    f.seek(f.length());
+                    escribirReto(f, reto);
+                }
+            } catch (IOException e) {
+                System.err.println("Error agregando reto: " + e.getMessage());
+            }
+        }
+
+        public synchronized void actualizarReto(String username, Reto retoActualizado) {
+            try {
+                File file = new File(BASE_FOLDER + "/" + username + "/retos.ctr");
+                File tempFile = new File(BASE_FOLDER + "/" + username + "/retos_temp.ctr");
+
+                try (RandomAccessFile f = new RandomAccessFile(file, "r");
+                     RandomAccessFile temp = new RandomAccessFile(tempFile, "rw")) {
+
+                    while (f.getFilePointer() < f.length()) {
+                        Reto r = leerReto(f);
+                        if (r.getId().equals(retoActualizado.getId())) {
+                            escribirReto(temp, retoActualizado);
+                        } else {
+                            escribirReto(temp, r);
+                        }
+                    }
+                }
+
+                file.delete();
+                tempFile.renameTo(file);
+
+            } catch (IOException e) {
+                System.err.println("Error actualizando reto: " + e.getMessage());
+            }
+        }
+
+        public synchronized List<Reto> cargarRetos(String username) {
+            List<Reto> retos = new ArrayList<>();
+            try {
+                File file = new File(BASE_FOLDER + "/" + username + "/retos.ctr");
+                if (!file.exists()) return retos;
+
+                try (RandomAccessFile f = new RandomAccessFile(file, "r")) {
+                    while (f.getFilePointer() < f.length()) {
+                        retos.add(leerReto(f));
+                    }
+                }
+
+            } catch (IOException e) {
+                System.err.println("Error cargando retos: " + e.getMessage());
+            }
+            return retos;
+        }
+
+        private void escribirReto(RandomAccessFile f, Reto r) throws IOException {
+            f.writeUTF(r.retador);
+            f.writeUTF(r.retado);
+            f.writeInt(r.nivel);
+            f.writeUTF(r.estado.name());
+            f.writeUTF(r.fecha.toString());
+            f.writeInt(r.puntajeRetador);
+            f.writeInt(r.puntajeRetado);
+            f.writeInt(r.estrellasRetador);
+            f.writeInt(r.estrellasRetado);
+            f.writeInt(r.tiempoRetador);
+            f.writeInt(r.tiempoRetado);
+            f.writeBoolean(r.jugoRetador);
+            f.writeBoolean(r.jugoRetado);
+            f.writeUTF(r.ganador != null ? r.ganador : "");
+        }
+
+        private Reto leerReto(RandomAccessFile f) throws IOException {
+            String retador = f.readUTF();
+            String retado = f.readUTF();
+            int nivel = f.readInt();
+            String estadoStr = f.readUTF();
+            String fechaStr = f.readUTF();
+
+            Reto r = new Reto(retador, retado, nivel);
+            r.estado = Reto.Estado.valueOf(estadoStr);
+            r.fecha = java.time.LocalDateTime.parse(fechaStr);
+            r.puntajeRetador = f.readInt();
+            r.puntajeRetado = f.readInt();
+            r.estrellasRetador = f.readInt();
+            r.estrellasRetado = f.readInt();
+            r.tiempoRetador = f.readInt();
+            r.tiempoRetado = f.readInt();
+            r.jugoRetador = f.readBoolean();
+            r.jugoRetado = f.readBoolean();
+            String ganador = f.readUTF();
+            r.ganador = ganador.isEmpty() ? null : ganador;
+            return r;
+        }
+
+        // ---------- NOTIFICACIONES ----------
+
+        public synchronized void agregarNotificacion(String username, Notificacion n) {
+            try {
+                File file = new File(BASE_FOLDER + "/" + username + "/notificaciones.ctr");
+                try (RandomAccessFile f = new RandomAccessFile(file, "rw")) {
+                    f.seek(f.length());
+                    escribirNotificacion(f, n);
+                }
+            } catch (IOException e) {
+                System.err.println("Error agregando notificacion: " + e.getMessage());
+            }
+        }
+
+        public synchronized void marcarNotificacionLeida(String username, String idNotificacion) {
+            try {
+                File file = new File(BASE_FOLDER + "/" + username + "/notificaciones.ctr");
+                File tempFile = new File(BASE_FOLDER + "/" + username + "/notificaciones_temp.ctr");
+
+                try (RandomAccessFile f = new RandomAccessFile(file, "r");
+                     RandomAccessFile temp = new RandomAccessFile(tempFile, "rw")) {
+
+                    while (f.getFilePointer() < f.length()) {
+                        Notificacion n = leerNotificacion(f);
+                        if (n.getId().equals(idNotificacion)) {
+                            n.leida = true;
+                            escribirNotificacion(temp, n);
+                        } else {
+                            escribirNotificacion(temp, n);
+                        }
+                    }
+                }
+
+                file.delete();
+                tempFile.renameTo(file);
+
+            } catch (IOException e) {
+                System.err.println("Error marcando notificacion leida: " + e.getMessage());
+            }
+        }
+
+        public synchronized List<Notificacion> cargarNotificaciones(String username) {
+            List<Notificacion> notificaciones = new ArrayList<>();
+            try {
+                File file = new File(BASE_FOLDER + "/" + username + "/notificaciones.ctr");
+                if (!file.exists()) return notificaciones;
+
+                try (RandomAccessFile f = new RandomAccessFile(file, "r")) {
+                    while (f.getFilePointer() < f.length()) {
+                        notificaciones.add(leerNotificacion(f));
+                    }
+                }
+
+            } catch (IOException e) {
+                System.err.println("Error cargando notificaciones: " + e.getMessage());
+            }
+            return notificaciones;
+        }
+
+        private void escribirNotificacion(RandomAccessFile f, Notificacion n) throws IOException {
+            f.writeUTF(n.tipo.name());
+            f.writeUTF(n.origen);
+            f.writeUTF(n.destino);
+            f.writeInt(n.nivel);
+            f.writeUTF(n.fecha.toString());
+            f.writeBoolean(n.leida);
+        }
+
+        private Notificacion leerNotificacion(RandomAccessFile f) throws IOException {
+            String tipoStr = f.readUTF();
+            String origen = f.readUTF();
+            String destino = f.readUTF();
+            int nivel = f.readInt();
+            String fechaStr = f.readUTF();
+            boolean leida = f.readBoolean();
+
+            Notificacion n = new Notificacion(
+                Notificacion.Tipo.valueOf(tipoStr),
+                origen, destino, nivel
+            );
+            n.fecha = java.time.LocalDateTime.parse(fechaStr);
+            n.leida = leida;
+            return n;
+        }
+
+        // ---------- UTILIDADES ----------
+
+        public synchronized boolean usuarioExiste(String username) {
+            File userFolder = new File(BASE_FOLDER + "/" + username);
+            return userFolder.exists() && userFolder.isDirectory();
+        }
+
+        public synchronized boolean crearCarpetaUsuario(String username) {
+            try {
+                File userFolder = new File(BASE_FOLDER + "/" + username);
+                if (userFolder.exists()) {
+                    borrarCarpeta(userFolder);
+                }
+                if (!userFolder.mkdirs()) return false;
+
+                new File(userFolder, "perfil.ctr").createNewFile();
+                new File(userFolder, "stats.ctr").createNewFile();
+                new File(userFolder, "preferencias.ctr").createNewFile();
+                new File(userFolder, "amigos.ctr").createNewFile();
+                new File(userFolder, "sesiones.ctr").createNewFile();
+                new File(userFolder, "historial.ctr").createNewFile();
+                new File(userFolder, "retos.ctr").createNewFile();
+                new File(userFolder, "notificaciones.ctr").createNewFile();
+                new File(userFolder, "avatar").mkdir();
+
+                return true;
+            } catch (IOException e) {
+                System.err.println("Error creando carpeta: " + e.getMessage());
+                return false;
+            }
+        }
+
+        public synchronized void borrarCarpetaUsuario(String username) {
+            File userFolder = new File(BASE_FOLDER + "/" + username);
+            if (userFolder.exists()) {
+                borrarCarpeta(userFolder);
+            }
         }
 
         private void borrarCarpeta(File folder) {
-        if (folder.isDirectory()) {
-        File[] files = folder.listFiles();
-        if (files != null) for (File f : files) borrarCarpeta(f);
-        }
-        folder.delete();
-        }
-
-        public USER getCurrentUser() { return currentUser; }
-        public void setCurrentUser(USER u) { this.currentUser = u; }
-
-            public boolean cambiarIdioma(String username, boolean ingles) {
-                boolean ok = reescribir(username, u -> u.setIngles(ingles));
-                if (ok && currentUser != null && currentUser.getUsername().equals(username))
-                    currentUser.setIngles(ingles);
-                return ok;
+            if (folder.isDirectory()) {
+                File[] files = folder.listFiles();
+                if (files != null) {
+                    for (File f : files) {
+                        borrarCarpeta(f);
+                    }
+                }
             }
-
-            public boolean cambiarMusica(String username, boolean activa) {
-                boolean ok = reescribir(username, u -> u.setMusicaActiva(activa));
-                if (ok && currentUser != null && currentUser.getUsername().equals(username))
-                    currentUser.setMusicaActiva(activa);
-                return ok;
-            }
-
-            public PartidaHistorial[] getHistorialMemoria() {
-                return SesionJuego.get().getHistorial()
-                    .toArray(new PartidaHistorial[0]);
-            }
-
-
+            folder.delete();
         }
+
+        public synchronized String[] listarUsuarios() {
+            File base = new File(BASE_FOLDER);
+            if (!base.exists()) return new String[0];
+
+            File[] carpetas = base.listFiles(File::isDirectory);
+            if (carpetas == null) return new String[0];
+
+            String[] usuarios = new String[carpetas.length];
+            for (int i = 0; i < carpetas.length; i++) {
+                usuarios[i] = carpetas[i].getName();
+            }
+            return usuarios;
+        }
+    }
+}

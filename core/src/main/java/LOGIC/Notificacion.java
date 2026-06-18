@@ -23,4 +23,8 @@ public class Notificacion implements java.io.Serializable {    public enum Tipo 
         this.fecha   = LocalDateTime.now();
         this.leida   = false;
     }
+
+    public String getId() {
+        return origen + "_" + destino + "_" + nivel + "_" + fecha.toString();
+    }
 }
