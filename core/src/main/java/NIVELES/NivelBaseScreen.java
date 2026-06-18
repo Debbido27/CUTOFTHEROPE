@@ -51,6 +51,13 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
     protected LoginManager gestor;
     protected int          nivel;
 
+    private boolean pausado = false;
+    private Texture pauseBtnTex;
+    private Texture playBtnTex;
+    private Texture selectLvlBtnTex;
+    private Texture overlayBgTex;
+    private Table overlayTable;
+
     protected Stage   escenario;
     protected Skin    piel;
     protected Texture bgTexture;
@@ -150,32 +157,94 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
         raiz.setFillParent(true);
         raiz.top().left();
 
-        if (!modoReto) {
-            TextButton btnVolver = crearBoton("< Volver", ROJO);
-            btnVolver.addListener(new ClickListener() {
-                public void clicked(InputEvent e, float x, float y) {
-                    SesionJuego.get().finalizarNivel(false);
-                    Gdx.app.postRunnable(() ->
-                        juego.setScreen(new SeleccionNivelScreen(juego, usuario, gestor)));
-                }
-            });
-            raiz.add(btnVolver)
-            .width(120)
-            .height(38)
-            .padLeft(4)   // Muy cerca del borde izquierdo
-            .padTop(4);          } else {
+        Pixmap px = new Pixmap(24, 24, Pixmap.Format.RGBA8888);
+        px.setColor(com.badlogic.gdx.graphics.Color.WHITE);
+        px.fillRectangle(4, 3, 6, 18);
+        px.fillRectangle(14, 3, 6, 18);
+        pauseBtnTex = new Texture(px);
+        px.dispose();
+        Image pauseImg = new Image(pauseBtnTex);
+        pauseImg.addListener(new ClickListener() {
+            public void clicked(InputEvent e, float x, float y) {
+                pausar();
+            }
+        });
+        raiz.add(pauseImg).size(32, 32).padLeft(8).padTop(8);
+
+        if (modoReto) {
             TextButton btnRendir = crearBoton("Rendirse", ROJO);
             btnRendir.addListener(new ClickListener() {
                 public void clicked(InputEvent e, float x, float y) {
                     finalizarReto(false);
                 }
             });
-    raiz.add(btnRendir)
-            .width(120)
-            .height(38)
-            .padLeft(4)
-            .padTop(4);        }
+            raiz.add(btnRendir).width(120).height(38).padLeft(8).padTop(4);
+        }
+
         escenario.addActor(raiz);
+        construirPauseOverlay();
+    }
+
+    private void construirPauseOverlay() {
+        playBtnTex = new Texture(Gdx.files.internal("images/play.png"));
+        selectLvlBtnTex = new Texture(Gdx.files.internal("images/selectLevel.png"));
+
+        Pixmap px = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        px.setColor(0, 0, 0, 0.65f);
+        px.fill();
+        overlayBgTex = new Texture(px);
+        px.dispose();
+
+        overlayTable = new Table();
+        overlayTable.setFillParent(true);
+
+        Label lblPaused = new Label("PAUSED", piel, "pause-titulo");
+
+        Image imgPlay = new Image(playBtnTex);
+        imgPlay.setScaling(com.badlogic.gdx.utils.Scaling.fit);
+        imgPlay.addListener(new ClickListener() {
+            public void clicked(InputEvent e, float x, float y) {
+                reanudar();
+            }
+        });
+
+        Image imgSelect = new Image(selectLvlBtnTex);
+        imgSelect.setScaling(com.badlogic.gdx.utils.Scaling.fit);
+        imgSelect.addListener(new ClickListener() {
+            public void clicked(InputEvent e, float x, float y) {
+                irASeleccionNiveles();
+            }
+        });
+
+        Table contenido = new Table();
+        contenido.add(lblPaused).padBottom(25).row();
+        contenido.add(imgPlay).width(160).height(65).padBottom(8).row();
+        contenido.add(imgSelect).width(160).height(65).row();
+        overlayTable.add(contenido).expand().center();
+
+        overlayTable.setVisible(false);
+        escenario.addActor(overlayTable);
+    }
+
+    private void pausar() {
+        pausado = true;
+        overlayTable.setVisible(true);
+    }
+
+    private void reanudar() {
+        pausado = false;
+        overlayTable.setVisible(false);
+    }
+
+    private void irASeleccionNiveles() {
+        pausado = false;
+        if (modoReto) {
+            finalizarReto(false);
+        } else {
+            SesionJuego.get().finalizarNivel(false);
+            Gdx.app.postRunnable(() ->
+                juego.setScreen(new SeleccionNivelScreen(juego, usuario, gestor)));
+        }
     }
 
     //calcula el viewport que mantiene la proporcion de la camara sin estirar
@@ -204,59 +273,64 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
 
         switch (estadoNivel) {
             case JUGANDO:
-                mundo.step(delta, 12, 8);
-                if (burbujaActiva != null) burbujaActiva.entrar(pelota);
-                if (nomnom != null) {
-                    if (pelota != null) {
-                        Vector2 pp = pelota.getBody().getPosition();
-                        Vector2 np = nomnom.getBody().getPosition();
-                        nomnom.setPelotaCerca(pp.dst2(np) < 6.25f);
-                    }
-                    nomnom.actualizar(delta);
-                    if (nomnom.comioLaPelota()) {
-                        if (burbujaActiva != null) {
-                            burbujaActiva.explotar(pelota);
-                            burbujaActiva = null;
+                if (!pausado) {
+                    mundo.step(delta, 12, 8);
+                    if (burbujaActiva != null) burbujaActiva.entrar(pelota);
+                    if (nomnom != null) {
+                        if (pelota != null) {
+                            Vector2 pp = pelota.getBody().getPosition();
+                            Vector2 np = nomnom.getBody().getPosition();
+                            nomnom.setPelotaCerca(pp.dst2(np) < 6.25f);
                         }
-                        pelota.ocultar();
-                        estadoNivel     = EstadoNivel.GANANDO;
-                        timerTransicion = 1.8f;
+                        nomnom.actualizar(delta);
+                        if (nomnom.comioLaPelota()) {
+                            if (burbujaActiva != null) {
+                                burbujaActiva.explotar(pelota);
+                                burbujaActiva = null;
+                            }
+                            pelota.ocultar();
+                            estadoNivel     = EstadoNivel.GANANDO;
+                            timerTransicion = 1.8f;
+                        }
                     }
+
+                    if (pelotaCayoEnEspina && pelota != null && !pelota.estaRota()) {
+                        pelotaCayoEnEspina = false;
+                        SesionJuego.get().registrarFallo();
+                        pelota.romper();
+                        if (nomnom != null) nomnom.ponerTriste();
+                        estadoNivel     = EstadoNivel.PERDIENDO;
+                        timerTransicion = 2.0f;
+                    } else if (pelotaCayoFuera()) {
+                        SesionJuego.get().registrarFallo();
+                        estadoNivel     = EstadoNivel.PERDIENDO;
+                        timerTransicion = 1.0f;
+                        if (nomnom != null) nomnom.ponerTriste();
+                    }
+
+                    procesarCorte();
+                    procesarToqueBurbujas();
                 }
-
-                if (pelotaCayoEnEspina && pelota != null && !pelota.estaRota()) {
-                    pelotaCayoEnEspina = false;
-                    SesionJuego.get().registrarFallo();
-                    pelota.romper();
-                    if (nomnom != null) nomnom.ponerTriste();
-                    estadoNivel     = EstadoNivel.PERDIENDO;
-                    timerTransicion = 2.0f;
-                } else if (pelotaCayoFuera()) {
-                    SesionJuego.get().registrarFallo();
-                    estadoNivel     = EstadoNivel.PERDIENDO;
-                    timerTransicion = 1.0f;
-                    if (nomnom != null) nomnom.ponerTriste();
-                }
-
-                procesarCorte();
-
-
-                procesarToqueBurbujas();
-
                 break;
 
             case GANANDO:
                 mundo.step(delta, 6, 2);
                 if (nomnom != null) nomnom.actualizar(delta);
                 timerTransicion -= delta;
-                if (timerTransicion <= 0) irAlSiguienteNivel();
+                if (timerTransicion <= 0) {
+                    timerTransicion = Float.MAX_VALUE;
+                    irAlSiguienteNivel();
+                }
                 break;
 
             case PERDIENDO:
                 if (pelota != null) pelota.actualizar(delta);
                 if (nomnom != null) nomnom.actualizar(delta);
                 timerTransicion -= delta;
-                if (timerTransicion <= 0) reiniciarNivel();
+                if (timerTransicion <= 0) {
+                    timerTransicion = Float.MAX_VALUE;
+                    reiniciarNivel();
+                }
                 break;
         }
 
@@ -269,8 +343,10 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
             Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.end();
 
-        for (Estrella e : estrellas) e.actualizar(delta);
-        for (Burbuja  b : burbujas)  b.actualizar(delta);
+        if (!pausado) {
+            for (Estrella e : estrellas) e.actualizar(delta);
+            for (Burbuja  b : burbujas)  b.actualizar(delta);
+        }
 
         //objetos fisicos con viewport que respeta la proporcion de la camara
         Gdx.gl.glViewport(vpX, vpY, vpW, vpH);
@@ -293,6 +369,21 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
             dibujarBannerTexto("¡Inténtalo de nuevo!", ROJO);
 
         batch.end();
+
+        if (pausado) {
+            Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            Gdx.gl.glEnable(GL20.GL_BLEND);
+            Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+            batch.getProjectionMatrix().setToOrtho2D(
+                0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            batch.begin();
+            batch.setColor(0, 0, 0, 0.65f);
+            batch.draw(overlayBgTex, 0, 0,
+                Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            batch.setColor(com.badlogic.gdx.graphics.Color.WHITE);
+            batch.end();
+            Gdx.gl.glDisable(GL20.GL_BLEND);
+        }
 
         escenario.getViewport().apply(true);
         escenario.act(delta);
@@ -477,12 +568,28 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
         p.characters = FreeTypeFontGenerator.DEFAULT_CHARS + "áéíóúÁÉÍÓÚñÑüÜ¡¿";
         BitmapFont fuente = gen.generateFont(p);
         fuente.getData().setScale(1f / escala);
+
+        FreeTypeFontGenerator.FreeTypeFontParameter pPausa =
+            new FreeTypeFontGenerator.FreeTypeFontParameter();
+        pPausa.size = Math.round(48 * escala);
+        pPausa.characters = FreeTypeFontGenerator.DEFAULT_CHARS + "áéíóúÁÉÍÓÚñÑüÜ¡¿";
+        BitmapFont fuentePausa = gen.generateFont(pPausa);
+        fuentePausa.getData().setScale(1f / escala);
+
         gen.dispose();
         skin.add("fuente-defecto", fuente);
 
         Label.LabelStyle ls = new Label.LabelStyle();
         ls.font = fuente; ls.fontColor = CAFE;
         skin.add("default", ls);
+
+        Label.LabelStyle lsTitulo = new Label.LabelStyle();
+        lsTitulo.font = fuente; lsTitulo.fontColor = CAFE;
+        skin.add("titulo", lsTitulo);
+
+        Label.LabelStyle lsPausa = new Label.LabelStyle();
+        lsPausa.font = fuentePausa; lsPausa.fontColor = Color.WHITE;
+        skin.add("pause-titulo", lsPausa);
 
         TextButton.TextButtonStyle bs = new TextButton.TextButtonStyle();
         bs.font = fuente; bs.fontColor = Color.WHITE;
@@ -505,7 +612,7 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
         if (pelota != null) pelota.dispose();
         if (nomnom != null) nomnom.dispose();
         Cuerda.disposeTextura();
-        Burbuja.disposeTexturas();//Liberar texturas estaticas de las burbujas
+        Burbuja.disposeTexturas();
         for (Cuerda    c : cuerdas)    c.dispose();
         for (Estrella  e : estrellas)  e.dispose();
         for (Obstaculo o : obstaculos) o.dispose();
@@ -515,6 +622,10 @@ public abstract class NivelBaseScreen implements Screen, ContactListener {
         bgTexture.dispose();
         if (btnTexture != null) btnTexture.dispose();
         if (btnOverTexture != null) btnOverTexture.dispose();
+        if (pauseBtnTex != null) pauseBtnTex.dispose();
+        if (playBtnTex != null) playBtnTex.dispose();
+        if (selectLvlBtnTex != null) selectLvlBtnTex.dispose();
+        if (overlayBgTex != null) overlayBgTex.dispose();
         batch.dispose();
     }
 }

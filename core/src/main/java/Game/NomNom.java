@@ -1,6 +1,7 @@
 package Game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.*;
@@ -13,8 +14,12 @@ public class NomNom extends ElementoNivel implements Interactuable {
     private World mundo;
     private float radio;
     private boolean comio = false;
+    private boolean comioSoundPlayed = false;
+    private boolean sadSoundPlayed = false;
 
     private Texture texturaPlataforma;
+    private Sound   comiendoSound;
+    private Sound   sadSound;
 
     private Estado    estado     = Estado.NORMAL;
     private Texture[] fNormal;
@@ -40,6 +45,8 @@ public class NomNom extends ElementoNivel implements Interactuable {
         fTriste    = frames("pet_sad",        14);
 
         texturaPlataforma = new Texture(Gdx.files.internal("images/support.png"));
+        comiendoSound = Gdx.audio.newSound(Gdx.files.internal("audio/comiendo.wav"));
+        sadSound      = Gdx.audio.newSound(Gdx.files.internal("audio/sad.wav"));
 
         crearCuerpoFisico();
     }
@@ -126,6 +133,10 @@ public class NomNom extends ElementoNivel implements Interactuable {
             estado = Estado.TRISTE;
             frameActual = 0;
             tiempoFrame = 0f;
+            if (!sadSoundPlayed && sadSound != null) {
+                sadSoundPlayed = true;
+                sadSound.play();
+            }
         }
     }
 
@@ -135,6 +146,10 @@ public class NomNom extends ElementoNivel implements Interactuable {
         estado = Estado.COMIENDO;
         frameActual = 0;
         tiempoFrame = 0f;
+        if (!comioSoundPlayed && comiendoSound != null) {
+            comioSoundPlayed = true;
+            comiendoSound.play();
+        }
     }
 
     @Override
@@ -172,5 +187,7 @@ public class NomNom extends ElementoNivel implements Interactuable {
         for (Texture t : fComiendo)  if (t != null) t.dispose();
         for (Texture t : fTriste)    if (t != null) t.dispose();
         if (texturaPlataforma != null) texturaPlataforma.dispose();
+        if (comiendoSound != null) comiendoSound.dispose();
+        if (sadSound != null) sadSound.dispose();
     }
 }
