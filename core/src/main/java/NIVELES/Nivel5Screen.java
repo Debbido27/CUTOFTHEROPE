@@ -41,8 +41,8 @@ public class Nivel5Screen extends NivelBaseScreen {
 
         obstaculos.add(new Obstaculo(mundo, 7.0f, 5.0f, 1.0f, 3.0f, TipoObstaculo.LARGO));
         obstaculos.add(new Obstaculo(mundo, 11.0f, 5.0f, 1.0f, 3.0f, TipoObstaculo.LARGO));
-        obstaculos.add(new Obstaculo(mundo, 9.0f, 15.0f, 3.0f, 0.1f, TipoObstaculo.LARGO));
-
+        obstaculos.add(new Obstaculo(mundo, 9.0f, 16.5f, 3.0f, 1.0f, TipoObstaculo.LARGO));
+        
         limiteInferior = 0.5f;
         camaraFisica.setToOrtho(false, 14f, 18f);
         camaraFisica.position.set(9f, 11f, 0);
