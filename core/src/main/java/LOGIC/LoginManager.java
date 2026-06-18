@@ -344,7 +344,6 @@
         return null;
         }
         }
-        // ==================== SOLICITUDES ====================
 
         public synchronized void agregarSolicitud(String usuario, String emisor) {
         try {

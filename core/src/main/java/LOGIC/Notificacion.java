@@ -14,7 +14,7 @@ public class Notificacion implements java.io.Serializable {    public enum Tipo 
     public int           nivel;
     public LocalDateTime fecha;
     public boolean       leida;
-    private String       id;//Identificador persistente
+    private String       id;
 
     public Notificacion(Tipo tipo, String origen, String destino, int nivel) {
         this.tipo    = tipo;

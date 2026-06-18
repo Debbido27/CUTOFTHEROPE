@@ -612,75 +612,88 @@
         escenario.act(delta);
         escenario.draw();
         }
-            // ── RETAR AMIGO ──────────────────────────────────────────────────
-            private void construirRetarAmigo() {
-                escenario.clear();
-                Table tabla = new Table();
-                tabla.setFillParent(true);
-                tabla.center();
-
-                Label titulo  = new Label(Idioma.get(Idioma.Clave.RETAR_AMIGO), piel);
-                titulo.setColor(VERDE);
-                Label lblInfo = new Label(Idioma.get(Idioma.Clave.INGRESA_USUARIO_SOLICITUD), piel);
-                lblInfo.setColor(CAFE);
-
-                TextField campoBuscar = crearCampo(Idioma.get(Idioma.Clave.USUARIO));
-                Label mensaje = new Label("", piel);
-                Table tablaResultado = new Table();
-
-                TextButton btnBuscar = crearBoton(Idioma.get(Idioma.Clave.BUSCAR), VERDE);
-                TextButton btnVolver = crearBoton(Idioma.get(Idioma.Clave.VOLVER), NARANJA);
-
-                btnBuscar.addListener(new ClickListener() {
-                    public void clicked(InputEvent e, float x, float y) {
-                        String busqueda = campoBuscar.getText().trim();
-                        tablaResultado.clear();
-                        if (busqueda.isEmpty() || busqueda.equals(usuario)) {
-                            mensaje.setText(Idioma.get(Idioma.Clave.USUARIO_INVALIDO));
-                            mensaje.setColor(ROJO);
-                            return;
-                        }
-                        if (!friendsManager.sonAmigos(usuario, busqueda)) {
-                            mensaje.setText(Idioma.get(Idioma.Clave.SOLO_AMIGOS_RETO));
-                            mensaje.setColor(ROJO);
-                            return;
-                        }
-                         if (busqueda.equals(usuario)) {
-                            mensaje.setText(Idioma.get(Idioma.Clave.NO_AUTO_AGREGAR));
-                            mensaje.setColor(ROJO);
-                            return;  
-                        }
-                        USER encontrado = gestor.buscarUser(busqueda);
-                        if (encontrado == null) {
-                            mensaje.setText(Idioma.get(Idioma.Clave.USUARIO_NO_ENCONTRADO));
-                            return;
-                        }
-                        mensaje.setText("");
-                        Label lblNombre = new Label(encontrado.getFullname() + " (@" + busqueda + ")", piel);
-                        lblNombre.setColor(CAFE);
-                        TextButton btnElegirNivel = crearBoton(Idioma.get(Idioma.Clave.ELEGIR_NIVEL), VERDE);
-                        btnElegirNivel.addListener(new ClickListener() {
-                            public void clicked(InputEvent e2, float x2, float y2) {
-                                construirSelectorNivelReto(busqueda);
-                            }
-                        });
-                        tablaResultado.add(lblNombre).padRight(16);
-                        tablaResultado.add(btnElegirNivel).width(140).height(38).row();
-                    }
-                });
-                btnVolver.addListener(new ClickListener() {
-                    public void clicked(InputEvent e, float x, float y) { construirMenu(); }
-                });
-
-                tabla.add(titulo).padBottom(20).row();
-                tabla.add(lblInfo).left().width(360).padBottom(6).row();
-                tabla.add(campoBuscar).width(360).height(40).padBottom(8).row();
-                tabla.add(btnBuscar).width(360).height(40).padBottom(8).row();
-                tabla.add(tablaResultado).padBottom(8).row();
-                tabla.add(mensaje).padBottom(10).row();
-                tabla.add(btnVolver).width(280).height(44).row();
-                escenario.addActor(tabla);
+        
+        
+  private void construirRetarAmigo() {
+    escenario.clear();
+    
+    Table contenido = new Table();
+    contenido.top().pad(20);
+    
+    Label titulo = new Label(Idioma.get(Idioma.Clave.RETAR_AMIGO), piel);
+    titulo.setColor(VERDE);
+    contenido.add(titulo).colspan(2).center().padBottom(20).row();
+    
+    String[] amigos = friendsManager.getAmigos(usuario);
+    
+    if (amigos.length == 0) {
+        Label lblVacio = new Label(Idioma.get(Idioma.Clave.NO_TIENES_AMIGOS), piel);
+        lblVacio.setColor(GRIS);
+        contenido.add(lblVacio).colspan(2).center().padBottom(20).row();
+    } else {
+        for (String amigo : amigos) {
+            USER u = gestor.buscarUser(amigo);
+            if (u == null) continue;
+            
+         
+            final String nombreAmigo = amigo;
+            
+            
+            String rutaAvatar = (u.getAvatarPath() != null && !u.getAvatarPath().isEmpty())
+                ? u.getAvatarPath() : "AVATARS/X1.png";
+            
+            Table card = new Table();
+            card.background(piel.newDrawable("white", new Color(0.9f, 0.87f, 0.78f, 1f)));
+            card.pad(8);
+            
+            if (Gdx.files.internal(rutaAvatar).exists()) {
+                Texture tex = new Texture(Gdx.files.internal(rutaAvatar));
+                texturasDinamicas.add(tex);
+                Image imgAvatar = new Image(tex);
+                imgAvatar.setSize(40, 40);
+                card.add(imgAvatar).size(40, 40).padRight(10);
             }
+            
+            Table info = new Table();
+            info.left();
+            
+            Label lblNombre = new Label(u.getFullname(), piel);
+            lblNombre.setColor(CAFE);
+            Label lblUser = new Label("@" + u.getUsername(), piel);
+            lblUser.setColor(NARANJA);
+            
+            info.add(lblNombre).left().row();
+            info.add(lblUser).left();
+            
+            card.add(info).expandX().left().padRight(10);
+            
+   
+            TextButton btnRetar = crearBoton(Idioma.get(Idioma.Clave.RETAR), VERDE);
+            btnRetar.addListener(new ClickListener() {
+                public void clicked(InputEvent e, float x, float y) {
+                    construirSelectorNivelReto(nombreAmigo);  
+                }
+            });
+            card.add(btnRetar).width(100).height(38);
+            
+            contenido.add(card).width(450).padBottom(8).colspan(2).row();
+        }
+    }
+    
+    TextButton btnVolver = crearBoton(Idioma.get(Idioma.Clave.VOLVER), NARANJA);
+    btnVolver.addListener(new ClickListener() {
+        public void clicked(InputEvent e, float x, float y) { construirMenuRetos(); }
+    });
+    contenido.add(btnVolver).width(280).height(44).padTop(20).colspan(2).center().row();
+    
+    ScrollPane.ScrollPaneStyle spStyle = new ScrollPane.ScrollPaneStyle();
+    spStyle.background = null;
+    ScrollPane scroll = new ScrollPane(contenido, spStyle);
+    scroll.setFillParent(true);
+    scroll.setScrollingDisabled(true, false);
+    
+    escenario.addActor(scroll);
+}
 
             
             

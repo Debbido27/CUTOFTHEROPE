@@ -73,30 +73,14 @@ public class Obstaculo extends ElementoNivel implements Interactuable {
     public void actualizar(float delta) {}
 
     @Override
-public void dibujar(SpriteBatch batch) {
-    if (!activo) return;
-    
-    float factorGrosor = 0.35f;
-    
-    if (ancho > alto) {
+    public void dibujar(SpriteBatch batch) {
+        if (!activo) return;
         
-      
-        float anchoDibujo = ancho;             
-        float altoDibujo = alto * factorGrosor; 
-        
-        float xPos = x - anchoDibujo / 2f;
-        float yPos = y - altoDibujo / 2f;
-        batch.draw(textura, xPos, yPos, anchoDibujo, altoDibujo);
-    } else {
-        
-        float anchoDibujo = ancho * factorGrosor; 
-        float altoDibujo = alto;                  
-        
-        float xPos = x - anchoDibujo / 2f;
-        float yPos = y - altoDibujo / 2f;
-        batch.draw(textura, xPos, yPos, anchoDibujo, altoDibujo);
+        // DIBUJAR NORMAL SIN APLASTAR
+        float xPos = x - ancho / 2f;
+        float yPos = y - alto / 2f;
+        batch.draw(textura, xPos, yPos, ancho, alto);
     }
-}
 
     @Override
     public void interactuar() {}
