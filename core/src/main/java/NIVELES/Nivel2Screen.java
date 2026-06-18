@@ -9,7 +9,12 @@
 
         public Nivel2Screen(CutTheRope juego, String usuario, LoginManager gestor) {
         super(juego, usuario, gestor, 2);
+            construirUI();
         }
+            public Nivel2Screen(CutTheRope juego, String usuario, LoginManager gestor,
+                                String retoRetador, String retoRetado) {
+                super(juego, usuario, gestor, 2, retoRetador, retoRetado);
+            }
 
         @Override
         protected String rutaFondo() {

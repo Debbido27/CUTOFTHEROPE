@@ -57,13 +57,6 @@ public class SesionJuego {
         gestor.registrarPartida(username, nivelActual - 1,
             puntuacion, estrellasNivel,
             fallosAcumulados, tiempoMs);
-        RetosManager rm = new RetosManager();
-        for (LOGIC.Reto r : rm.getHistorialRetos(username)) {
-            if (r.nivel == nivelActual && r.estado == LOGIC.Reto.Estado.ACEPTADO) {
-                if (r.retador.equals(username)) {
-                }
-            }
-        }
         historial.add(new PartidaHistorial(
             nivelActual, gano, estrellasNivel,
             puntuacion, tiempoMs, LocalDate.now()));
@@ -81,6 +74,9 @@ public class SesionJuego {
     }
 
     public int getEstrellasNivel()               { return estrellasNivel; }
+    public long getTiempoTranscurridoMs() {
+        return System.currentTimeMillis() - tiempoInicioNivel;
+    }
     public List<PartidaHistorial> getHistorial() { return historial;      }
     public String getUsername()                  { return username;       }
 }

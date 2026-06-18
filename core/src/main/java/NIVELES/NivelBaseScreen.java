@@ -1,6 +1,7 @@
         package NIVELES;
 
         import Game.*;
+        import LOGIC.RetosManager;
         import LOGIC.SesionJuego;
         import com.badlogic.gdx.Gdx;
         import com.badlogic.gdx.Screen;
@@ -32,7 +33,10 @@
         protected List<Cuerda>   cuerdas          = new ArrayList<>();
         protected List<Body>     anclas           = new ArrayList<>();
         protected List<Vector2>  posicionesAnclas = new ArrayList<>();
-
+        protected boolean modoReto          = false;
+        protected String  retoRetador       = null;
+        protected String  retoRetado        = null;
+        protected String  retoJugadorActual = null;
         protected List<Estrella>  estrellas  = new ArrayList<>();
         protected List<Obstaculo> obstaculos = new ArrayList<>();
         protected List<Burbuja>   burbujas   = new ArrayList<>();
@@ -79,8 +83,17 @@
         escenario = new Stage(new FitViewport(640, 480));
         piel = crearPiel();
         Gdx.input.setInputProcessor(escenario);
-        construirUI();
         }
+            public NivelBaseScreen(CutTheRope juego, String usuario, LoginManager gestor, int nivel,
+                                   String retoRetador, String retoRetado) {
+                this(juego, usuario, gestor, nivel);
+                this.modoReto          = true;
+                this.retoRetador       = retoRetador;
+                this.retoRetado        = retoRetado;
+                this.retoJugadorActual = usuario;
+                construirUI();
+
+            }
 
 
         protected abstract String rutaFondo();
@@ -126,22 +139,32 @@
         nomnom = new NomNom(mundo, x, y, radio);
         }
 
-        private void construirUI() {
-        Table raiz = new Table();
-        raiz.setFillParent(true);
-        raiz.top().left();
+            protected void construirUI() {
+                Table raiz = new Table();
+                raiz.setFillParent(true);
+                raiz.top().left();
 
-        TextButton btnVolver = crearBoton("< Volver", ROJO);
-        btnVolver.addListener(new ClickListener() {
-        public void clicked(InputEvent e, float x, float y) {
-            SesionJuego.get().finalizarNivel(false);
-            Gdx.app.postRunnable(() ->
-                juego.setScreen(new SeleccionNivelScreen(juego, usuario, gestor)));
-        }
-        });
-        raiz.add(btnVolver).width(120).height(38).pad(12);
-        escenario.addActor(raiz);
-        }
+                if (!modoReto) {
+                    TextButton btnVolver = crearBoton("< Volver", ROJO);
+                    btnVolver.addListener(new ClickListener() {
+                        public void clicked(InputEvent e, float x, float y) {
+                            SesionJuego.get().finalizarNivel(false);
+                            Gdx.app.postRunnable(() ->
+                                juego.setScreen(new SeleccionNivelScreen(juego, usuario, gestor)));
+                        }
+                    });
+                    raiz.add(btnVolver).width(120).height(38).pad(12);
+                } else {
+                    TextButton btnRendir = crearBoton("Rendirse", ROJO);
+                    btnRendir.addListener(new ClickListener() {
+                        public void clicked(InputEvent e, float x, float y) {
+                            finalizarReto(false);
+                        }
+                    });
+                    raiz.add(btnRendir).width(120).height(38).pad(12);
+                }
+                escenario.addActor(raiz);
+            }
 
         @Override
         public void render(float delta) {
@@ -256,12 +279,20 @@
         }
 
         private void irAlSiguienteNivel() {
+            if (modoReto) {
+                finalizarReto(true);
+                return;
+            }
         final int sig = nivel + 1;
         SesionJuego.get().finalizarNivel(true);
         Gdx.app.postRunnable(() -> juego.setScreen(crearPantallaNivel(sig)));
         }
 
         private void reiniciarNivel() {
+            if (modoReto) {
+                finalizarReto(false);
+                return;
+            }
         final int n = nivel;
         Gdx.app.postRunnable(() -> juego.setScreen(crearPantallaNivel(n)));
         }
@@ -293,6 +324,23 @@
         batch.draw(overlay, cx - w / 2f, cy - h / 2f, w, h);
         overlay.dispose();
         }
+             void finalizarReto(boolean gano) {
+                long tiempoMs = SesionJuego.get().getTiempoTranscurridoMs();
+                int  segundos = (int) (tiempoMs / 1000);
+                int  estrellas = SesionJuego.get().getEstrellasNivel();
+
+                int puntaje = gano ? (1000 + (200 * estrellas) - (5 * segundos)) : 0;
+                if (puntaje < 0) puntaje = 0;
+
+                SesionJuego.get().finalizarNivel(gano);
+
+                new RetosManager().registrarResultadoJugador(
+                    retoRetador, retoRetado, nivel, retoJugadorActual,
+                    puntaje, estrellas, segundos);
+
+                Gdx.app.postRunnable(() ->
+                    juego.setScreen(new com.cutherope.AmigosScreen(juego, usuario, gestor)));
+            }
 
         @Override
         public void beginContact(Contact contact) {

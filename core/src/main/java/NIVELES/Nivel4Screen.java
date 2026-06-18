@@ -11,14 +11,19 @@
 
 
     public class Nivel4Screen extends NivelBaseScreen {
+        public Nivel4Screen(CutTheRope juego, String usuario, LoginManager gestor,
+                            String retoRetador, String retoRetado) {
+            super(juego, usuario, gestor, 4, retoRetador, retoRetado);
 
+        }
     public Nivel4Screen(CutTheRope juego, String usuario, LoginManager gestor) {
     super(juego, usuario, gestor, 4);
+        construirUI();
     }
 
     @Override
     protected String rutaFondo() {
-    return "images/lvl1.png"; 
+    return "images/lvl1.png";
     }
 
     @Override

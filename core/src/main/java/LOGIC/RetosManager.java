@@ -12,6 +12,7 @@ public class RetosManager {
     private static final String NOTIF = BASE + "/notificaciones.dat";
 
 
+
     public boolean enviarReto(String retador, String retado, int nivel) {
         for (Reto r : getTodosRetos()) {
             if (r.retador.equals(retador) && r.retado.equals(retado)
@@ -41,27 +42,6 @@ public class RetosManager {
                     Notificacion.Tipo.RETO_RECHAZADO, retado, retador, nivel)));
     }
 
-    public void registrarResultado(String retador, String retado, int nivel,
-                                   int puntajeRetador, int puntajeRetado) {
-        List<Reto> lista = getTodosRetos();
-        for (Reto r : lista) {
-            if (r.retador.equals(retador) && r.retado.equals(retado)
-                && r.nivel == nivel && r.estado == Reto.Estado.ACEPTADO) {
-                r.puntajeRetador = puntajeRetador;
-                r.puntajeRetado  = puntajeRetado;
-                r.estado         = Reto.Estado.COMPLETADO;
-                r.ganador        = puntajeRetador >= puntajeRetado ? retador : retado;
-                String perdedor  = r.ganador.equals(retador) ? retado : retador;
-
-                agregarNotificacion(new Notificacion(
-                    Notificacion.Tipo.RETO_GANADO, perdedor, r.ganador, nivel));
-                agregarNotificacion(new Notificacion(
-                    Notificacion.Tipo.RETO_PERDIDO, r.ganador, perdedor, nivel));
-                break;
-            }
-        }
-        guardarRetos(lista);
-    }
 
     public List<Reto> getRetosRecibidos(String usuario) {
         List<Reto> res = new ArrayList<>();
@@ -191,4 +171,69 @@ public class RetosManager {
         }
         return false;
     }
+    public void registrarResultadoJugador(String retador, String retado, int nivel,
+                                          String quienJugo, int puntaje, int estrellas, int tiempoSeg) {
+        List<Reto> lista = getTodosRetos();
+        for (Reto r : lista) {
+            if (!r.retador.equals(retador) || !r.retado.equals(retado) || r.nivel != nivel) continue;
+            if (r.estado != Reto.Estado.ACEPTADO && r.estado != Reto.Estado.ESPERANDO_RIVAL) continue;
+
+            boolean esRetador = quienJugo.equals(retador);
+            if (esRetador) {
+                r.puntajeRetador   = puntaje;
+                r.estrellasRetador = estrellas;
+                r.tiempoRetador    = tiempoSeg;
+                r.jugoRetador      = true;
+            } else {
+                r.puntajeRetado    = puntaje;
+                r.estrellasRetado  = estrellas;
+                r.tiempoRetado     = tiempoSeg;
+                r.jugoRetado       = true;
+            }
+
+            if (r.jugoRetador && r.jugoRetado) {
+                r.ganador = determinarGanador(r);
+                r.estado  = Reto.Estado.COMPLETADO;
+                String perdedor = r.ganador.equals(retador) ? retado : retador;
+                agregarNotificacion(new Notificacion(
+                    Notificacion.Tipo.RETO_GANADO, perdedor, r.ganador, nivel));
+                agregarNotificacion(new Notificacion(
+                    Notificacion.Tipo.RETO_PERDIDO, r.ganador, perdedor, nivel));
+            } else {
+                r.estado = Reto.Estado.ESPERANDO_RIVAL;
+            }
+
+            guardarRetos(lista);
+            return;
+        }
+    }
+
+    private String determinarGanador(Reto r) {
+        if (r.estrellasRetador != r.estrellasRetado)
+            return r.estrellasRetador > r.estrellasRetado ? r.retador : r.retado;
+        return r.tiempoRetador <= r.tiempoRetado ? r.retador : r.retado;
+    }
+
+    public List<Reto> getRetosEnviados(String usuario) {
+        List<Reto> res = new ArrayList<>();
+        for (Reto r : getTodosRetos())
+            if (r.retador.equals(usuario) && r.estado == Reto.Estado.PENDIENTE)
+                res.add(r);
+        return res;
+    }
+
+    public List<Reto> getRetosActivos(String usuario) {
+        List<Reto> res = new ArrayList<>();
+        for (Reto r : getTodosRetos()) {
+            if (!(r.retador.equals(usuario) || r.retado.equals(usuario))) continue;
+            if (r.estado != Reto.Estado.ACEPTADO && r.estado != Reto.Estado.ESPERANDO_RIVAL) continue;
+            boolean esRetador = r.retador.equals(usuario);
+            if (esRetador && r.jugoRetador) continue;
+            if (!esRetador && r.jugoRetado) continue;
+            res.add(r);
+        }
+        return res;
+    }
+
+
 }

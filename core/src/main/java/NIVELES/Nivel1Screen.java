@@ -21,8 +21,12 @@ public class Nivel1Screen extends NivelBaseScreen {
 
     public Nivel1Screen(CutTheRope juego, String usuario, LoginManager gestor) {
         super(juego, usuario, gestor, 1);
+        construirUI();
     }
-
+    public Nivel1Screen(CutTheRope juego, String usuario, LoginManager gestor,
+                        String retoRetador, String retoRetado) {
+        super(juego, usuario, gestor, 1, retoRetador, retoRetado);
+    }
     @Override
     protected String rutaFondo() {
         return "images/lvl1.png"; // ← tu fondo específico
