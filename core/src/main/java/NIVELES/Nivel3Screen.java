@@ -32,11 +32,11 @@ public class Nivel3Screen extends NivelBaseScreen {
     anclarCuerda(pelotaX, pelotaY - 6.0f, 9, 0.7f);
     obstaculos.add(new Obstaculo(mundo, pelotaX, pelotaY - 4.0f, 4.5f, 0.3f, TipoObstaculo.LARGO));
     obstaculos.add(new Obstaculo(mundo, pelotaX, pelotaY - 8.0f, 4.5f, 0.3f, TipoObstaculo.LARGO));
-estrellas.add(new Estrella(mundo, pelotaX + 2.5f, pelotaY - 3.5f, 0.22f));
+    estrellas.add(new Estrella(mundo, pelotaX + 2.5f, pelotaY - 3.5f, 0.22f));
 
-estrellas.add(new Estrella(mundo, pelotaX - 2f, pelotaY - 11.5f, 0.22f));
-estrellas.add(new Estrella(mundo, pelotaX - 2f, pelotaY - 7f, 0.22f));
-    colocarNomNom(pelotaX, pelotaY - 12.0f, 0.6f);
+    estrellas.add(new Estrella(mundo, pelotaX - 2f, pelotaY - 11.5f, 0.22f));
+    estrellas.add(new Estrella(mundo, pelotaX - 2f, pelotaY - 7f, 0.22f));
+     colocarNomNom(pelotaX, pelotaY - 12.0f, 0.6f);
     limiteInferior = pelotaY - 14f;
     camaraFisica.setToOrtho(false, 14f, 18f);
     camaraFisica.position.set(pelotaX - 2f, pelotaY - 5f, 0);

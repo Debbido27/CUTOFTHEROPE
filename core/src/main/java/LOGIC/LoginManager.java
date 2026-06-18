@@ -174,7 +174,7 @@
 
         u.setPartidasJugadas(u.getPartidasJugadas() + 1);
 
-        if (puntaje > 0) { // Solo si gano la partida
+        if (puntaje > 0) { 
             int estrellasViejas = u.getEstrellasPorNivel()[nivel];
             if (estrellas > estrellasViejas) {
                 u.setEstrellasTotal(u.getEstrellasTotal() + (estrellas - estrellasViejas));
@@ -251,7 +251,6 @@
         return dataManager.cargarRetos(username);
         }
 
-        // ==================== MÉTODOS PARA NOTIFICACIONES ====================
 
         public synchronized void guardarNotificacion(String username, Notificacion notificacion) {
         dataManager.agregarNotificacion(username, notificacion);
@@ -359,7 +358,6 @@
         return null;
         }
         }
-        // ==================== SOLICITUDES ====================
 
         public synchronized void agregarSolicitud(String usuario, String emisor) {
         try {
@@ -822,7 +820,7 @@
         f.writeInt(n.nivel);
         f.writeUTF(n.fecha.toString());
         f.writeBoolean(n.leida);
-        f.writeUTF(n.getId());//Guardar el ID persistente
+        f.writeUTF(n.getId());
         }
 
         private Notificacion leerNotificacion(RandomAccessFile f) throws IOException {
@@ -832,7 +830,7 @@
         int nivel = f.readInt();
         String fechaStr = f.readUTF();
         boolean leida = f.readBoolean();
-        String id = f.readUTF();//Leer el ID guardado
+        String id = f.readUTF();
 
         Notificacion n = new Notificacion(
         Notificacion.Tipo.valueOf(tipoStr),
@@ -840,7 +838,7 @@
         );
         n.fecha = java.time.LocalDateTime.parse(fechaStr);
         n.leida = leida;
-        n.setId(id);//Asignar el ID recuperado
+        n.setId(id);
         return n;
         }
 
@@ -862,7 +860,7 @@
             new File(userFolder, "stats.ctr").createNewFile();
             new File(userFolder, "preferencias.ctr").createNewFile();
             new File(userFolder, "amigos.ctr").createNewFile();
-            new File(userFolder, "solicitudes.ctr").createNewFile();  // ← NUEVO
+            new File(userFolder, "solicitudes.ctr").createNewFile();  
             new File(userFolder, "sesiones.ctr").createNewFile();
             new File(userFolder, "historial.ctr").createNewFile();
             new File(userFolder, "retos.ctr").createNewFile();
