@@ -7,6 +7,7 @@ public class Nivel3Screen extends NivelBaseScreen {
 
     public Nivel3Screen(CutTheRope juego, String usuario, LoginManager gestor) {
         super(juego, usuario, gestor, 3);
+        construirUI();
     }
 
     public Nivel3Screen(CutTheRope juego, String usuario, LoginManager gestor,
